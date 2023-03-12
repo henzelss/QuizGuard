@@ -1,0 +1,61 @@
+{% extends "dashboard.html" %}
+
+{% block title %} <title>Professor | Dashboard</title>{% endblock %}
+
+{% block nav %}
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="#">Settings</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col">
+      <div class="card card-design">
+        <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+        <div class="card-body">
+          <h5 class="card-title">Quiz Creator</h5>
+          <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, quam in! Unde voluptatibus illum quas laudantium?</p>
+          <a href="{{ url_for('views.createquiz') }}" class="btn btn-warning btn-links-hover">Create Quiz</a>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card card-design">
+        <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+        <div class="card-body">
+          <h5 class="card-title">Quiz Library</h5>
+          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+          <a href="" class="btn btn-warning btn-links-hover">Open Library</a>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card card-design">
+        <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+        <div class="card-body ">
+          <h5 class="card-title">Student Records</h5>
+          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+          <a href="" class="btn btn-warning btn-links-hover">Open Records</a>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card card-design">
+        <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+        <div class="card-body">
+          <h5 class="card-title">Students Accounts</h5>
+          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+          <a href="" class="btn btn-warning btn-links-hover">Create Accounts</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

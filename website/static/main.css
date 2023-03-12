@@ -1,0 +1,238 @@
+body{
+    background-color: #181818;
+}
+
+.center {
+    margin: auto;
+    width: 50%;
+    background-color: #202020;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.quiz-list{
+    background-color: #202020;
+    border-radius: 5px;
+}
+
+.quiz-box{
+    background-color: #fcba03;
+}
+
+.row{
+    margin: 10px 0px;
+    padding: 10px 0;
+    border-radius: 5px;
+}
+
+
+
+.txt-properties{
+    padding: 20px 20px;
+    color: white;
+}
+input[type=text], input[type=password], input[type=email]
+{
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: none;
+  border-radius: 4px;
+  box-sizing: border-box;
+
+}
+input[type=submit]
+{
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    background-color: #fcba03;
+    border: none;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.form-properties, input[type=text]:focus, input[type=password]:focus, input[type=email]:focus
+{
+ outline: none;
+}
+
+.links
+{
+    text-decoration: none !important;
+    color: #fcba03 !important;
+}
+
+.links:hover{
+    color: #fcba03 !important;
+}
+
+.img-center{
+  margin: auto;
+  padding: 10px;
+}
+
+h1 a.home-link{
+    
+    color: #FAB903 !important;
+    text-decoration: none !important;
+}
+h1 a.home-link:hover{
+    color: #fcba03 !important;
+}
+
+
+
+div a.home-link{
+    color: #fcba03 !important;
+    text-decoration: none !important;
+}
+
+div a.home-link:hover{
+    color: #fcba03 !important;
+}
+
+.fa-egg-fried{
+    width: 50px;
+    height: 50px;
+    color: #fcba03;
+}
+
+.rooms-container
+{
+    margin: auto;
+    width: 50%;
+    background-color: #181818;
+    border-radius: 10px;
+    padding: 10px;
+    
+}
+
+.quiz-description
+{
+    text-indent: 5em;
+    text-align: justify;
+    text-justify: inter-word;
+    color: white;
+}
+
+.card-design{
+    background-color: #202020 !important;
+    color: white;
+    
+}
+a.card-design:hover{
+    background-color: #202020 !important;
+    border-color: #FAB903 !important;
+    color: white !important;
+}
+
+.card-div{
+    width: 18rem !important; 
+    height: 400px !important;
+}
+
+.bg-night{
+    background-color: #202020 !important;
+    color: white !important;
+}
+a.text-hover:hover{
+    color: #FAB903 !important;
+}
+
+.btn-links-hover:hover{
+    background-color: #202020;
+    border : 2px solid #FAB903;
+    color: #FAB903;
+
+}
+
+
+.radio-section{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+.radio-item [type="radio"]{
+    display: none;
+}
+
+.radio-item + .radio-item{
+    margin-top: 15px;
+}
+.radio-item label{
+    display: block;
+    padding: 20px 60px;
+    background: #181818;
+    border:2px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 400;
+    min-width: 250px;
+    white-space: nowrap;
+    position: relative;
+}
+.radio-item label:after,
+.radio-item label:before{
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+}
+
+.radio-item label:after{
+    height: 20px;
+    width: 20px;
+    border:2px solid #FAB903;
+    left: 20px;
+    top: calc(50% - 12px);
+}
+.radio-item label:before{
+    background: #fcba03;
+    height: 10px;
+    width: 10px;
+    left: 27px;
+    top: calc(50% - 5px);
+    transform: scale(5);
+    transition: .4s ease-in-out 0s;
+    opacity: 0;
+    visibility: hidden;
+}
+.radio-item [type="radio"]:checked ~ label{
+    border-color: #fcba03;
+}
+
+.radio-item [type="radio"]:checked ~ label:before{
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.submit-button{
+    width: 200px !important;
+    background-color: #FAB903 !important;
+    color: #181818 !important; 
+}
+
+.submit-button:hover{
+    width: 200px !important;
+    background-color: #181818 !important;
+    color: #FAB903 !important;
+    border: 1px solid #FAB903 !important;   
+}
+
+.radio-button{
+    display: block;
+}
+
+.radio-button:checked{
+    border: 1px solid #FAB903;
+}
+
+.hidden {
+    display: none;   
+}
+
+
