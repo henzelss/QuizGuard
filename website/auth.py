@@ -82,6 +82,10 @@ def profile():
     return render_template('profile.html', form=form)
 
 @auth.route('/accounts')
+@login_required
+def accounts():
+    accs = User.query.all()
+    return render_template('accounts.html', accounts=accs)
 
 
 @auth.route('/logs')

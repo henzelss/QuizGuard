@@ -1,0 +1,49 @@
+{% extends 'dashboard.html' %}
+
+{% block nav %}
+  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('views.dashboard') }}">Home</a>
+    </li>
+  </ul>
+  <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="{{ url_for('auth.profile') }}"><i class="fa-solid fa-user me-1"></i>Settings</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-sharp fa-solid fa-right-from-bracket me-1"></i>Logout</a>
+    </li>
+  </ul>
+{% endblock %}
+
+
+{% block content %}
+<div class="container mt-5 bg-night p-3 rounded">
+    <h1 class="text-center">Manage Accounts</h1>
+    <table class="table bg-night">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Fullname</th>
+          <th>Email</th>
+          <th>User Type</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for acc in accounts %}
+          <tr>
+            <td>{{ acc.id }}</td>
+            <td>{{ acc.firstname}}&nbsp;{{ acc.lastname}}</td>
+            <td>{{ acc.email }}</td>
+            <td>{{ acc.usertype }}</td>
+            <td> 
+                <a href="" class="btn btn-warning">Edit</a>
+                <a href="" class="btn btn-danger">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
