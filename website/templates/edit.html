@@ -1,0 +1,45 @@
+{% extends 'dashboard.html' %}
+{% block nav %}
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('views.dashboard') }}">Home</a>
+        </li>
+  </ul>
+  <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('auth.profile') }}"><i class="fa-solid fa-user me-1"></i>Settings</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-sharp fa-solid fa-right-from-bracket me-1"></i>Logout</a>
+        </li>
+    </ul>
+{% endblock%}
+
+
+{% block content %}
+<div class="center txt-properties mt-5">
+    <form method="POST" class="form-properties">
+        {{ form.hidden_tag() }}
+        {{ form.firstname.label(class='text-light') }}
+        {{ form.firstname(class='text-dark', required=True) }}
+    
+        {{ form.lastname.label(class='text-light') }}
+        {{ form.lastname(class='text-dark' , required=True) }}
+    
+        {{ form.email.label(class='text-light') }}
+        {{ form.email(class='text-dark', required=True) }}
+    
+        {{ form.password.label(class='text-light') }}
+        {{ form.password(class='text-dark', required=True) }}
+    
+        {{ form.retypepassword.label(class='text-light') }}
+        {{ form.retypepassword(class='text-dark', required=True) }}
+
+        {{ form.usertype.label(class='text-light') }}
+        {{ form.usertype(class="form-select form-select-lg mb-3", required=True) }}
+
+        {{ form.submit(class='btn btn-warning bg-warning text-dark') }}
+    </form>
+</div>
+
+{% endblock %}

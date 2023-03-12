@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField
 from wtforms.validators import DataRequired, Email, Length 
 
 
@@ -27,3 +27,26 @@ class UserProfileForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password"})
     retypepassword = PasswordField('Retype Password', validators=[DataRequired()], render_kw={"placeholder": "Confirm Your Password"})
     submit = SubmitField('Update')
+
+class EditForm(FlaskForm):
+    firstname = StringField('Firstname', validators=[DataRequired()], render_kw={"placeholder": "Enter Firstname "})
+    lastname = StringField('Lastname', validators=[DataRequired()], render_kw={"placeholder": "Enter Lastname"})
+    email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email"})
+    password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password"})
+    retypepassword = PasswordField('Retype Password', validators=[DataRequired()], render_kw={"placeholder": "Confirm Your Password"})
+    usertype = SelectField('Select Usertype', choices=[('admin', 'Admin'), ('professor', 'Professor'), ('user', 'User')])
+    submit = SubmitField('Update')
+
+    def __init__(self, *args, **kwargs):
+        super(EditForm, self).__init__(*args, **kwargs)
+
+        if kwargs.get('obj'):
+            user = kwargs['obj']
+            self.firstname.data = user.firstname
+            self.lastname.data = user.lastname
+            self.email.data = user.email
+            self.password.data = user.password
+            self.usertype.data = user.usertype
+
+
+   

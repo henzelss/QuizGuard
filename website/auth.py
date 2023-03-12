@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from . import db
 from .models import User, ActivityLog
-from .forms import LoginForm, RegisterForm, UserProfileForm
+from .forms import LoginForm, RegisterForm, UserProfileForm, EditForm
 from .utils import activity_logs
 auth = Blueprint('auth', __name__)
 
@@ -51,10 +51,11 @@ def register():
             return redirect(url_for('auth.register'))
         else:
             hashed_password = generate_password_hash(form.password.data, method='sha256')
-            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, password=hashed_password, usertype='admin')
+            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, password=hashed_password, usertype='user')
             db.session.add(new_user)
             db.session.commit()
-            activity_logs('New User Registered')
+            #activity_logs('New User Registered')
+            login_user(new_user)
             flash('Account created!', category='success')
             return redirect(url_for('views.dashboard'))
     return render_template('register.html', form=form)
@@ -87,6 +88,29 @@ def accounts():
     accs = User.query.all()
     return render_template('accounts.html', accounts=accs)
 
+@auth.route('/edit/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def edit(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        flash('User not found', category='error')
+        return redirect(url_for('auth.accounts'))
+    
+    form = EditForm(obj=user)
+    if form.validate_on_submit():
+        user.firstname = form.firstname.data
+        user.lastname = form.lastname.data
+        user.email = form.email.data
+        user.usertype = form.usertype.data
+        
+        # update password only if a new one has been entered
+        if form.password.data and form.password.data == form.retypepassword.data:
+            user.password = generate_password_hash(form.password.data)
+
+        db.session.commit()
+        flash('User information updated', category='success')
+        return redirect(url_for('views.dashboard'))
+    return render_template('edit.html', form=form)
 
 @auth.route('/logs')
 def logs():
