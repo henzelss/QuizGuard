@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField
 from wtforms.validators import DataRequired, Email, Length 
+from wtforms import ValidationError
+from .models import User
 
 
 class LoginForm(FlaskForm):
@@ -32,8 +34,6 @@ class EditForm(FlaskForm):
     firstname = StringField('Firstname', validators=[DataRequired()], render_kw={"placeholder": "Enter Firstname "})
     lastname = StringField('Lastname', validators=[DataRequired()], render_kw={"placeholder": "Enter Lastname"})
     email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email"})
-    password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password"})
-    retypepassword = PasswordField('Retype Password', validators=[DataRequired()], render_kw={"placeholder": "Confirm Your Password"})
     usertype = SelectField('Select Usertype', choices=[('admin', 'Admin'), ('professor', 'Professor'), ('user', 'User')])
     submit = SubmitField('Update')
 
@@ -45,8 +45,15 @@ class EditForm(FlaskForm):
             self.firstname.data = user.firstname
             self.lastname.data = user.lastname
             self.email.data = user.email
-            self.password.data = user.password
             self.usertype.data = user.usertype
+    
+    
 
-
+class AddNewUserForm(FlaskForm):
+    firstname = StringField('Firstname', validators=[DataRequired()], render_kw={"placeholder": "Enter Firstname "})
+    lastname = StringField('Lastname', validators=[DataRequired()], render_kw={"placeholder": "Enter Lastname"})
+    email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email"})
+    usertype = SelectField('Select Usertype', choices=[('admin', 'Admin'), ('professor', 'Professor'), ('user', 'User')])
+    password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password"})
+    submit = SubmitField('Add')
    

@@ -4,8 +4,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from . import db
 from .models import User, ActivityLog
-from .forms import LoginForm, RegisterForm, UserProfileForm, EditForm
+from .forms import LoginForm, RegisterForm, UserProfileForm, EditForm, AddNewUserForm
 from .utils import activity_logs
+from sqlalchemy.exc import IntegrityError
 auth = Blueprint('auth', __name__)
 
 @auth.route('/', methods=['GET', 'POST'])
@@ -51,7 +52,7 @@ def register():
             return redirect(url_for('auth.register'))
         else:
             hashed_password = generate_password_hash(form.password.data, method='sha256')
-            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, password=hashed_password, usertype='user')
+            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, password=hashed_password, usertype='user ')
             db.session.add(new_user)
             db.session.commit()
             #activity_logs('New User Registered')
@@ -82,11 +83,30 @@ def profile():
     print('Nothing Happening!')
     return render_template('profile.html', form=form)
 
-@auth.route('/accounts')
+@auth.route('/accounts', methods=['GET', 'POST'])
 @login_required
 def accounts():
     accs = User.query.all()
-    return render_template('accounts.html', accounts=accs)
+    addform = AddNewUserForm()
+    if addform.validate_on_submit():
+        existing_email = User.query.filter_by(email=addform.email.data).first()
+        if existing_email:
+            flash('Email already registered exist',  category='error')
+            return redirect(url_for('auth.accounts'))
+        else:
+            new_user = User(
+                email=addform.email.data,
+                password=generate_password_hash(addform.password.data),
+                firstname=addform.firstname.data,
+                lastname=addform.lastname.data,
+                usertype=addform.usertype.data
+            )
+            # Add the new user to the database
+            db.session.add(new_user)
+            db.session.commit()
+            flash('New user added successfully!', category='success')
+            return redirect(url_for('auth.accounts', accounts=accs,  addform=addform))
+    return render_template('accounts.html', accounts=accs, addform=addform)
 
 @auth.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 @login_required
@@ -95,28 +115,51 @@ def edit(user_id):
     if not user:
         flash('User not found', category='error')
         return redirect(url_for('auth.accounts'))
-    
+
     form = EditForm(obj=user)
     if form.validate_on_submit():
+        # check if user made any changes
+        if form.firstname.data == user.firstname and form.lastname.data == user.lastname and \
+                form.email.data == user.email and form.usertype.data == user.usertype:
+            flash('No changes were made', category='warning')
+            return redirect(url_for('auth.accounts', user_id=user_id))
+
+        # check if email already exists
+        other_user = User.query.filter(User.email == form.email.data).filter(User.id != user_id).first()
+        if other_user:
+            flash('Email already registered', category='error')
+            return redirect(url_for('auth.edit', user_id=user_id))
+
+        # update user information
         user.firstname = form.firstname.data
         user.lastname = form.lastname.data
         user.email = form.email.data
         user.usertype = form.usertype.data
-        
-        # update password only if a new one has been entered
-        if form.password.data and form.password.data == form.retypepassword.data:
-            user.password = generate_password_hash(form.password.data)
-
         db.session.commit()
         flash('User information updated', category='success')
-        return redirect(url_for('views.dashboard'))
+        return redirect(url_for('auth.accounts'))
+
     return render_template('edit.html', form=form)
+
+@auth.route('/delete/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def delete(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        flash('User not found', category='error')
+        return redirect(url_for('auth.accounts'))
+    
+    db.session.delete(user)
+    db.session.commit()
+    flash('User deleted', category='success')
+    return redirect(url_for('auth.accounts'))
+
+
 
 @auth.route('/logs')
 def logs():
     logs = ActivityLog.query.all()
     return render_template('logs.html', log=logs)
-
 
 @auth.route('/logout')
 @login_required

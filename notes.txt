@@ -9,25 +9,14 @@
 -----------------student - quiz route----------------------
 {% block content %}
     <div class="container my-5">
-        <h1 class="text-light">Quiz List</h1>
-        {% for quiz in sample_dict %}
-        <div class="list-group bg-night mb-2 rounded"> 
-            <a href="{{ url_for('views.quiz') }}" class="list-group-item list-group-item-action bg-night card-design text-hover">
-              <div class="d-flex w-100 justify-content-between"> 
-                <h5 class="mb-1">{{ quiz.Quizname }}</h5>
-                <small>3 days ago &nbsp;
-                </small>
-              </div>
-              <p class="mb-1">Some Quiz Decription Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-              <small>Deadline {{quiz.Deadline}}</small>
-            </a> 
-            <div class="ms-auto p-2">
-                <button class="btn-warning rounded">Edit</button>
-                <button class="btn-danger rounded">Delete</button>
-            </div>
-        </div>
-        {% endfor %}
-          
+       
     </div>
 {% endblock %}
 -----------------student - quiz route----------------------
+
+
+ {{ form.password.label(class='text-light') }}
+        {{ form.password(class='text-dark', required=True) }}
+    
+        {{ form.retypepassword.label(class='text-light') }}
+        {{ form.retypepassword(class='text-dark', required=True) }}
