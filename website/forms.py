@@ -28,14 +28,14 @@ class UserProfileForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email"})
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password"})
     retypepassword = PasswordField('Retype Password', validators=[DataRequired()], render_kw={"placeholder": "Confirm Your Password"})
-    submit = SubmitField('Update')
+    submit = SubmitField('Save Changes')
 
 class EditForm(FlaskForm):
     firstname = StringField('Firstname', validators=[DataRequired()], render_kw={"placeholder": "Enter Firstname "})
     lastname = StringField('Lastname', validators=[DataRequired()], render_kw={"placeholder": "Enter Lastname"})
     email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email"})
     usertype = SelectField('Select Usertype', choices=[('admin', 'Admin'), ('professor', 'Professor'), ('user', 'User')])
-    submit = SubmitField('Update')
+    submit = SubmitField('Save Changes')
 
     def __init__(self, *args, **kwargs):
         super(EditForm, self).__init__(*args, **kwargs)
