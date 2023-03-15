@@ -65,23 +65,32 @@ def register():
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    user =  User.query.get_or_404(current_user.id)
     form = UserProfileForm()
-    if form.validate_on_submit():
-        current_user.firstname = form.firstname.data
-        current_user.lastname = form.lastname.data
-        current_user.email = form.email.data
-        db.session.commit()
-        activity_logs('Update Profile')
-        flash('Your profile has been updated!', category='success')
-        return redirect(url_for('auth.profile'))
-    elif request.method == 'GET':
-        form.firstname.data = current_user.firstname
-        form.lastname.data = current_user.lastname
-        form.email.data = current_user.email
-        print('Nothing!')
-
-    print('Nothing Happening!')
-    return render_template('profile.html', form=form)
+    existing_info = {
+        'firstname' : user.firstname,
+        'lastname' : user.lastname,
+        'email' : user.email
+    }
+    if request.method == 'POST' and request.form.get('submit'):
+        if request.form['firstname'] != current_user.firstname:
+            user.firstname = request.form['firstname']
+        if request.form['lastname'] != current_user.lastname:
+                user.lastname = request.form['lastname']
+        if request.form['email'] != current_user.email:
+            # Check if the new email already exists in the database
+            if User.query.filter_by(email=request.form['email']).first():
+                flash('Email already exists', category='danger')
+                return redirect(url_for('auth.profile'))
+            user.email = request.form['email']
+        try:
+            db.session.commit()
+            flash('Profile Successfully Updated', category='success')
+            return redirect(url_for('auth.profile'))
+        except:
+            flash('Profile Failed to Updated', category='danger')
+            return redirect(url_for('auth.profile'))
+    return render_template('profile.html', form=form, existing_info=existing_info)
 
 @auth.route('/accounts', methods=['GET', 'POST'])
 @login_required
@@ -111,35 +120,39 @@ def accounts():
 @auth.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def edit(user_id):
-    user = User.query.get(user_id)
-    if not user:
-        flash('User not found', category='error')
-        return redirect(url_for('auth.accounts'))
+    user = User.query.get_or_404(user_id)
+    form = EditForm()
+    existing_info = {
+        'firstname' : user.firstname,
+        'lastname' : user.lastname,
+        'email' : user.email,
+        'password' : user.password,
+        'usertype' : user.usertype
+    }
+    if request.method == 'POST' and request.form.get('submit'):
 
-    form = EditForm(obj=user)
-    if form.validate_on_submit():
-        # check if user made any changes
-        if form.firstname.data == user.firstname and form.lastname.data == user.lastname and \
-                form.email.data == user.email and form.usertype.data == user.usertype:
-            flash('No changes were made', category='warning')
-            return redirect(url_for('auth.accounts', user_id=user_id))
+        if request.form['firstname'] != existing_info['firstname']:
+            user.firstname = request.form['firstname']
+        if request.form['lastname'] != existing_info['lastname']:
+            user.lastname = request.form['lastname']
+        if request.form['usertype'] != existing_info['usertype']:
+            user.usertype = request.form['usertype']
+        if request.form['email'] != existing_info['email']:
+            # Check if the new email already exists in the database
+            if User.query.filter_by(email=request.form['email']).first():
+                flash('Email already exists', category='danger')
+                return redirect(url_for('auth.edit', user_id=user.id))
+            user.email = request.form['email']
 
-        # check if email already exists
-        other_user = User.query.filter(User.email == form.email.data).filter(User.id != user_id).first()
-        if other_user:
-            flash('Email already registered', category='error')
-            return redirect(url_for('auth.edit', user_id=user_id))
-
-        # update user information
-        user.firstname = form.firstname.data
-        user.lastname = form.lastname.data
-        user.email = form.email.data
-        user.usertype = form.usertype.data
-        db.session.commit()
-        flash('User information updated', category='success')
-        return redirect(url_for('auth.accounts'))
-
-    return render_template('edit.html', form=form)
+        try: 
+            db.session.commit()
+            flash('Successfully Updated', category='success')
+            return redirect(url_for('auth.accounts'))
+        except:
+            flash('Failed to update', category='danger')
+            return redirect(url_for('auth.edit' , user_id = user.id))
+    
+    return render_template('edit.html', form=form,  existing_info=existing_info)
 
 @auth.route('/delete/<int:user_id>', methods=['GET', 'POST'])
 @login_required

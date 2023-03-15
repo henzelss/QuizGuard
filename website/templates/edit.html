@@ -49,24 +49,49 @@
       {% endif%}
     {% endwith%}
   </div>
-
-<div class="center txt-properties mt-5">
-    <form method="POST" class="form-properties">
-        {{ form.hidden_tag() }}
-        {{ form.firstname.label(class='text-light') }}
-        {{ form.firstname(class='text-dark', required=True) }}
-    
-        {{ form.lastname.label(class='text-light') }}
-        {{ form.lastname(class='text-dark' , required=True) }}
-    
-        {{ form.email.label(class='text-light') }}
-        {{ form.email(class='text-dark', required=True) }}
-
-        {{ form.usertype.label(class='text-light') }}
-        {{ form.usertype(class="form-select form-select-lg mb-3", required=True) }}
-
-        {{ form.submit(class='btn btn-warning bg-warning text-dark') }}
-    </form>
+<div class="row">
+    <div class="col">
+        <div class="container txt-properties mt-5 ">
+            <h1>User Data</h1>
+            <form action="" method="GET">
+                <label for="firstname" class="">Firstname</label>
+                <input class="firstname" id="firstname" type="text" placeholder="{{ existing_info['firstname'] }}" disabled >
+                <label for="lastname">Lastname</label>
+                <input class="lastname" id="lastname" type="text" placeholder="{{ existing_info['lastname'] }}" disabled >
+                <label for="Email">Email</label>
+                <input class="Email" id="Email" type="text" placeholder="{{ existing_info['email'] }}" disabled >
+                <label for="Password">Password</label>
+                <input class="Password" id="Password" type="text" placeholder="{{ existing_info['password'] }}" disabled >
+                <label for="Usertype">Usertype</label>
+                <input class="Usertype" id="Usertype" type="text" placeholder="{{ existing_info['usertype'] }}" disabled >
+            </form>
+        </div>
+    </div>
+    <div class="col">
+        <div class="container txt-properties mt-5">
+            <h1>Update Form</h1>
+            <form method="POST" class="form-properties">
+                {{ form.hidden_tag() }}
+                {{ form.firstname.label(class='text-light') }}
+                {{ form.firstname(class='text-dark', required=True) }}
+            
+                {{ form.lastname.label(class='text-light') }}
+                {{ form.lastname(class='text-dark' , required=True) }}
+            
+                {{ form.email.label(class='text-light') }}
+                {{ form.email(class='text-dark', required=True) }}
+        
+                {{ form.usertype.label(class='text-light') }}
+                {{ form.usertype(class="form-select form-select-lg mb-3", required=True) }}
+        
+                {{ form.submit(class='btn btn-warning bg-warning text-dark') }}
+            </form>
+        </div>
+    </div>
 </div>
+
+
+
+
 
 {% endblock %}

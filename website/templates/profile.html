@@ -23,7 +23,7 @@
 
 {% block content %}
 
-    <div class="container mt-5 bg-night p-4 rounded">
+    <div class="container mt-5 p-4 rounded">
         {% with messages = get_flashed_messages(with_categories=true)%}
             {% if messages %} 
                 {% for category, message in messages %}
@@ -47,21 +47,71 @@
                 {% endfor %}
             {% endif%}
         {% endwith%}
-
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            {{ form.firstname.label(class='text-light') }}
-            {{ form.firstname(class='text-dark') }}
-    
-            {{ form.lastname.label(class='text-light') }}
-            {{ form.lastname(class='text-dark') }}
-    
-            {{ form.email.label(class='text-light') }}
-            {{ form.email(class='text-dark') }}
-            
-            <div class="d-flex justify-content-end"> 
-                {{ form.submit(class='submit-button text-dark') }}
-            </div>
-        </form>
     </div>
+
+    <div class="container bg-night rounded txt-properties mt-5">
+        <div class="row">
+            <div class="col-6">
+                <div class="container ">
+                    <h1>User Profile</h1>
+                    <form action="" method="GET">
+                        <label for="firstname" class="">Firstname</label>
+                        <input class="firstname" id="firstname" type="text" placeholder="{{ existing_info['firstname'] }}" disabled >
+                        <label for="lastname">Lastname</label>
+                        <input class="lastname" id="lastname" type="text" placeholder="{{ existing_info['lastname'] }}" disabled >
+                        <label for="Email">Email</label>
+                        <input class="Email" id="Email" type="text" placeholder="{{ existing_info['email'] }}" disabled >
+                    </form>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="container">
+                    <h1>Update Form</h1>
+                    <form method="POST" class="form-properties">
+                        {{ form.hidden_tag() }}
+                        {{ form.firstname.label(class='text-light') }}
+                        {{ form.firstname(class='text-dark', required=True) }}
+                    
+                        {{ form.lastname.label(class='text-light') }}
+                        {{ form.lastname(class='text-dark' , required=True) }}
+                    
+                        {{ form.email.label(class='text-light') }}
+                        {{ form.email(class='text-dark', required=True) }}
+                
+                       <!-- Button trigger modal -->
+                       <div class="d-flex justify-content-end"> 
+                            <button type="button" class="btn submit-button text-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Save
+                            </button>
+                       </div>
+                        
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content bg-night">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Update</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to save the changes?
+                                </div>
+                                <div class="modal-footer">
+                                    {{ form.submit(class='btn btn-warning bg-warning text-dark') }}
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
 {% endblock %}

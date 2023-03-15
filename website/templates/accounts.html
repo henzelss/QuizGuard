@@ -82,9 +82,9 @@
                       <!-- pass the acc.id on the href to get the profile you want to edit-->
                       <a href="{{ url_for('auth.edit', user_id=acc.id) }}" class="btn btn-warning">Edit</a>
                       <!-- Button trigger modal -->
-                      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Delete</button>
+                      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal{{ acc.id }}">Delete</button>
                       <!-- Modal -->
-                      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal fade" id="exampleModal{{ acc.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                           <div class="modal-content bg-night">
                             <div class="modal-header">
