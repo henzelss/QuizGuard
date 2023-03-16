@@ -1,5 +1,62 @@
-{% extends 'dashboard' %}
+{% extends 'dashboard.html' %}
 
 {% block content %}
-    
+
+<div class="container mt-5 bg-night p-3 rounded">
+    <form action=""></form>
+        <div class="row">
+                {{ form.hidden_tag() }}
+                <div class="col-9">{{ form.search(class='form-control text-dark')}}</div>
+                <div class="col-3">{{ form.submit(class='btn btn-warning text-dark')}}</div>
+        </div>
+    </form>
+    <div class="table-responsive">
+        <table class="table bg-night">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Fullname</th>
+              <th>Email</th>
+              <th>User Type</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for users in results %}
+              <tr>
+                <td>{{ users.id }}</td>
+                <td>{{ users.firstname}}&nbsp;{{ users.lastname}}</td>
+                <td>{{ users.email }}</td>
+                <td>{{ users.usertype }}</td>
+                <td> 
+                    <!-- pass the users.id on the href to get the profile you want to edit-->
+                    <a href="{{ url_for('auth.edit', user_id=users.id) }}" class="btn btn-warning">Edit</a>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal{{ users.id }}">Delete</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal{{ users.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content bg-night">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Delete User</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure you want to delete this user <p>{{ users.firstname}}&nbsp;{{ users.lastname}}?</p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <a href="{{ url_for('auth.delete', user_id=users.id) }}" class="btn btn-danger">Delete</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+</div>
+
 {% endblock %}

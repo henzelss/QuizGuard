@@ -54,10 +54,11 @@
 <div class="row mx-3">
   <div class="col-6">
     <div class="container mt-5 bg-night p-3 rounded">
-        <form action="" method="POST">
+        <form action="{{ url_for('auth.search') }}" method="POST">
+          {{ searchform.hidden_tag() }}
           <div class="row">
-              <div class="col-9"><input class="form-control" type="text" placeholder="Search User"></div>
-              <div class="col-3"><input class='btn btn-warning' type="submit" value="Search"></div>
+              <div class="col-9">{{ searchform.search(class='text-dark' , required=True)}}</div>
+              <div class="col-3">{{ searchform.submit(class='btn btn-warning text-dark' , required=True)}}</div>
           </div>
         </form>
         <div class="table-responsive">

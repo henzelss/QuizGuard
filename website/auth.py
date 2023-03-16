@@ -4,9 +4,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from . import db
 from .models import User, ActivityLog
-from .forms import LoginForm, RegisterForm, UserProfileForm, EditForm, AddNewUserForm
+from .forms import LoginForm, RegisterForm, UserProfileForm, EditForm, AddNewUserForm, SearchForm
 from .utils import activity_logs
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import or_
 auth = Blueprint('auth', __name__)
 
 @auth.route('/', methods=['GET', 'POST'])
@@ -96,6 +97,7 @@ def profile():
 @login_required
 def accounts():
     accs = User.query.all()
+    searchform = SearchForm()
     addform = AddNewUserForm()
     if addform.validate_on_submit():
         existing_email = User.query.filter_by(email=addform.email.data).first()
@@ -115,7 +117,7 @@ def accounts():
             db.session.commit()
             flash('New user added successfully!', category='success')
             return redirect(url_for('auth.accounts', accounts=accs,  addform=addform))
-    return render_template('accounts.html', accounts=accs, addform=addform)
+    return render_template('accounts.html', accounts=accs, addform=addform, searchform=searchform)
 
 @auth.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 @login_required
@@ -168,6 +170,25 @@ def delete(user_id):
     return redirect(url_for('auth.accounts'))
 
 
+@auth.route('/search', methods=['GET', 'POST'])
+@login_required
+def search():
+    form = SearchForm()
+    if request.method == 'POST' and request.form.get('submit'):
+        query_string = form.search.data
+        print(query_string)
+        results = User.query.filter(or_(User.firstname.ilike(f'%{query_string}%'),
+                                      User.lastname.ilike(f'%{query_string}%'),
+                                      User.email.ilike(f'%{query_string}%'))).all()
+        print(results)
+        if results is None:
+            flash('The User doesnt exists', category='warning')
+            return redirect('auth.accounts')
+        else: 
+            return render_template('search.html', results=results, form=form)
+        
+    return redirect(url_for('auth.accounts'))
+    
 
 @auth.route('/logs')
 def logs():

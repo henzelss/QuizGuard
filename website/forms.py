@@ -46,8 +46,6 @@ class EditForm(FlaskForm):
             self.lastname.data = user.lastname
             self.email.data = user.email
             self.usertype.data = user.usertype
-    
-    
 
 class AddNewUserForm(FlaskForm):
     firstname = StringField('Firstname', validators=[DataRequired()], render_kw={"placeholder": "Enter Firstname "})
@@ -57,3 +55,6 @@ class AddNewUserForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password"})
     submit = SubmitField('Add')
    
+class SearchForm(FlaskForm):
+    search = StringField('Search', validators=[DataRequired()], render_kw={"placeholder": "Search User "})
+    submit = SubmitField('Search')
