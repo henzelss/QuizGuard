@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="../static/bootstrap.css">
     <link rel="stylesheet" href="../static/main.css">
     <script src="https://kit.fontawesome.com/874ad22535.js" crossorigin="anonymous"></script>
+   
+
     {% block title %}{% endblock %}
 
 </head>
@@ -21,7 +23,24 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- all the link are here for differnt types of users -->
-                {% block nav %}{% endblock %}
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('views.dashboard') }}">Home</a>
+                    </li>
+                    {% if current_user.usertype == 'user'%}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Activity</a> 
+                    </li>
+                    {% endif %}
+                  </ul>
+                  <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{{ url_for('auth.profile')}}"><i class="fa-solid fa-user me-1"></i>Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-sharp fa-solid fa-right-from-bracket me-1"></i>Logout</a>
+                    </li>
+                  </ul>
             </div>
         </div>
     </nav>

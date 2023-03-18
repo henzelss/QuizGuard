@@ -27,3 +27,12 @@ class ActivityLog(db.Model):
     activity = db.Column(db.String(255))
     user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))
 
+class Violations(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    detected = db.Column(db.String(50))
+    multiple_people = db.Column(db.String(50))
+    phone_detected = db.Column(db.String(50))
+    focus = db.Column(db.String(50))
+    switch_tabs = db.Column(db.String(50))
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 

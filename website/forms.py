@@ -58,3 +58,8 @@ class AddNewUserForm(FlaskForm):
 class SearchForm(FlaskForm):
     search = StringField('Search', validators=[DataRequired()], render_kw={"placeholder": "Search User "})
     submit = SubmitField('Search')
+
+class SearchCode(FlaskForm):
+    search = StringField('Search', validators=[DataRequired()], render_kw={"placeholder": "Enter your code here "})
+    submit = SubmitField('Search') 
+

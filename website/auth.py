@@ -11,7 +11,6 @@ from sqlalchemy import or_
 auth = Blueprint('auth', __name__)
 
 @auth.route('/', methods=['GET', 'POST'])
-@auth.route('/login', methods=['GET', 'POST'])
 @auth.route('/home', methods=['GET', 'POST'])
 def home():
     if current_user.is_authenticated:
@@ -53,11 +52,11 @@ def register():
             return redirect(url_for('auth.register'))
         else:
             hashed_password = generate_password_hash(form.password.data, method='sha256')
-            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, password=hashed_password, usertype='user ')
+            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, password=hashed_password, usertype='user')
             db.session.add(new_user)
             db.session.commit()
-            #activity_logs('New User Registered')
             login_user(new_user)
+            activity_logs('New User Registered')
             flash('Account created!', category='success')
             return redirect(url_for('views.dashboard'))
     return render_template('register.html', form=form)
@@ -87,9 +86,11 @@ def profile():
         try:
             db.session.commit()
             flash('Profile Successfully Updated', category='success')
+            activity_logs("User Profile Updated")
             return redirect(url_for('auth.profile'))
         except:
             flash('Profile Failed to Updated', category='danger')
+            activity_logs("User profile failed to updated")
             return redirect(url_for('auth.profile'))
     return render_template('profile.html', form=form, existing_info=existing_info)
 

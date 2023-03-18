@@ -1,26 +1,4 @@
 {% extends "dashboard.html" %}
-
-{% block nav %}
-    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        {% if current_user.usertype=='user'%}
-            <li class="nav-item">
-                <a class="nav-link"  href="#"><i class="fa-solid fa-house me-1"></i>Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa-solid fa-hourglass-half me-1"></i>Activity</a>
-            </li>
-        {% endif %}
-    </ul>
-    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-            </i><a class="nav-link active"  aria-current="page" href="{{ url_for('auth.profile')}}"><i class="fa-solid fa-user me-1"></i>Profile</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-sharp fa-solid fa-right-from-bracket me-1"></i>Logout</a>
-        </li>
-    </ul>
-{% endblock %}
-
 {% block content %}
 
     <div class="container mt-5 p-4 rounded">
@@ -67,7 +45,7 @@
             <div class="col-6">
                 <div class="container">
                     <h1>Update Form</h1>
-                    <form method="POST" class="form-properties">
+                    <form method="POST" class="form-properties" action="{{ url_for('auth.profile')}}">
                         {{ form.hidden_tag() }}
                         {{ form.firstname.label(class='text-light') }}
                         {{ form.firstname(class='text-dark', required=True) }}
