@@ -212,12 +212,14 @@ a.text-hover:hover{
 
 .submit-button{
     width: 200px !important;
+    height: 50px !important;
     background-color: #FAB903 !important;
     color: #181818 !important; 
 }
 
 .submit-button:hover{
     width: 200px !important;
+    height: 50px !important;
     background-color: #181818 !important;
     color: #FAB903 !important;
     border: 1px solid #FAB903 !important;   
@@ -250,4 +252,22 @@ a.text-hover:hover{
     display: block;
     margin-top: 0em;
 
+}
+
+.submit-button-add{
+    width: 100% !important;
+    padding: 12px 20px !important;
+    margin: 8px 0px !important;
+    display: inline-block !important;
+    background-color: #fcba03 !important;
+    border: none !important;
+    border-radius: 4px !important;
+    box-sizing: border-box !important;
+   
+}
+.submit-button-add:hover{
+    outline: none;
+}
+.submit-button-add:focus{
+    outline: none;
 }

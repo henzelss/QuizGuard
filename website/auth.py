@@ -52,7 +52,7 @@ def register():
             return redirect(url_for('auth.register'))
         else:
             hashed_password = generate_password_hash(form.password.data, method='sha256')
-            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, password=hashed_password, usertype='user')
+            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, password=hashed_password, usertype='admin')
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user)
@@ -116,6 +116,7 @@ def accounts():
             # Add the new user to the database
             db.session.add(new_user)
             db.session.commit()
+            activity_logs('Added New User')
             flash('New user added successfully!', category='success')
             return redirect(url_for('auth.accounts', accounts=accs,  addform=addform))
     return render_template('accounts.html', accounts=accs, addform=addform, searchform=searchform)
@@ -149,10 +150,12 @@ def edit(user_id):
 
         try: 
             db.session.commit()
+            activity_logs('Edit user profile')
             flash('Successfully Updated', category='success')
             return redirect(url_for('auth.accounts'))
         except:
             flash('Failed to update', category='danger')
+            activity_logs('Failed to edit user profile')
             return redirect(url_for('auth.edit' , user_id = user.id))
     
     return render_template('edit.html', form=form,  existing_info=existing_info)
@@ -163,11 +166,13 @@ def delete(user_id):
     user = User.query.get(user_id)
     if not user:
         flash('User not found', category='error')
+        activity_logs('Deleting Non-existing user')
         return redirect(url_for('auth.accounts'))
     
     db.session.delete(user)
     db.session.commit()
     flash('User deleted', category='success')
+    activity_logs('Deleted a user')
     return redirect(url_for('auth.accounts'))
 
 
@@ -184,8 +189,10 @@ def search():
         print(results)
         if results is None:
             flash('The User doesnt exists', category='warning')
+            activity_logs('failed to search user')
             return redirect('auth.accounts')
         else: 
+            activity_logs('Search for a user')
             return render_template('search.html', results=results, form=form)
         
     return redirect(url_for('auth.accounts'))

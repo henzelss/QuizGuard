@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/bootstrap.css">
-    <link rel="stylesheet" href="../static/main.css">
-    <script src="https://kit.fontawesome.com/874ad22535.js" crossorigin="anonymous"></script>
-   
+    <!-- <link rel="stylesheet" href="../static/bootstrap.css">
+    <link rel="stylesheet" href="../static/main.css"> -->
+    <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
 
+    <script src="https://kit.fontawesome.com/874ad22535.js" crossorigin="anonymous"></script>
     {% block title %}{% endblock %}
 
 </head>
@@ -25,7 +26,7 @@
                 <!-- all the link are here for differnt types of users -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{{ url_for('views.dashboard') }}">Home</a>
+                        <a class="nav-link" href="{{ url_for('views.dashboard') }}"><i class="fa-solid fa-house me-1"></i>Home</a>
                     </li>
                     {% if current_user.usertype == 'user'%}
                     <li class="nav-item">
@@ -35,7 +36,7 @@
                   </ul>
                   <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{{ url_for('auth.profile')}}"><i class="fa-solid fa-user me-1"></i>Profile</a>
+                        <a class="nav-link"  href="{{ url_for('auth.profile')}}"><i class="fa-solid fa-user me-1"></i>Profile</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-sharp fa-solid fa-right-from-bracket me-1"></i>Logout</a>

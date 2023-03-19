@@ -1,9 +1,8 @@
 {% extends 'dashboard.html' %}
 
 {% block content %}
-
 <div class="container mt-5 bg-night p-3 rounded">
-    <form action=""></form>
+    <form method="POST" action="{{ url_for('auth.search') }}">
         <div class="row">
                 {{ form.hidden_tag() }}
                 <div class="col-9">{{ form.search(class='form-control text-dark')}}</div>

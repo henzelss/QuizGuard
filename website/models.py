@@ -13,19 +13,50 @@ class User(db.Model, UserMixin):
     usertype = db.Column(db.String(10))
 
 
-class QuizBank():
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    quiztitle = db.Column(db.String(150))
-    category = db.Column(db.String(25))
+# class QuizBank():
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+#     quiztitle = db.Column(db.String(150))
+#     category = db.Column(db.String(25))
 
-class ActivityLog(db.Model):
+class QuizList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    name = db.Column(db.String(255))
-    logtime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    activity = db.Column(db.String(255))
-    user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))
+    code = db.Column(db.String(20), unique=True, nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    category = db.Column(db.String(100), nullable=False)
+    startdate = db.Column(db.Date, nullable=True)
+    starttime = db.Column(db.Time, nullable=True)
+    enddate = db.Column(db.Date, nullable=True)
+    time_closed = db.Column(db.Time, nullable=True)
+
+class MatchingType(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+    question = db.Column(db.String(255), nullable=False)
+    choice1 = db.Column(db.String(255), nullable=False)
+    choice2 = db.Column(db.String(255), nullable=False)
+    choice3 = db.Column(db.String(255), nullable=False)
+    choice4 = db.Column(db.String(255), nullable=False)
+    answer = db.Column(db.String(255), nullable=False)
+
+class FillInTheBlanks(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+    question = db.Column(db.String(255), nullable=False)
+    answer = db.Column(db.String(255), nullable=False)
+
+class TrueOrFalse(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+    question = db.Column(db.String(255), nullable=False)
+    answer = db.Column(db.Boolean, nullable=False)
+
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
 
 class Violations(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,3 +67,11 @@ class Violations(db.Model):
     switch_tabs = db.Column(db.String(50))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
+
+class ActivityLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    name = db.Column(db.String(255))
+    logtime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    activity = db.Column(db.String(255))
+    user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))

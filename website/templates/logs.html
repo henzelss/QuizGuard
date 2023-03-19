@@ -20,26 +20,28 @@
 {% block content %}
   <div class="container mt-5 bg-night p-3 rounded">
     <h1 class="text-center">Activity Log</h1>
-    <table class="table bg-night">
-      <thead>
-        <tr>
-          <th>User ID</th>
-          <th>Fullname</th>
-          <th>Time Log</th>
-          <th>Activity</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for logs in log %}
+    <div class="table-responsive">
+      <table class="table bg-night">
+        <thead>
           <tr>
-            <td>{{ logs.user_id }}</td>
-            <td>{{ logs.name}}</td>
-            <td>{{ logs.logtime }}</td>
-            <td>{{ logs.activity }}</td>
+            <th>User ID</th>
+            <th>Fullname</th>
+            <th>Time Log</th>
+            <th>Activity</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for logs in log %}
+            <tr>
+              <td>{{ logs.user_id }}</td>
+              <td>{{ logs.name}}</td>
+              <td>{{ logs.logtime }}</td>
+              <td>{{ logs.activity }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 
 {% endblock %}

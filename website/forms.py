@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField, DateTimeField, RadioField
 from wtforms.validators import DataRequired, Email, Length 
 from wtforms import ValidationError
 from .models import User
@@ -62,4 +62,30 @@ class SearchForm(FlaskForm):
 class SearchCode(FlaskForm):
     search = StringField('Search', validators=[DataRequired()], render_kw={"placeholder": "Enter your code here "})
     submit = SubmitField('Search') 
+
+class CreateQuiz(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()], render_kw={"placeholder": "Enter Quiz Title "})
+    category = SelectField('Select Category', choices=[('1', 'Matching Type'), ('2', 'Fill in the blanks'), ('3', 'True or False')])
+    submit = SubmitField('Add Quiz') 
+
+
+class MatchingTypeForm(FlaskForm):
+    question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question "})
+    choice1 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 1"})
+    choice2 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 2"})
+    choice3 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 3"})
+    choice4 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 4"})
+    answer =  StringField('Answer', validators=[DataRequired()], render_kw={"placeholder": "Enter Answer"})
+    submit = SubmitField('Submit')
+
+
+class FillInTheBlanksForm(FlaskForm):
+    question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question "})
+    answer =  StringField('Answer', validators=[DataRequired()], render_kw={"placeholder": "Enter Answer"})
+    submit = SubmitField('Submit')
+
+class TrueOrFalseForm(FlaskForm):
+    question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question "})
+    answer = RadioField('Select an option', choices=[('0', 'False'), ('1', 'True')])
+    submit = SubmitField('Submit')
 
