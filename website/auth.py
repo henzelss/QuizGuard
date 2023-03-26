@@ -7,6 +7,7 @@ from .models import User, ActivityLog
 from .forms import LoginForm, RegisterForm, UserProfileForm, EditForm, AddNewUserForm, SearchForm
 from .utils import activity_logs
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime
 from sqlalchemy import or_
 auth = Blueprint('auth', __name__)
 
@@ -200,6 +201,10 @@ def search():
 
 @auth.route('/logs')
 def logs():
+
+    #today = dateTime.today()
+
+    #logs = ActivityLog.query.filter(ActivityLog.logtime == datetime.utcnow).all()
     logs = ActivityLog.query.all()
     return render_template('logs.html', log=logs)
 
