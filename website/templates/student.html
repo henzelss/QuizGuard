@@ -15,7 +15,7 @@
             </div>
         </form>
     </div>
-    <div class="container bg-night mt-5 rounded">
+    <!-- <div class="container bg-night mt-5 rounded">
         <h1 class="text-light">Quiz List</h1>
         <div class="list-group bg-night mb-2 rounded" style="border:none;"> 
             <a href="" class="list-group-item list-group-item-action bg-night card-design text-hover">
@@ -30,6 +30,51 @@
             <div class="ms-auto p-2">
                 <button class="btn-warning rounded">Edit</button>
                 <button class="btn-danger rounded">Delete</button>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="container mt-5 rounded p-3" >
+        <div class="row">
+            <div class="col-2">
+                <button class="btn text-start shadow-none"  data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <div class="card bg-night" style="width: 18rem;">
+                        <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+                        <div class="card-body">
+                          <h4 class="card-text">The Geography Quiz</h4>
+                        </div>
+                      </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content bg-night">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">The Geography Quiz</h5>
+                    
+                    <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top rounded" alt="quiz.jpg">
+                    <div>
+                        <div class="d-flex w-100 justify-content-between mt-2">
+                            <p class="card-text">Create by : Fernando Lagahit</p>
+                            <small>3 days ago</small>
+                        </div>
+                        <p class="card-text">Description : Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"><i class="fa-regular fa-square-plus me-1"></i>Take Quiz</button>
+                    <!-- <button type="button" class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i>Edit</button>
+                    <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Delete</button> -->
+                    
+                </div>
+            </div>
             </div>
         </div>
     </div>
