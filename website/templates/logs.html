@@ -1,22 +1,5 @@
 {% extends "dashboard.html" %}
 
-{% block nav %}
-  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('views.dashboard') }}">Home</a>
-    </li>
-  </ul>
-  <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-    <li class="nav-item">
-        <a class="nav-link" aria-current="page" href="{{ url_for('auth.profile') }}"><i class="fa-solid fa-user me-1"></i>Settings</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-sharp fa-solid fa-right-from-bracket me-1"></i>Logout</a>
-    </li>
-  </ul>
-{% endblock %}
-
-
 {% block content %}
   <div class="container mt-5 bg-night p-3 rounded">
     <!-- <div class="row">
@@ -30,7 +13,15 @@
         </div>
       </div>
     </div> -->
-    <h1 class="text-start">Activity Log</h1>
+    <div class="row">
+      <div class="col-6"><h1 class="text-start">Activity Log</h1></div>
+      <div class="col-6">
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-warning d-print-none">Print</button>
+        </div>
+      </div>
+    </div>
+    
     <div class="table-responsive">
       <table class="table bg-night">
         <thead>
@@ -54,5 +45,15 @@
       </table>
     </div>
   </div>
+
+<script>
+    document.querySelector(".btn-warning").addEventListener("click", function() {
+    printTable();
+  });
+  
+  function printTable() {
+    window.print();
+  }
+</script>
 
 {% endblock %}
