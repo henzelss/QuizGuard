@@ -1,0 +1,66 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div class="container mt-5 rounded bg-night p-3">
+  <h1>Quiz Questions </h1>
+  {% for quiz in questions %}
+
+    <div class="accordion-item bg-night">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button text-light bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{quiz.id}}" aria-expanded="true" aria-controls="collapseOne{{quiz.id}}">
+          <Strong>{{loop.index}}.&nbsp;</Strong>{{ quiz.question }}
+        </button>
+      </h2>
+      <div id="collapseOne{{quiz.id}}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+        <div class="accordion-body bg-night text-light">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum vel repellat, eum libero facilis perspiciatis, rerum voluptatem deserunt commodi dolorem explicabo architecto minus fuga ab, exercitationem perferendis tempore eveniet corporis?
+          <div>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edit_question{{quiz.id}}"> Edit </button> 
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_question{{quiz.id}}"> Delete </button> 
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Edit Modal -->
+    <div class="modal fade" id="edit_question{{quiz.id}}" tabindex="-1" aria-labelledby="edit_question{{quiz.id}}" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content bg-night">
+          <div class="modal-header">
+            <h5 class="modal-title" id="edit_question{{quiz.id}}Label">Modal Edit</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- check if the form is matching or etc -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Delete Modal -->
+    <div class="modal fade" id="delete_question{{quiz.id}}" tabindex="-1" aria-labelledby="delete_question{{quiz.id}}" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content bg-night">
+          <div class="modal-header">
+            <h5 class="modal-title" id="delete_question{{quiz.id}}Label">Modal Delete</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+<div class="container ">
+  
+</div>
+{% endblock %}
+
