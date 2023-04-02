@@ -291,3 +291,32 @@ a.text-hover:hover{
 .modal-header, .modal-body, .modal-footer{
     border-color: #181818 !important;
 }
+
+/* .modal-dialog {
+    max-width: 500px !important;
+    height: 750px !important;
+}
+.modal-content {
+    height: 100% !important;
+    
+    border-radius: 4px !important;
+    border-radius: 0 !important;
+} */
+
+.text-desc{
+    margin: 0;
+    text-indent: 2rem;
+    text-align: justify;
+}
+
+
+/* hide the buttons and navbar whenever the user tries to print a table */
+@media print {
+    .navbar-nav {
+      display: none;
+    }
+    
+    .d-print-none {
+      display: none;
+    }
+  }
