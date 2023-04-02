@@ -13,11 +13,11 @@ views = Blueprint('views', __name__)
 @login_required
 def dashboard():
     user =  User.query.get_or_404(current_user.id)
-
+    
     print('Login Successfully')
     print(f'User type: {current_user.usertype}')
     if current_user.usertype == 'user':
-        return render_template('student.html')
+        return redirect(url_for('views.student'))
     elif current_user.usertype == 'admin':
         return render_template('admin.html')
     elif current_user.usertype == 'professor':
@@ -26,9 +26,61 @@ def dashboard():
     # If the user's usertype is not recognized, redirect to a custom error page
     return render_template('error.html', message='Unknown user type')
 
+
+@views.route('/student')
+def student():
+    #quiz_list = QuizList.query.all()
+    # joined the table so we can show the author fullname
+    quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
+    return render_template('student.html', quiz_list=quiz_list)
+
+@views.route('/quizbank')
+@login_required
+def quizbank():
+    quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
+    return render_template('quizbank.html', quiz_list=quiz_list)
+
+@views.route('/quizbankedit/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
+@login_required
+def quizbankedit(quizcode, quiztype):
+
+    if current_user.usertype == 'user':
+        return redirect(url_for('views.student'))
+    if quiztype == '1':
+        form = MatchingTypeForm()
+        questions = MatchingType.query.join(QuizList).filter(QuizList.code == quizcode).all()
+    elif quiztype == '2':
+        form = FillInTheBlanksForm()
+        questions = FillInTheBlanks.query.join(QuizList).filter(QuizList.code == quizcode).all()
+    elif quiztype == '3': 
+        form = TrueOrFalseForm()
+        questions = TrueOrFalse.query.join(QuizList).filter(QuizList.code == quizcode).all()
+    else:
+        flash('Quiz code not found', category='warning')
+        return redirect(url_for('views.quizbank'))
+    
+    if not questions:
+        flash('No questions has found for this quiz', category='warning')
+        
+    return render_template('quizbankedit.html', questions=questions, form=form)
+    
+        #check if the quiz code exist
+        # quiz_questions = QuizList.query.filter_by(code=quizcode).first()
+        # if quiz_questions:
+        #     if quiztype == '1': 
+        #         type = MatchingType.query.filter_by(quiz_id=quiz_questions.id).all()
+        #         return render_template('quizbankedit.html', type=type)
+        #     elif quiztype == '2': 
+        #         type = FillInTheBlanks.query.filter_by(quiz_id=quiz_questions.id).all()
+        #         return render_template('quizbankedit.html', type=type)
+        #     elif quiztype == '3':
+        #         type = TrueOrFalse.query.filter_by(quiz_id=quiz_questions.id).all()
+        #         return render_template('quizbankedit.html', type=type)
+
 @views.route('/error')
 @login_required
 def error():
+    
     return render_template('error.html')
 
 
@@ -113,11 +165,11 @@ def matchingtype():
         choice4 = form.choice4.data
         answer = form.answer.data
 
-        matchingtype  = MatchingType(quiz_id=current_user.id , question=question, choice1=choice1, choice2=choice2, choice3=choice3, choice4=choice4, answer=answer)
+        matchingtype = MatchingType(quiz_id=current_user.id, question=question, choice1=choice1, choice2=choice2, choice3=choice3, choice4=choice4, answer=answer)
         db.session.add(matchingtype)
         db.session.commit()
         flash('Your question has been added!', 'success')
-        return redirect(url_for('views.questionaire', current_user.id , category='1'))
+        return redirect(url_for('views.questionaire', quiz_id=current_user.id, category='1'))
 
     return render_template('questionaire.html', form=form, quiz_id=current_user.id, category='1')
 
@@ -168,10 +220,7 @@ def images(filename):
 
 
 
-@views.route('/quizbank')
-@login_required
-def quizbank():
-    return render_template('quizbank.html')
+
 
 #error page handler | page not found
 @views.errorhandler(404)
