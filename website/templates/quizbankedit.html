@@ -1,20 +1,36 @@
 {% extends "dashboard.html" %}
 
 {% block content %}
+
+
 <div class="container mt-5 rounded bg-night p-3">
+
   <h1>Quiz Questions </h1>
   {% for quiz in questions %}
-
     <div class="accordion-item bg-night">
-      <h2 class="accordion-header" id="headingOne">
-        <button class="accordion-button text-light bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{quiz.id}}" aria-expanded="true" aria-controls="collapseOne{{quiz.id}}">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo{{quiz.id}}" aria-expanded="false" aria-controls="collapseTwo{{quiz.id}}">
           <Strong>{{loop.index}}.&nbsp;</Strong>{{ quiz.question }}
         </button>
       </h2>
-      <div id="collapseOne{{quiz.id}}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-        <div class="accordion-body bg-night text-light">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum vel repellat, eum libero facilis perspiciatis, rerum voluptatem deserunt commodi dolorem explicabo architecto minus fuga ab, exercitationem perferendis tempore eveniet corporis?
-          <div>
+      <div id="collapseTwo{{quiz.id}}" class="accordion-collapse collapse bg-night" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+            {% if quiztype == '1' %}
+              <div class="row">
+                <div class="col-6">A. {{ quiz.choice1 }} </div>
+                <div class="col-6">B. {{ quiz.choice2 }} </div>
+              </div>
+              <div class="row">
+                <div class="col-6">C. {{ quiz.choice3 }}</div>
+                <div class="col-6">D. {{ quiz.choice4}}</div>
+              </div>
+              <Strong>Answer:&nbsp</Strong>{{ quiz.answer }} 
+            {% elif quiztype == '2' %}
+              <h5>Fill in the blanks Type</h5>
+            {% elif quiztype == '3' %}
+              <h5>True or False</h5>
+            {% endif %}
+          <div class="mt-3">
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edit_question{{quiz.id}}"> Edit </button> 
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_question{{quiz.id}}"> Delete </button> 
           </div>
@@ -27,15 +43,64 @@
       <div class="modal-dialog">
         <div class="modal-content bg-night">
           <div class="modal-header">
-            <h5 class="modal-title" id="edit_question{{quiz.id}}Label">Modal Edit</h5>
+            <h5 class="modal-title" id="edit_question{{quiz.id}}Label">
+              {% if quiztype == '1' %}
+                <h5>Matching Type</h5>
+              {% elif quiztype == '2' %}
+                <h5>Fill in the blanks Type</h5>
+              {% elif quiztype == '3' %}
+                <h5>True or False</h5>
+              {% endif %}
+            </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <!-- check if the form is matching or etc -->
+            {% if quiztype == '1' %}
+              <form action="{{ url_for('views.quizedit', id=quiz.id, quiztype=quiztype) }}" method="POST" class="p-3">
+                {{ form.hidden_tag() }}
+                {{ form.question.label(class='text-light') }}
+                {{ form.question(class='form-control text-dark')}}
+                {{ form.choice1.label(class='text-light') }}
+                {{ form.choice1(class='form-control text-dark')}}
+                {{ form.choice2.label(class='text-light') }}
+                {{ form.choice2(class='form-control text-dark')}}
+                {{ form.choice3.label(class='text-light') }}
+                {{ form.choice3(class='form-control text-dark')}}
+                {{ form.choice4.label(class='text-light') }}
+                {{ form.choice4(class='form-control text-dark')}}
+                {{ form.answer.label(class='text-light') }}
+                {{ form.answer(class='form-control text-dark')}}
+                {{ form.submit(class='btn btn-warning') }}
+              </form>
+            {% elif quiztype == '2' %}
+              <form action="{{ url_for('views.quizedit', id=quiz.id, quiztype=quiztype) }}" method="POST" class="p-3">
+                <h1>Fill in the blanks </h1>
+                {{ form.hidden_tag() }}
+                {{ form.question.label(class='text-light') }}
+                {{ form.question(class='form-control text-dark')}}
+                {{ form.answer.label(class='text-light') }}
+                {{ form.answer(class='form-control text-dark')}}
+                {{ form.submit(class='btn btn-warning text-dark') }}
+              </form>
+            {% elif quiztype == '3' %}
+              <form action="{{ url_for('views.quizedit', id=quiz.id, quiztype=quiztype) }}" method="POST" class="p-3"> 
+                <h1>True or False</h1>
+                {{ form.hidden_tag() }}
+                {{ form.question.label(class='text-light') }}
+                {{ form.question(class='form-control text-dark')}}
+                {{ form.answer.label() }}
+                {{ form.answer()}}
+                {{ form.submit(class='btn btn-warning text-dark') }}
+              </form>
+            {% else %}
+              <h5>There is an error on your category</h5>
+            {% endif %}
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
+          <!-- <div class="modal-footer">
+           
+             <button type="button" class="btn btn-primary">Save changes</button> 
+          </div> -->
         </div>
       </div>
     </div>
@@ -45,14 +110,14 @@
       <div class="modal-dialog">
         <div class="modal-content bg-night">
           <div class="modal-header">
-            <h5 class="modal-title" id="delete_question{{quiz.id}}Label">Modal Delete</h5>
+            <h5 class="modal-title" id="delete_question{{quiz.id}}Label">Warning</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            ...
+              Do you really want to remove this question?
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-danger">Delete</button>
           </div>
         </div>
       </div>
