@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, url_for, flash, redirect, send_fro
 from datetime import datetime, time
 from flask_login import login_required, current_user
 from .models import User, QuizList, MatchingType, FillInTheBlanks, TrueOrFalse, Violations
-from .forms import CreateQuiz, MatchingTypeForm, FillInTheBlanksForm, TrueOrFalseForm
+from .forms import CreateQuiz, MatchingTypeForm, FillInTheBlanksForm, TrueOrFalseForm, MatchingTypeFormEdit, FillInTheBlanksFormEdit, TrueOrFalseFormEdit
 from .utils import generate_random_string, activity_logs
 from .import db
 
@@ -47,7 +47,7 @@ def quizbankedit(quizcode, quiztype):
     if current_user.usertype == 'user':
         return redirect(url_for('views.student'))
     if quiztype == '1':
-        form = MatchingTypeForm()
+        form = MatchingTypeFormEdit()
         questions = MatchingType.query.join(QuizList).filter(QuizList.code == quizcode).all()
     elif quiztype == '2':
         form = FillInTheBlanksForm()
@@ -62,20 +62,41 @@ def quizbankedit(quizcode, quiztype):
     if not questions:
         flash('No questions has found for this quiz', category='warning')
         
-    return render_template('quizbankedit.html', questions=questions, form=form)
+    return render_template('quizbankedit.html', questions=questions, form=form, quiztype=quiztype)
+
+@views.route('/quizedit/<string:id>/<string:quiztype>', methods=['GET', 'POST'])
+@login_required
+def quizedit(id, quiztype):
+    if current_user.usertype == 'user':
+        return redirect(url_for('views.student'))
     
-        #check if the quiz code exist
-        # quiz_questions = QuizList.query.filter_by(code=quizcode).first()
-        # if quiz_questions:
-        #     if quiztype == '1': 
-        #         type = MatchingType.query.filter_by(quiz_id=quiz_questions.id).all()
-        #         return render_template('quizbankedit.html', type=type)
-        #     elif quiztype == '2': 
-        #         type = FillInTheBlanks.query.filter_by(quiz_id=quiz_questions.id).all()
-        #         return render_template('quizbankedit.html', type=type)
-        #     elif quiztype == '3':
-        #         type = TrueOrFalse.query.filter_by(quiz_id=quiz_questions.id).all()
-        #         return render_template('quizbankedit.html', type=type)
+    # form = None
+    # if quiztype == '1':
+    #     form = MatchingTypeFormEdit()
+    # elif quiztype == '2':
+    #     form = FillInTheBlanksFormEdit()
+    # elif quiztype == '3':
+    #     form = TrueOrFalseFormEdit()
+    # else:
+    #     return render_template(url_for('views.dashboard'))
+
+
+    # # saan galing yung id?
+    # if form.validate_on_submit():
+    #     if quiztype == '1':
+    #         pass
+    #     elif quiztype == '2':
+    #         pass
+    #     elif quiztype == '3':
+    #         pass
+    #     else:
+    #         return render_template(url_for('views.dashboard'))
+
+
+    
+    
+
+
 
 @views.route('/error')
 @login_required
@@ -134,8 +155,6 @@ def createquiz():
 @views.route('/questionaire/<int:quiz_id>/<string:category>', methods=['GET', 'POST'])
 @login_required
 def questionaire(quiz_id, category):
-
-
     quiz = QuizList.query.get(quiz_id)
     # yung quiz id pala ay para lang sa quiz for unique indetification hindi siya current user
     # ang current user pala ang magiging author
@@ -158,6 +177,7 @@ def matchingtype():
 
     form = MatchingTypeForm()
     if form.validate_on_submit():
+        # quiz id is base on author 
         question = form.question.data
         choice1 = form.choice1.data
         choice2 = form.choice2.data
