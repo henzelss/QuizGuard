@@ -449,3 +449,32 @@ def records():
         {% endwith%}
     </div>
 ------------------------------------------------alert message--------------------------------------------------------------------
+
+
+
+----------------------------------------------------------------------------------add questions--------------------------------------------------------------------------------
+<div class="container mt-5 rounded bg-night p-3">
+  <!-- Category -->
+  {% if quiztype == '1' %}
+    <h1>Matching Type</h1>
+  {% elif quiztype == '2' %}
+    <h1>Fill in the blanks Type</h1>
+  {% elif quiztype == '3' %}
+    <h1>True or False</h1>
+  {% endif %}
+
+  <!-- Add Questions -->
+  <div class="accordion-item bg-night">
+    <h2 class="accordion-header" id="headingTwo">
+      <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        Add New Questions
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+      <div class="accordion-body bg-night">
+        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+</div>
+  ----------------------------------------------------------------------------------add questions--------------------------------------------------------------------------------
