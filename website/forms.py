@@ -78,13 +78,31 @@ class MatchingTypeForm(FlaskForm):
     answer =  StringField('Answer', validators=[DataRequired()], render_kw={"placeholder": "Enter Answer"})
     submit = SubmitField('Submit')
 
+class MatchingTypeFormEdit(FlaskForm):
+    question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question "})
+    choice1 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 1"})
+    choice2 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 2"})
+    choice3 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 3"})
+    choice4 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 4"})
+    answer =  StringField('Answer', validators=[DataRequired()], render_kw={"placeholder": "Enter Answer"})
+    submit = SubmitField('Submit')
 
 class FillInTheBlanksForm(FlaskForm):
     question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question "})
     answer =  StringField('Answer', validators=[DataRequired()], render_kw={"placeholder": "Enter Answer"})
     submit = SubmitField('Submit')
 
+class FillInTheBlanksFormEdit(FlaskForm):
+    question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question "})
+    answer =  StringField('Answer', validators=[DataRequired()], render_kw={"placeholder": "Enter Answer"})
+    submit = SubmitField('Submit')
+
 class TrueOrFalseForm(FlaskForm):
+    question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question "})
+    answer = RadioField('Select an option', choices=[('0', 'False'), ('1', 'True')])
+    submit = SubmitField('Submit')
+
+class TrueOrFalseFormEdit(FlaskForm):
     question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question "})
     answer = RadioField('Select an option', choices=[('0', 'False'), ('1', 'True')])
     submit = SubmitField('Submit')
