@@ -59,22 +59,41 @@
                                     </h6>
                                     <h6>Description:</h6>
                                     <p class="card-text text-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam doloribus eos consequuntur explicabo voluptates voluptatem deleniti, itaque perspiciatis pariatur tenetur autem accusantium officiis saepe blanditiis ratione laborum! Consectetur, modi ullam!</p>
-                                    <label class="mt-3" for="quiz{{ quiz.id }}"><h6>Quiz Code : </h6></label>
+                                    <label class="mt-3" for="quiz"><h6>Quiz Code : {{ quiz.code }} </h6></label>
                                 </div>
                                 <div class="modal-footer mt-3">
-                                    <input type="text" id="quiz{{ quiz.id }}" value="{{ quiz.code }}" id="quizcode">
-                                    <button type="button" class="btn btn-secondary" onclick="copyText()"><i class="fa-regular fa-clipboard me-1"></i>Copy Code</button>
-                                    <a href="{{ url_for('views.quizbankedit', quizcode=quiz.code, quiztype=quiz.category)}}" class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i>Edit</a>
-                                    <a href="{{ url_for('views.quizbankedit', quizcode=quiz.code, quiztype=quiz.category)}}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Delete</a>
+                                    <input type="text" id="quizcode{{ quiz.id }}" value="{{ quiz.code }}" id="quizcode" hidden>
+                                    <button type="button" class="btn btn-secondary" onclick='copyText("{{ quiz.id }}")'><i class="fa-regular fa-clipboard me-1"></i>Copy Code</button>
+                                    <a href="{{ url_for('views.quizbankedit', quizcode=quiz.code, quiztype=quiz.category)}}" class="btn btn-warning"><i class="fa-solid fa-pen-to-square me-1"></i>Edit</a>
+                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#quizdelete{{quiz.id}}"><i class="fa-solid fa-trash me-1"></i>Remove</button>
+                                    
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+  
+                <!-- Modal -->
+                <div class="modal fade" id="quizdelete{{quiz.id}}" tabindex="-1" aria-labelledby="quizdelete{{quiz.id}}Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content bg-night">
+                        <div class="modal-header">
+                        <h5 class="modal-title bg-night" id="quizdelete{{quiz.id}}Label">Remove Quiz</h5>
+                        <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body bg-night">
+                            Removing will make the quiz no longer available to all users
+                        </div>
+                        <div class="modal-footer bg-night">
+                            <a href="{{ url_for('views.quizdelete', quizid=quiz.id, quiztype=quiz.category )}}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Remove</a>
+                        </div>
+                    </div>
+                    </div>
+                </div>
             {% endfor %}
         </div>
     </div>
+    <script src="{{ url_for('static', filename='clipboard.js') }}"></script> 
+    <script src="{{ url_for('static', filename='jquery-3.6.3.min.js') }}"></script>    
 {% endblock %}
 
-<script src="{{ url_for('static', filename='clipboard.js' )}}"></script>
-<script src="{{url_for('static', filename='jquery-3.6.3.min.js')}}"></script>
