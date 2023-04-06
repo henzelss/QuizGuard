@@ -140,6 +140,8 @@ def edit(user_id):
             user.firstname = request.form['firstname']
         if request.form['lastname'] != existing_info['lastname']:
             user.lastname = request.form['lastname']
+        if request.form['password'] != existing_info['password']:
+            user.password = generate_password_hash(request.form['password'])
         if request.form['usertype'] != existing_info['usertype']:
             user.usertype = request.form['usertype']
         if request.form['email'] != existing_info['email']:
@@ -148,6 +150,10 @@ def edit(user_id):
                 flash('Email already exists', category='danger')
                 return redirect(url_for('auth.edit', user_id=user.id))
             user.email = request.form['email']
+
+        if request.form['password'] != request.form['retype']:
+            flash("The password and retype password doesnt match")
+            return redirect(url_for('auth.edit'))
 
         try: 
             db.session.commit()
