@@ -12,13 +12,6 @@ class User(db.Model, UserMixin):
     lastname = db.Column(db.String(150))
     usertype = db.Column(db.String(10))
 
-
-# class QuizBank():
-#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-#     quiztitle = db.Column(db.String(150))
-#     category = db.Column(db.String(25))
-
 class QuizList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(20), unique=True, nullable=False)
@@ -32,7 +25,7 @@ class QuizList(db.Model):
 
 class MatchingType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
     question = db.Column(db.String(255), nullable=False)
     choice1 = db.Column(db.String(255), nullable=False)
     choice2 = db.Column(db.String(255), nullable=False)
@@ -42,13 +35,13 @@ class MatchingType(db.Model):
 
 class FillInTheBlanks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
     question = db.Column(db.String(255), nullable=False)
     answer = db.Column(db.String(255), nullable=False)
 
 class TrueOrFalse(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
     question = db.Column(db.String(255), nullable=False)
     answer = db.Column(db.Boolean, nullable=False)
 
@@ -75,5 +68,3 @@ class ActivityLog(db.Model):
     logtime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     activity = db.Column(db.String(255))
     user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))
-
-
