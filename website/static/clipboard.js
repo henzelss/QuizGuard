@@ -1,14 +1,22 @@
-function copyText() {
+function copyText(quizid) {
     // Get the text field
-    var copyText = document.getElementById("quizcode");
+    var copyText = document.getElementById("quizcode" + quizid);
   
     // Select the text field
     copyText.select();
     copyText.setSelectionRange(0, 99999); // For mobile devices
   
      // Copy the text inside the text field
-    navigator.clipboard.writeText(copyText.value);
+    var codeText= 'Dear User, \nWe would like to remind you that you have an upcoming quiz scheduled on quizguard, \nTo access your quiz, kindly visit quizguard.com \nand enter your quiz code: ' + copyText.value;
+
+    navigator.clipboard.writeText(codeText);
   
     // Alert the copied text
-    alert("Copied the text: " + copyText.value);
+    Swal.fire({
+      title: "Code Copied",
+      text: "The quiz code has been copied to your clipboard.",
+      icon: "success",
+      timer: 1000 // time in milliseconds
+    });
+
   }
