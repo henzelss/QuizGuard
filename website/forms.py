@@ -34,7 +34,9 @@ class EditForm(FlaskForm):
     firstname = StringField('Firstname', validators=[DataRequired()], render_kw={"placeholder": "Enter Firstname "})
     lastname = StringField('Lastname', validators=[DataRequired()], render_kw={"placeholder": "Enter Lastname"})
     email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email"})
-    usertype = SelectField('Select Usertype', choices=[('admin', 'Admin'), ('professor', 'Professor'), ('user', 'User')])
+    password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter New Password"})
+    retype = PasswordField('Retype Password', validators=[DataRequired()], render_kw={"placeholder": "Confirm Your Password"})
+    usertype = SelectField('Select Role', choices=[('admin', 'Admin'), ('professor', 'Professor'), ('user', 'User')])
     submit = SubmitField('Save Changes')
 
     def __init__(self, *args, **kwargs):
@@ -51,7 +53,7 @@ class AddNewUserForm(FlaskForm):
     firstname = StringField('Firstname', validators=[DataRequired()], render_kw={"placeholder": "Enter Firstname "})
     lastname = StringField('Lastname', validators=[DataRequired()], render_kw={"placeholder": "Enter Lastname"})
     email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email"})
-    usertype = SelectField('Select Usertype', choices=[('admin', 'Admin'), ('professor', 'Professor'), ('user', 'User')])
+    usertype = SelectField('Select Role', choices=[('admin', 'Admin'), ('professor', 'Professor'), ('user', 'User')])
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password"})
     submit = SubmitField('Add')
    
