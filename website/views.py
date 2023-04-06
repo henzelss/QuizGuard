@@ -74,6 +74,11 @@ def quizdelete(quizid):
         activity_logs('Deleting Non-existing Quiz')
         return redirect(url_for('views.quizbank'))
 
+    # Delete all the matching type questions with quiz_id equal to the deleted quiz's id
+    matching_questions = MatchingType.query.filter_by(quiz_id=quiz.id).all()
+    for question in matching_questions:
+        db.session.delete(question)
+
     db.session.delete(quiz)
     db.session.commit()
     flash('Quiz is Deleted', category='success')
