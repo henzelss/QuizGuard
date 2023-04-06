@@ -75,3 +75,5 @@ class ActivityLog(db.Model):
     logtime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     activity = db.Column(db.String(255))
     user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))
+
+
