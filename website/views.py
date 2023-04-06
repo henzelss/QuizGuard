@@ -64,6 +64,24 @@ def quizbankedit(quizcode, quiztype):
         
     return render_template('quizbankedit.html', questions=questions, form=form, quiztype=quiztype)
 
+@views.route('/quizbankdelete/<string:quizid>', methods=['GET', 'POST'])
+@login_required
+def quizdelete(quizid):
+
+    quiz = QuizList.query.get(quizid)
+    if not quiz:
+        flash('Quiz not found', category='error')
+        activity_logs('Deleting Non-existing Quiz')
+        return redirect(url_for('views.quizbank'))
+
+    db.session.delete(quiz)
+    db.session.commit()
+    flash('Quiz is Deleted', category='success')
+    activity_logs('Deleted a user')
+    return redirect(url_for('views.quizbank'))
+
+
+
 @views.route('/quizedit/<string:id>/<string:quiztype>', methods=['GET', 'POST'])
 @login_required
 def quizedit(id, quiztype):
