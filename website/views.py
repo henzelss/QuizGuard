@@ -64,9 +64,9 @@ def quizbankedit(quizcode, quiztype):
         
     return render_template('quizbankedit.html', questions=questions, form=form, quiztype=quiztype)
 
-@views.route('/quizbankdelete/<string:quizid>', methods=['GET', 'POST'])
+@views.route('/quizbankdelete/<string:quizid>/<string:quiztype>', methods=['GET', 'POST'])
 @login_required
-def quizdelete(quizid):
+def quizdelete(quizid, quiztype):
 
     quiz = QuizList.query.get(quizid)
     if not quiz:
@@ -74,10 +74,19 @@ def quizdelete(quizid):
         activity_logs('Deleting Non-existing Quiz')
         return redirect(url_for('views.quizbank'))
 
-    # Delete all the matching type questions with quiz_id equal to the deleted quiz's id
-    matching_questions = MatchingType.query.filter_by(quiz_id=quiz.id).all()
-    for question in matching_questions:
-        db.session.delete(question)
+    if quiztype == '1':
+        # Delete all the matching type questions with quiz_id equal to the deleted quiz's id
+        matching_questions = MatchingType.query.filter_by(quiz_id=quiz.id).all()
+        for question in matching_questions:
+            db.session.delete(question)
+    elif quiztype == '2':
+        fib_questions = FillInTheBlanks.query.filter_by(quiz_id=quiz.id).all()
+        for question in fib_questions:
+            db.session.delete(question)
+    elif quiztype == '3':
+        tor_questions = TrueOrFalse.query.filter_by(quiz_id=quiz.id).all()
+        for question in tor_questions:
+            db.session.delete(question)
 
     db.session.delete(quiz)
     db.session.commit()
