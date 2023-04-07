@@ -140,7 +140,48 @@ def quizedit(id, quiztype):
     #         pass
     #     else:
     #         return render_template(url_for('views.dashboard'))
+
+@views.route('/editquestion<string:quizcode>/<string:questionid>', methods=['GET', 'POST'])
+@login_required
+def EditQuestions(quizcode, questionid):
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("Try to access webpages not for users")
+        return redirect(url_for('views.student'))
     
+    pass
+
+@views.route('/deletequestion<string:quizcode>/<string:questionid>', methods=['GET', 'POST'])
+@login_required
+def DeleteQuestions(quizcode, questionid):
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("Try to access webpages not for users")
+        return redirect(url_for('views.student'))
+    pass
+
+@views.route('/editquiz<string:quizcode>', methods=['GET', 'POST'])
+@login_required
+def EditQuiz():
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("Try to access webpages not for users")
+        return redirect(url_for('views.student'))
+    
+    pass
+
+@views.route('/deletequiz<string:quizcode>', methods=['GET', 'POST'])
+@login_required
+def DeleteQuiz():
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("Try to access webpages not for users")
+        return redirect(url_for('views.student'))
+    
+    pass
+
+
+
 @views.route('/createquiz', methods=['GET', 'POST'])
 @login_required
 def createquiz():
@@ -200,17 +241,6 @@ def questionaire(quiz_code, category):
     else:
         return render_template('404.html')
     
-@views.route('/edit/question<string:quizcode>/<string:type>', methods=['GET', 'POST'])
-@login_required
-def EditQuestion(quizcode, type):
-    pass
-
-@views.route('/delete/question<string:quizcode>/<string:type>', methods=['GET', 'POST'])
-@login_required
-def DeleteQuestion(quizcode, type):
-    pass
-
-
 @views.route('/matchingtype<string:quiz_code>', methods=['GET', 'POST'])
 @login_required
 def matchingtype(quiz_code):
