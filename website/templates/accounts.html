@@ -48,7 +48,7 @@
                           </div>
                           <div class="modal-body">
                             Removing this account will result of permanent removal of all data associated with this account: <p>{{ acc.firstname}}&nbsp;{{ acc.lastname}}</p>
-                            Are you sure you want to remove this account?
+                            Are you sure you still want to remove this account?
                           </div>
                           <div class="modal-footer">
                             <a href="{{ url_for('auth.delete', user_id=acc.id) }}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Remove</a>
