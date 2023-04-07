@@ -131,6 +131,7 @@ class QuizForm(FlaskForm):
                                                       ('30', '30 points'), 
                                                       ('50', '50 points')])
     visibility = RadioField('Visibility', choices=[('1', 'public'), ('2', 'private')])
+    quizcode = StringField('Quiz Code', validators=[DataRequired()], render_kw={"placeholder": ""})
     submit = SubmitField('Save')
 
     
