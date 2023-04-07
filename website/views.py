@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, url_for, flash, redirect, send_fro
 from datetime import datetime, time
 from flask_login import login_required, current_user
 from .models import User, QuizList, MatchingType, FillInTheBlanks, TrueOrFalse, Violations
-from .forms import CreateQuiz, MatchingTypeForm, FillInTheBlanksForm, TrueOrFalseForm, MatchingTypeFormEdit, FillInTheBlanksFormEdit, TrueOrFalseFormEdit
+from .forms import CreateQuiz, MatchingTypeForm, FillInTheBlanksForm, TrueOrFalseForm, MatchingTypeFormEdit, FillInTheBlanksFormEdit, TrueOrFalseFormEdit, QuizForm, SearchCode
 from .utils import generate_random_string, activity_logs
 from .import db
 
@@ -37,8 +37,23 @@ def student():
 @views.route('/quizbank')
 @login_required
 def quizbank():
+    form = SearchCode()
     quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
-    return render_template('quizbank.html', quiz_list=quiz_list)
+    return render_template('quizbank.html', quiz_list=quiz_list, form=form)
+
+@views.route('/searchquiz',  methods=['GET', 'POST'])
+def searchquiz():
+    form = SearchCode()
+    if form.validate_on_submit():
+        code = form.search.data
+        quiz = QuizList.query.filter_by(code=code).first()
+        if quiz:
+            author = User.query.filter_by(id=quiz.author_id).first()
+            return render_template('searchbank.html', quiz=quiz, form=form, author=author)
+        else:
+            flash('Quiz not found', category='error')
+            return redirect(url_for('views.quizbank'))
+    return render_template('searchbank.html', form=form)
 
 @views.route('/quizbankedit/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
 @login_required
@@ -46,6 +61,8 @@ def quizbankedit(quizcode, quiztype):
 
     if current_user.usertype == 'user':
         return redirect(url_for('views.student'))
+    
+    quizform = QuizForm()
     if quiztype == '1':
         form = MatchingTypeFormEdit()
         questions = MatchingType.query.join(QuizList).filter(QuizList.code == quizcode).all()
@@ -62,7 +79,7 @@ def quizbankedit(quizcode, quiztype):
     if not questions:
         flash('No questions has found for this quiz', category='warning')
         
-    return render_template('quizbankedit.html', questions=questions, form=form, quiztype=quiztype)
+    return render_template('quizbankedit.html', questions=questions, form=form, quiztype=quiztype, quizform=quizform)
 
 @views.route('/quizbankdelete/<string:quiz_code>/<string:quiztype>', methods=['GET', 'POST'])
 @login_required
@@ -123,13 +140,12 @@ def quizedit(id, quiztype):
     #         pass
     #     else:
     #         return render_template(url_for('views.dashboard'))
-
-
+    
 @views.route('/createquiz', methods=['GET', 'POST'])
 @login_required
 def createquiz():
-    form = CreateQuiz()
-   
+    #form = CreateQuiz()
+    form = QuizForm()
     if request.method == 'POST' and request.form.get('submit'):
 
         startdate_str = request.form['startdate']
