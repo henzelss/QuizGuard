@@ -37,20 +37,21 @@
                     <!-- pass the acc.id on the href to get the profile you want to edit-->
                     <a href="{{ url_for('auth.edit', user_id=acc.id) }}" class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i>Edit</a>
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ acc.id }}"><i class="fa-solid fa-trash me-1"></i>Delete</button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ acc.id }}"><i class="fa-solid fa-trash me-1"></i>Remove</button>
                     <!-- Modal -->
                     <div class="modal fade" id="deleteModal{{ acc.id }}" tabindex="-1" aria-labelledby="deleteModal" aria-hidden="true">
                       <div class="modal-dialog">
                         <div class="modal-content bg-night">
                           <div class="modal-header">
-                            <h5 class="modal-title" id="deleteModal">Delete Account</h5>
+                            <h5 class="modal-title" id="deleteModal">Remove Account</h5>
                             <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">
-                            Are you sure you want to delete<p>{{ acc.firstname}}&nbsp;{{ acc.lastname}} account?</p>
+                            Removing this account will result of permanent removal of all data associated with this account: <p>{{ acc.firstname}}&nbsp;{{ acc.lastname}}</p>
+                            Are you sure you want to remove this account?
                           </div>
                           <div class="modal-footer">
-                            <a href="{{ url_for('auth.delete', user_id=acc.id) }}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Delete</a>
+                            <a href="{{ url_for('auth.delete', user_id=acc.id) }}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Remove</a>
                           </div>
                         </div>
                       </div>
