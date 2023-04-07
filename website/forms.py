@@ -1,8 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField, DateTimeField, RadioField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField, DateTimeField, RadioField, IntegerField
 from wtforms.validators import DataRequired, Email, Length 
 from wtforms import ValidationError
 from .models import User
+from jinja2 import Markup
+
 
 
 class LoginForm(FlaskForm):
@@ -109,3 +111,27 @@ class TrueOrFalseFormEdit(FlaskForm):
     answer = RadioField('Select an option', choices=[('0', 'False'), ('1', 'True')])
     submit = SubmitField('Submit')
 
+class QuizForm(FlaskForm):
+    title = StringField('Quiz Title', validators=[DataRequired()], render_kw={"placeholder": "Enter Quiz Title "})
+    description = StringField('Quiz Description', validators=[DataRequired()], render_kw={"placeholder": "Enter Quiz Description "})
+    category = SelectField('Select Category', choices=[('1', 'Language'), ('2', 'Social Studies'), ('3', 'Science'), 
+                                                       ('4', 'History'), ('5', 'Science'), ('6', 'Computer Science'), 
+                                                       ('6', 'Career and Technical Education'), ('7', 'Creative Arts')])
+    quiztype = SelectField('Select Quiz Type', choices=[('1', 'Multiple Choice'), ('2', 'Fill in the blanks'), ('3', 'True or Falls')])
+    timelimit = RadioField('Time Limit', choices=[('5', Markup('<i class="fa-regular fa-clock me-1"></i> 5 mins')), ('10', Markup('<i class="fa-regular fa-clock me-1"></i>10 mins')), 
+                                                  ('15', Markup('<i class="fa-regular fa-clock me-1"></i>15 mins')), ('20', Markup('<i class="fa-regular fa-clock me-1"></i>20 mins')), 
+                                                  ('30', Markup('<i class="fa-regular fa-clock me-1"></i>30 mins')), ('60', Markup('<i class="fa-regular fa-clock me-1"></i> 60 mins')), 
+                                                  ('120', Markup('<i class="fa-regular fa-clock me-1"></i>120 mins'))])
+    points  = RadioField('Points Per Score', choices=[('1', '1 point'), 
+                                                      ('2', '2 points'), 
+                                                      ('5', '5 points'), 
+                                                      ('10', '10 points'), 
+                                                      ('15', '15 points'), 
+                                                      ('20', '20 points'), 
+                                                      ('30', '30 points'), 
+                                                      ('50', '50 points')])
+    visibility = RadioField('Visibility', choices=[('1', 'public'), ('2', 'private')])
+    submit = SubmitField('Save')
+
+    
+    
