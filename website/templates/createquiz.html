@@ -1,118 +1,143 @@
 {% extends 'dashboard.html '%}
 {% block content %}
-    <div class="container mt-5 bg-night rounded p-5">
-        <h1>Create Quiz</h1>
-        <div class="accordion bg-night" id="accordionExample">
-            <div class="accordion-item bg-night">
-              <h2 class="accordion-header bg-night" id="headingOne">
-                <button class="accordion-button bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                    Quiz Details 
-                </button>
-              </h2>
-              <div id="collapseOne" class="accordion-collapse collapse show bg-night" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                <div class="accordion-body bg-night text-dark">
-                  <!-- Quiz Form-->
-                  <form action="">
-                    <label for="Title">Quiz Title</label>
-                    <input type="text" placeholder="Enter Quiz Title" id="Title">
-                    <label for="Description">Quiz Description</label>
-                    <input type="text" placeholder="Enter Quiz Description" id="Description">
-                    <label for="Category">Quiz Category</label>
-                    <select class="form-select" aria-label="Default select example" id="Category">
-                        <option selected>Select Category</option>
-                        <option value="1">Science</option>
-                        <option value="2">General Knowledge</option>
-                        <option value="3">Computer</option>
-                    </select>
-
-                    <label for="QuizType">Quiz Type</label>
-                    <select class="form-select" aria-label="Default select example" id="QuizType">
-                        <option selected>Select Quiz Type</option>
-                        <option value="1">Multiple Choice</option>
-                        <option value="2">Fill in the blanks</option>
-                        <option value="3">True or Falls</option>
-                    </select>
-                  </form>
-                </div>
+  <div class="container mt-5 bg-night rounded p-5">
+      <h1>Create Quiz</h1>
+      <form action="" method="POST" class="form-properties">
+        <div class="accordion" id="accordionPanelsStayOpenExample">
+          <div class="accordion-item bg-night">
+            <h2 class="accordion-header" id="panelsStayOpen-headingQuizDetails">
+              <button class="accordion-button bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizDetails" aria-expanded="true" aria-controls="panelsStayOpen-collapseQuizDetails">
+                Quiz Details
+              </button>
+            </h2>
+            <div id="panelsStayOpen-collapseQuizDetails" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingQuizDetails">
+              <div class="accordion-body bg-night">
+                <!-- Quiz Form  -->
+                {{ form.hidden_tag() }}
+                {{ form.title.label(class='text-light') }}
+                {{ form.title(class='text-dark', required='required') }}
+                {{ form.description.label(class='text-light') }}
+                {{ form.description(class='text-dark', required='required') }}
+                {{ form.category.label(class='text-light') }}
+                {{ form.category(class='text-dark form-select form-select-lg mt-1', required='required') }}
+                {{ form.quiztype.label(class='text-light') }}
+                {{ form.quiztype(class='text-dark form-select form-select-lg mt-1', required='required') }}
               </div>
             </div>
-            <div class="accordion-item bg-night">
-              <h2 class="accordion-header bg-night" id="headingTwo">
-                <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  Quiz Setting
-                </button>
-              </h2>
-              <div id="collapseTwo" class="accordion-collapse collapse bg-night" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                <div class="accordion-body bg-night text-dark">
-                    <form action="">
-                        <label for="startdate">Start Date</label>
-                        <input type="date" id="startdate" name="startdate" class="form-control datetimepicker-input datetimepicker-date">
-                        <label for="enddate">End Date</label>
-                        <input type="date" id="enddate" name="enddate" class="form-control datetimepicker-input datetimepicker-date">
-                        <label for="timelimit">Time Limit</label>
-                        <input type="time" id="timelimit" name="timelimit" class="form-control datetimepicker-input datetimepicker-date">
-                    </form>
+          </div>
+          <div class="accordion-item bg-night">
+            <h2 class="accordion-header" id="panelsStayOpen-headingQuizTimeSettings">
+              <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizTimeSettings" aria-expanded="false" aria-controls="panelsStayOpen-collapseQuizTimeSettings">
+                Quiz Time Settings
+              </button>
+            </h2>
+            <div id="panelsStayOpen-collapseQuizTimeSettings" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingQuizTimeSettings">
+              <div class="accordion-body bg-night">
+                  <!-- Quiz Form  -->
+                  <div class="row">
+                    <div class="col-2" >
+                        <div class="mb-3">
+                            <label for="startdate">Start Date</label>
+                            <input type="date" id="startdate" name="startdate" class="form-control datetimepicker-input datetimepicker-date" required>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                      <div class="mb-3">
+                          <label for="enddate">End Date</label>
+                          <input type="date" name="enddate" id="enddate" class="form-control datetimepicker-input datetimepicker-date" required>
+                      </div>
+                    </div>
+                    <div class="col-8" style="line-height: 18px !important;">
+                      <label class="label-margin" for="">Time Limit</label>
+                      {{ form.timelimit(class="timelimit") }}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="accordion-item bg-night">
-              <h2 class="accordion-header bg-night" id="headingThree">
-                <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  Quiz Score
-                </button>
-              </h2>
-              <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                <div class="accordion-body  text-light">
-                    <form action="">
-                        <label for="score">Set the point per score</label>
-                        <input type="text" placeholder="Set the points" id="score">
-                    </form>
+          </div>
+          <div class="accordion-item bg-night">
+            <h2 class="accordion-header" id="panelsStayOpen-headingQuizScore">
+              <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizScore" aria-expanded="false" aria-controls="panelsStayOpen-collapseQuizScore">
+                Quiz Score
+              </button>
+            </h2>
+            <div id="panelsStayOpen-collapseQuizScore" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingQuizScore">
+              <div class="accordion-body bg-night">
+                <!-- Quiz Form  -->
+                <label for="rbtn">Points Per Item:</label>
+                <div class="rbtn" >
+                  {{ form.points(class="timelimit")}}
                 </div>
               </div>
             </div>
           </div>
-    </div>
-    
-    <div class="container mt-5 bg-night rounded p-5">
-        <h1 class="ms-2">Create Quiz</h1>
-        <form action="" method="POST" class="form-properties">
-            <div class="container">
-                {{ form.hidden_tag() }}
-                {{ form.title.label(class='text-light') }}
-                {{ form.title(class='text-dark') }}
-                {{ form.category.label(class='text-light') }}
-                {{ form.category(class='text-dark form-select form-select-lg mt-1') }}
+          <div class="accordion-item bg-night">
+            <h2 class="accordion-header" id="panelsStayOpen-headingVisibility">
+              <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseVisibility" aria-expanded="false" aria-controls="panelsStayOpen-collapseVisibility">
+                Quiz Visibility
+              </button>
+            </h2>
+            <div id="panelsStayOpen-collapseVisibility" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingVisibility">
+              <div class="accordion-body bg-night">
+                <label for="visible">Visibility:</label>
+                <div class="visible">
+                  {{ form.visibility(class="timelimit")}}
+                </div>
+                <p class="text-muted mt-1">Note: Selecting public will make the item visible to everyone while selecting private will make the item visible only to you and people that has the quiz code</p>
+              </div>
             </div>
-            <div class="row">
-                <div class="col-2">
-                    <div class="mb-3">
-                        <label for="startdate">Start Date</label>
-                        <input type="date" id="startdate" name="startdate" class="form-control datetimepicker-input datetimepicker-date">
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="mb-3">
-                        <label for="starttime">Start Time</label>
-                        <input type="time" name="starttime" id="starttime" class="form-control datetimepicker-input datetimepicker-date">
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="mb-3">
-                        <label for="enddate">Deadline Date</label>
-                        <input type="date" name="enddate" id="enddate" class="form-control datetimepicker-input datetimepicker-date">
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="mb-3">
-                        <label for="time_closed">Deadline Time</label>
-                        <input type="time" name="time_closed" id="time_closed" class="form-control datetimepicker-input datetimepicker-date">
-                    </div>
-                </div>
-            </div>
-        
-            <div class="d-flex justify-content-end">
-                {{ form.submit(class="btn submit-button text-dark") }}
-            </div>
-        </form>
-    </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end">
+          {{ form.submit(class="btn submit-button text-dark") }}
+        </div>
+      </form>
+  </div>
+  
+  <div class="container mt-5 bg-night rounded p-5">
+      <h1 class="ms-2">Create Quiz</h1>
+      <form action="" method="POST" class="form-properties">
+          <div class="container">
+              {{ form.hidden_tag() }}
+              {{ form.title.label(class='text-light') }}
+              {{ form.title(class='text-dark') }}
+              {{ form.description.label(class='text-light') }}
+              {{ form.description(class='text-dark') }}
+              {{ form.category.label(class='text-light') }}
+              {{ form.category(class='text-dark form-select form-select-lg mt-1') }}
+              {{ form.quiztype.label(class='text-light') }}
+              {{ form.quiztype(class='text-dark form-select form-select-lg mt-1') }}
+          </div>
+          <div class="row">
+              <div class="col-2">
+                  <div class="mb-3">
+                      <label for="startdate">Start Date</label>
+                      <input type="date" id="startdate" name="startdate" class="form-control datetimepicker-input datetimepicker-date">
+                  </div>
+              </div>
+              <div class="col-2">
+                  <div class="mb-3">
+                      <label for="starttime">Start Time</label>
+                      <input type="time" name="starttime" id="starttime" class="form-control datetimepicker-input datetimepicker-date">
+                  </div>
+              </div>
+              <div class="col-2">
+                  <div class="mb-3">
+                      <label for="enddate">Deadline Date</label>
+                      <input type="date" name="enddate" id="enddate" class="form-control datetimepicker-input datetimepicker-date">
+                  </div>
+              </div>
+              <div class="col-2">
+                  <div class="mb-3">
+                      <label for="time_closed">Deadline Time</label>
+                      <input type="time" name="time_closed" id="time_closed" class="form-control datetimepicker-input datetimepicker-date">
+                  </div>
+              </div>
+          </div>
+      
+          <div class="d-flex justify-content-end">
+              {{ form.submit(class="btn submit-button text-dark") }}
+          </div>
+      </form>
+  </div>
 {% endblock %}
