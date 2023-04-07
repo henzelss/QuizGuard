@@ -1,161 +1,299 @@
 {% extends "dashboard.html" %}
 
 {% block content %}
-<!-- <div class="container mt-5 rounded bg-night p-3">
-    <h1>Quiz Settings</h1>
-    <div class="accordion" id="accordionExample">
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingTwo">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-            Quiz Details
-          </button>
-        </h2>
-        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-          <div class="accordion-body">
-            <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingThree">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-            Quiz Settings
-          </button>
-        </h2>
-        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-          <div class="accordion-body">
-            <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-          </div>
-        </div>
-      </div>
-    </div> -->
-
-
-</div>
-
-<div class="container mt-5 rounded bg-night p-3">
-
-  <h1>Quiz Questions </h1>
-  {% for quiz in questions %}
+<div class="container mt-5 rounded bg-night p-5">
+  <div class="accordion" id="accordionExample">
     <div class="accordion-item bg-night">
-      <h2 class="accordion-header" id="headingTwo">
-        <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo{{quiz.id}}" aria-expanded="false" aria-controls="collapseTwo{{quiz.id}}">
-          <Strong>{{loop.index}}.&nbsp;</Strong>{{ quiz.question }}
+      <h2 class="accordion-header bg-night" id="headingTwo">
+        <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          <h1>Edit Quiz</h1>
         </button>
       </h2>
-      <div id="collapseTwo{{quiz.id}}" class="accordion-collapse collapse bg-night" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-            {% if quiztype == '1' %}
-              <div class="row">
-                <div class="col-6">A. {{ quiz.choice1 }} </div>
-                <div class="col-6">B. {{ quiz.choice2 }} </div>
+      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+        <div class="accordion-body bg-night">
+          <form action="" method="POST" class="form-properties">
+            <p class="text-muted ms-1">Note: leave the form empty if you dont want to change anything here</p>
+            <div class="accordion" id="accordionPanelsStayOpenExample">
+              <div class="accordion-item bg-night">
+                <h2 class="accordion-header" id="panelsStayOpen-headingQuizDetails">
+                  <button class="accordion-button bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizDetails" aria-expanded="true" aria-controls="panelsStayOpen-collapseQuizDetails">
+                    Quiz Details
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseQuizDetails" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingQuizDetails">
+                  <div class="accordion-body bg-night">
+                    <!-- Quiz Form  -->
+                    {{ quizform.hidden_tag() }}
+                    {{ quizform.title.label(class='text-light') }}
+                    {{ quizform.title(class='text-dark', required='required') }}
+                    {{ quizform.description.label(class='text-light') }}
+                    {{ quizform.description(class='text-dark', required='required') }}
+                    {{ quizform.category.label(class='text-light') }}
+                    {{ quizform.category(class='text-dark form-select form-select-lg mt-1', required='required') }}
+                    <p class="text-muted mt-2">Note: you can no longer change the quiz type</p>
+                  </div>
+                </div>
               </div>
-              <div class="row">
-                <div class="col-6">C. {{ quiz.choice3 }}</div>
-                <div class="col-6">D. {{ quiz.choice4}}</div>
+              <div class="accordion-item bg-night">
+                <h2 class="accordion-header" id="panelsStayOpen-headingQuizTimeSettings">
+                  <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizTimeSettings" aria-expanded="false" aria-controls="panelsStayOpen-collapseQuizTimeSettings">
+                    Quiz Time Settings
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseQuizTimeSettings" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingQuizTimeSettings">
+                  <div class="accordion-body bg-night">
+                      <!-- Quiz Form  -->
+                      <div class="row">
+                        <div class="col-2" >
+                            <div class="mb-3">
+                                <label for="startdate">Start Date</label>
+                                <input type="date" id="startdate" name="startdate" class="form-control datetimepicker-input datetimepicker-date" required>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                          <div class="mb-3">
+                              <label for="enddate">End Date</label>
+                              <input type="date" name="enddate" id="enddate" class="form-control datetimepicker-input datetimepicker-date" required>
+                          </div>
+                        </div>
+                        <div class="col-8" style="line-height: 18px !important;">
+                          <label class="label-margin" for="">Time Limit</label>
+                          {{ quizform.timelimit(class="timelimit") }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
               </div>
-              <Strong>Answer:&nbsp</Strong>{{ quiz.answer }} 
-            {% elif quiztype == '2' %}
-              <h5>Fill in the blanks Type</h5>
-            {% elif quiztype == '3' %}
-              <h5>True or False</h5>
-            {% endif %}
-          <div class="mt-3">
-            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edit_question{{quiz.id}}"> Edit </button> 
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_question{{quiz.id}}"> Delete </button> 
+              <div class="accordion-item bg-night">
+                <h2 class="accordion-header" id="panelsStayOpen-headingQuizScore">
+                  <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizScore" aria-expanded="false" aria-controls="panelsStayOpen-collapseQuizScore">
+                    Quiz Score
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseQuizScore" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingQuizScore">
+                  <div class="accordion-body bg-night">
+                    <!-- Quiz Form  -->
+                    <label for="rbtn">Points Per Item:</label>
+                    <div class="rbtn" >
+                      {{ quizform.points(class="timelimit")}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item bg-night">
+                <h2 class="accordion-header" id="panelsStayOpen-headingVisibility">
+                  <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseVisibility" aria-expanded="false" aria-controls="panelsStayOpen-collapseVisibility">
+                    Quiz Visibility
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseVisibility" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingVisibility">
+                  <div class="accordion-body bg-night">
+                    <label for="visible">Visibility:</label>
+                    <div class="visible">
+                      {{ quizform.visibility(class="timelimit")}}
+                    </div>
+                    <p class="text-muted mt-1">Note: Selecting public will make the item visible to everyone while selecting private will make the item visible only to you and people that has the quiz code</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end">
+              {{ quizform.submit(class="btn submit-button text-dark") }}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item bg-night">
+      <h2 class="accordion-header" id="headingThree">
+        <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          <h1>Quiz Questions</h1>
+        </button>
+      </h2>
+      <div id="collapseThree" class="accordion-collapse collapse bg-night" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+        <div class="accordion-body bg-night">
+          <div class="accordion" id="accordionQuestion">
+            {% for quiz in questions %}
+              <div class="accordion-item bg-night">
+                <h2 class="accordion-header" id="headingQuestions">
+                  <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuestion{{quiz.id}}" aria-expanded="false" aria-controls="collapseQuestion{{quiz.id}}">
+                    <Strong>{{loop.index}}.&nbsp;</Strong>{{ quiz.question }}
+                  </button>
+                </h2>
+                <div id="collapseQuestion{{quiz.id}}" class="accordion-collapse collapse bg-night" aria-labelledby="headingQuestions" data-bs-parent="#accordionQuestion">
+                  <div class="accordion-body">
+                      {% if quiztype == '1' %}
+                        <div class="row">
+                          <div class="col-6">A. {{ quiz.choice1 }} </div>
+                          <div class="col-6">B. {{ quiz.choice2 }} </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-6">C. {{ quiz.choice3 }}</div>
+                          <div class="col-6">D. {{ quiz.choice4}}</div>
+                        </div>
+                        <Strong>Answer:&nbsp</Strong>{{ quiz.answer }} 
+                      {% elif quiztype == '2' %}
+                        <h5>Fill in the blanks Type</h5>
+                      {% elif quiztype == '3' %}
+                        <h5>True or False</h5>
+                      {% endif %}
+                    <div class="mt-3">
+                      <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edit_question{{quiz.id}}"> Edit </button> 
+                      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_question{{quiz.id}}"> Delete </button> 
+                    </div>
+                  </div>
+                </div>
+              </div>
+        
+              <!--Edit Modal -->
+              <div class="modal fade" id="edit_question{{quiz.id}}" tabindex="-1" aria-labelledby="edit_question{{quiz.id}}" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content bg-night">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="edit_question{{quiz.id}}Label">
+                        {% if quiztype == '1' %}
+                          <h5>Multiple Choice</h5>
+                        {% elif quiztype == '2' %}
+                          <h5>Fill in the blanks Type</h5>
+                        {% elif quiztype == '3' %}
+                          <h5>True or False</h5>
+                        {% endif %}
+                      </h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <!-- check the quiz type -->
+                      {% if quiztype == '1' %}
+                        <form action="{{ url_for('views.quizedit', id=quiz.id, quiztype=quiztype) }}" method="POST" class="p-3">
+                          {{ form.hidden_tag() }}
+                          {{ form.question.label(class='text-light') }}
+                          {{ form.question(class='form-control text-dark')}}
+                          {{ form.choice1.label(class='text-light') }}
+                          {{ form.choice1(class='form-control text-dark')}}
+                          {{ form.choice2.label(class='text-light') }}
+                          {{ form.choice2(class='form-control text-dark')}}
+                          {{ form.choice3.label(class='text-light') }}
+                          {{ form.choice3(class='form-control text-dark')}}
+                          {{ form.choice4.label(class='text-light') }}
+                          {{ form.choice4(class='form-control text-dark')}}
+                          {{ form.answer.label(class='text-light') }}
+                          {{ form.answer(class='form-control text-dark')}}
+                          {{ form.submit(class='btn btn-warning') }}
+                        </form>
+                      {% elif quiztype == '2' %}
+                        <form action="{{ url_for('views.quizedit', id=quiz.id, quiztype=quiztype) }}" method="POST" class="p-3">
+                          <h1>Fill in the blanks </h1>
+                          {{ form.hidden_tag() }}
+                          {{ form.question.label(class='text-light') }}
+                          {{ form.question(class='form-control text-dark')}}
+                          {{ form.answer.label(class='text-light') }}
+                          {{ form.answer(class='form-control text-dark')}}
+                          {{ form.submit(class='btn btn-warning text-dark') }}
+                        </form>
+                      {% elif quiztype == '3' %}
+                        <form action="{{ url_for('views.quizedit', id=quiz.id, quiztype=quiztype) }}" method="POST" class="p-3"> 
+                          <h1>True or False</h1>
+                          {{ form.hidden_tag() }}
+                          {{ form.question.label(class='text-light') }}
+                          {{ form.question(class='form-control text-dark')}}
+                          {{ form.answer.label() }}
+                          {{ form.answer()}}
+                          {{ form.submit(class='btn btn-warning text-dark') }}
+                        </form>
+                      {% else %}
+                        <h5>There is an error on your category</h5>
+                      {% endif %}
+                    </div>
+                    <!-- <div class="modal-footer">
+                    
+                      <button type="button" class="btn btn-primary">Save changes</button> 
+                    </div> -->
+                  </div>
+                </div>
+              </div>
+        
+              <!--Delete Modal -->
+              <div class="modal fade" id="delete_question{{quiz.id}}" tabindex="-1" aria-labelledby="delete_question{{quiz.id}}" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content bg-night">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="delete_question{{quiz.id}}Label">Warning</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Do you really want to remove this question?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger">Delete</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+            
+            <div class="accordion-item bg-night">
+              <h2 class="accordion-header" id="headingAddQuestions">
+                <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#AddQuestions" aria-expanded="false" aria-controls="AddQuestions">
+                  <Strong>Add New Questions</Strong>
+                </button>
+              </h2>
+              <div id="AddQuestions" class="accordion-collapse collapse" aria-labelledby="headingAddQuestions" data-bs-parent="#accordionQuestion">
+                <div class="accordion-body bg-night">
+                  <!-- Add Question form here -->
+                  {% if quiztype == '1' %}
+                        <form action="" method="POST" class="p-3">
+                          {{ form.hidden_tag() }}
+                          {{ form.question.label(class='text-light') }}
+                          {{ form.question(class='form-control text-dark')}}
+                          {{ form.choice1.label(class='text-light') }}
+                          {{ form.choice1(class='form-control text-dark')}}
+                          {{ form.choice2.label(class='text-light') }}
+                          {{ form.choice2(class='form-control text-dark')}}
+                          {{ form.choice3.label(class='text-light') }}
+                          {{ form.choice3(class='form-control text-dark')}}
+                          {{ form.choice4.label(class='text-light') }}
+                          {{ form.choice4(class='form-control text-dark')}}
+                          {{ form.answer.label(class='text-light') }}
+                          {{ form.answer(class='form-control text-dark')}}
+                          <div class="d-flex justify-content-end">
+                            {{ form.submit(class='class="btn submit-button text-dark"') }}
+                          </div>
+                        </form>
+                      {% elif quiztype == '2' %}
+                        <form action="" method="POST" class="p-3">
+                          <h1>Fill in the blanks </h1>
+                          {{ form.hidden_tag() }}
+                          {{ form.question.label(class='text-light') }}
+                          {{ form.question(class='form-control text-dark')}}
+                          {{ form.answer.label(class='text-light') }}
+                          {{ form.answer(class='form-control text-dark')}}
+                          <div class="d-flex justify-content-end">
+                            {{ form.submit(class='class="btn submit-button text-dark"') }}
+                          </div>
+                        </form>
+                      {% elif quiztype == '3' %}
+                        <form action="" method="POST" class="p-3"> 
+                          <h1>True or False</h1>
+                          {{ form.hidden_tag() }}
+                          {{ form.question.label(class='text-light') }}
+                          {{ form.question(class='form-control text-dark')}}
+                          {{ form.answer.label() }}
+                          {{ form.answer()}}
+                          <div class="d-flex justify-content-end">
+                            {{ form.submit(class='class="btn submit-button text-dark"') }}
+                          </div>
+                        </form>
+                      {% else %}
+                        <h5>There is an error on your category</h5>
+                      {% endif %}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!--Edit Modal -->
-    <div class="modal fade" id="edit_question{{quiz.id}}" tabindex="-1" aria-labelledby="edit_question{{quiz.id}}" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content bg-night">
-          <div class="modal-header">
-            <h5 class="modal-title" id="edit_question{{quiz.id}}Label">
-              {% if quiztype == '1' %}
-                <h5>Matching Type</h5>
-              {% elif quiztype == '2' %}
-                <h5>Fill in the blanks Type</h5>
-              {% elif quiztype == '3' %}
-                <h5>True or False</h5>
-              {% endif %}
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <!-- check if the form is matching or etc -->
-            {% if quiztype == '1' %}
-              <form action="{{ url_for('views.quizedit', id=quiz.id, quiztype=quiztype) }}" method="POST" class="p-3">
-                {{ form.hidden_tag() }}
-                {{ form.question.label(class='text-light') }}
-                {{ form.question(class='form-control text-dark')}}
-                {{ form.choice1.label(class='text-light') }}
-                {{ form.choice1(class='form-control text-dark')}}
-                {{ form.choice2.label(class='text-light') }}
-                {{ form.choice2(class='form-control text-dark')}}
-                {{ form.choice3.label(class='text-light') }}
-                {{ form.choice3(class='form-control text-dark')}}
-                {{ form.choice4.label(class='text-light') }}
-                {{ form.choice4(class='form-control text-dark')}}
-                {{ form.answer.label(class='text-light') }}
-                {{ form.answer(class='form-control text-dark')}}
-                {{ form.submit(class='btn btn-warning') }}
-              </form>
-            {% elif quiztype == '2' %}
-              <form action="{{ url_for('views.quizedit', id=quiz.id, quiztype=quiztype) }}" method="POST" class="p-3">
-                <h1>Fill in the blanks </h1>
-                {{ form.hidden_tag() }}
-                {{ form.question.label(class='text-light') }}
-                {{ form.question(class='form-control text-dark')}}
-                {{ form.answer.label(class='text-light') }}
-                {{ form.answer(class='form-control text-dark')}}
-                {{ form.submit(class='btn btn-warning text-dark') }}
-              </form>
-            {% elif quiztype == '3' %}
-              <form action="{{ url_for('views.quizedit', id=quiz.id, quiztype=quiztype) }}" method="POST" class="p-3"> 
-                <h1>True or False</h1>
-                {{ form.hidden_tag() }}
-                {{ form.question.label(class='text-light') }}
-                {{ form.question(class='form-control text-dark')}}
-                {{ form.answer.label() }}
-                {{ form.answer()}}
-                {{ form.submit(class='btn btn-warning text-dark') }}
-              </form>
-            {% else %}
-              <h5>There is an error on your category</h5>
-            {% endif %}
-          </div>
-          <!-- <div class="modal-footer">
-           
-             <button type="button" class="btn btn-primary">Save changes</button> 
-          </div> -->
-        </div>
-      </div>
-    </div>
-
-    <!--Delete Modal -->
-    <div class="modal fade" id="delete_question{{quiz.id}}" tabindex="-1" aria-labelledby="delete_question{{quiz.id}}" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content bg-night">
-          <div class="modal-header">
-            <h5 class="modal-title" id="delete_question{{quiz.id}}Label">Warning</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              Do you really want to remove this question?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger">Delete</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  {% endfor %}
-</div>
-<div class="container ">
-  
+  </div>
 </div>
 {% endblock %}
 
