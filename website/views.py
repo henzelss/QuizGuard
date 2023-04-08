@@ -2,8 +2,8 @@
 from flask import Blueprint, render_template, url_for, flash, redirect, send_from_directory, jsonify, request, Response
 from datetime import datetime, time
 from flask_login import login_required, current_user
-from .models import User, QuizList, MatchingType, FillInTheBlanks, TrueOrFalse, Violations
-from .forms import CreateQuiz, MatchingTypeForm, FillInTheBlanksForm, TrueOrFalseForm, MatchingTypeFormEdit, FillInTheBlanksFormEdit, TrueOrFalseFormEdit, QuizForm, SearchCode
+from .models import User, QuizList, MultipleChoice, FillInTheBlanks, TrueOrFalse, Violations
+from .forms import CreateQuiz, MultipleChoiceForm, FillInTheBlanksForm, TrueOrFalseForm, MultipleChoiceFormEdit, FillInTheBlanksFormEdit, TrueOrFalseFormEdit, QuizForm, SearchCode
 from .utils import generate_random_string, activity_logs
 from .import db
 
@@ -65,8 +65,8 @@ def quizbankedit(quizcode, quiztype):
     
     quizform = QuizForm()
     if quiztype == '1':
-        form = MatchingTypeFormEdit()
-        questions = MatchingType.query.join(QuizList).filter(QuizList.code == quizcode).all()
+        form = MultipleChoiceFormEdit()
+        questions = MultipleChoice.query.join(QuizList).filter(QuizList.code == quizcode).all()
     elif quiztype == '2':
         form = FillInTheBlanksForm()
         questions = FillInTheBlanks.query.join(QuizList).filter(QuizList.code == quizcode).all()
@@ -94,8 +94,8 @@ def quizdelete(quiz_code, quiztype):
 
     if quiztype == '1':
         # Delete all the matching type questions with quiz_code equal to the deleted quiz's code
-        matching_questions = MatchingType.query.filter_by(quiz_code=quiz_code).all()
-        for question in matching_questions:
+        multiple_choice = MultipleChoice.query.filter_by(quiz_code=quiz_code).all()
+        for question in multiple_choice:
             db.session.delete(question)
     elif quiztype == '2':
         fib_questions = FillInTheBlanks.query.filter_by(quiz_code=quiz_code).all()
@@ -151,8 +151,8 @@ def editquestions(quizcode, quiztype, questionid):
         return redirect(url_for('views.student'))
 
     if quiztype == '1':
-        question = MatchingType.query.get(questionid)
-        form = MatchingTypeFormEdit(obj=question)
+        question = MultipleChoice.query.get(questionid)
+        form = MultipleChoiceFormEdit(obj=question)
     elif quiztype == '2':
         question = FillInTheBlanks.query.get(questionid)
         form = FillInTheBlanksFormEdit(obj=question)
@@ -180,7 +180,7 @@ def deletequestion(quizcode, quiztype, questionid):
         return redirect(url_for('views.student'))
     
     if quiztype == '1':
-        question = MatchingType.query.get(questionid)
+        question = MultipleChoice.query.get(questionid)
     elif quiztype == '2':
         question = FillInTheBlanks.query.get(questionid)
     elif quiztype == '3':
@@ -203,7 +203,7 @@ def addquestions(quizcode, quiztype):
         return redirect(url_for('views.student'))
     
     if quiztype == '1':
-        form = MatchingTypeFormEdit()
+        form = MultipleChoiceFormEdit()
     elif quiztype == '2':
         form = FillInTheBlanksFormEdit()
     elif quiztype == '3':
@@ -214,7 +214,7 @@ def addquestions(quizcode, quiztype):
     
     if form.validate_on_submit():
         if quiztype == '1':
-            question = MatchingType(
+            question = MultipleChoice(
                 question=form.question.data,
                 choice1=form.choice1.data,
                 choice2=form.choice2.data,
@@ -244,7 +244,7 @@ def addquestions(quizcode, quiztype):
         flash('Question added successfully', category='success')
         return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
     
-    return redirect(url_for('views.quizbankedit'))
+    return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
 
 
 @views.route('/editquiz<string:quizcode>', methods=['GET', 'POST'])
@@ -271,32 +271,55 @@ def DeleteQuiz():
 @views.route('/createquiz', methods=['GET', 'POST'])
 @login_required
 def createquiz():
+
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("Try to access webpages not for users")
+        return redirect(url_for('views.student'))
+
     #form = CreateQuiz()
     form = QuizForm()
+    code = generate_random_string(8)
+    form.quizcode.data = code
+
     if request.method == 'POST' and request.form.get('submit'):
 
         startdate_str = request.form['startdate']
         startdate = datetime.strptime(startdate_str, '%Y-%m-%d').date()
 
-        starttime_str = request.form['starttime']
-        starttime = datetime.strptime(starttime_str, '%H:%M').time()
+        # starttime_str = request.form['starttime']
+        # starttime = datetime.strptime(starttime_str, '%H:%M').time()
       
 
         enddate_str = request.form['enddate']
         enddate = datetime.strptime(enddate_str, '%Y-%m-%d').date()
 
-        time_closed_str = request.form['time_closed']
-        time_closed = datetime.strptime(time_closed_str, '%H:%M').time()
+        # time_closed_str = request.form['time_closed']
+        # time_closed = datetime.strptime(time_closed_str, '%H:%M').time()
 
-        code = generate_random_string(8)
-        new_quiz = QuizList(code=code, 
-                            title=form.title.data, 
-                            author_id=current_user.id, 
-                            category=form.category.data, 
-                            startdate=startdate,
-                            starttime=starttime,
-                            enddate=enddate,
-                            time_closed=time_closed
+        
+        # new_quiz = QuizList(code=code, 
+        #                     title=form.title.data, 
+        #                     author_id=current_user.id, 
+        #                     category=form.category.data, 
+        #                     startdate=startdate,
+        #                     starttime=starttime,
+        #                     enddate=enddate,
+        #                     time_closed=time_closed
+        #                     )
+
+        new_quiz = QuizList(author_id=current_user.id,
+                            code=code,
+                            title = form.title.data,
+                            description = form.description.data,
+                            category = form.category.data,
+                            quiztype = form.quiztype.data,
+                            startdate = startdate,
+                            enddate = enddate,
+                            timelimit = form.timelimit.data,
+                            points = form.points.data,
+                            visibility = form.visibility.data,
+                            attempt = form.attempt.data
                             )
 
         db.session.add(new_quiz)
