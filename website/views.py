@@ -55,11 +55,12 @@ def searchquiz():
             return redirect(url_for('views.quizbank'))
     return render_template('searchbank.html', form=form)
 
-@views.route('/quizbankedit/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
+@views.route('/quizbankedit/<string:quizcode>/<string:quiztype>/', methods=['GET', 'POST'])
 @login_required
 def quizbankedit(quizcode, quiztype):
 
     if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
         return redirect(url_for('views.student'))
     
     quizform = QuizForm()
@@ -79,7 +80,7 @@ def quizbankedit(quizcode, quiztype):
     if not questions:
         flash('No questions has found for this quiz', category='warning')
         
-    return render_template('quizbankedit.html', questions=questions, form=form, quiztype=quiztype, quizform=quizform)
+    return render_template('quizbankedit.html', questions=questions, form=form, quiztype=quiztype, quizform=quizform, quizcode=quizcode)
 
 @views.route('/quizbankdelete/<string:quiz_code>/<string:quiztype>', methods=['GET', 'POST'])
 @login_required
@@ -113,7 +114,7 @@ def quizdelete(quiz_code, quiztype):
 
 
 
-@views.route('/quizedit/<string:id>/<string:quiztype>', methods=['GET', 'POST'])
+@views.route('/quizedit/<string:id>/<string:quiztype>/<string:questionid>', methods=['GET', 'POST'])
 @login_required
 def quizedit(id, quiztype):
     if current_user.usertype == 'user':
@@ -141,24 +142,110 @@ def quizedit(id, quiztype):
     #     else:
     #         return render_template(url_for('views.dashboard'))
 
-@views.route('/editquestion<string:quizcode>/<string:questionid>', methods=['GET', 'POST'])
+@views.route('/editquestions<string:quizcode>/<string:quiztype>/<string:questionid>', methods=['GET', 'POST'])
 @login_required
-def EditQuestions(quizcode, questionid):
+def editquestions(quizcode, quiztype, questionid):
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("Try to access webpages not for users")
+        return redirect(url_for('views.student'))
+
+    if quiztype == '1':
+        question = MatchingType.query.get(questionid)
+        form = MatchingTypeFormEdit(obj=question)
+    elif quiztype == '2':
+        question = FillInTheBlanks.query.get(questionid)
+        form = FillInTheBlanksFormEdit(obj=question)
+    elif quiztype == '3':
+        question = TrueOrFalse.query.get(questionid)
+        form = TrueOrFalseFormEdit(obj=question)
+    else:
+        flash('Quiz Type doesnt exists', category='error')
+        return redirect(url_for('views.quizbankedit'))
+    
+    if form.validate_on_submit():
+        form.populate_obj(question)
+        db.session.commit()
+        flash('Question updated successfully', category='success')
+        return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+    
+    return render_template('quizbankedit.html', form=form)
+
+@views.route('/deletequestion<string:quizcode>/<string:quiztype>/<string:questionid>', methods=['GET', 'POST'])
+@login_required
+def deletequestion(quizcode, quiztype, questionid):
     if current_user.usertype == 'user':
         flash('You dont have permission to access this page', category='error')
         activity_logs("Try to access webpages not for users")
         return redirect(url_for('views.student'))
     
-    pass
-
-@views.route('/deletequestion<string:quizcode>/<string:questionid>', methods=['GET', 'POST'])
+    if quiztype == '1':
+        question = MatchingType.query.get(questionid)
+    elif quiztype == '2':
+        question = FillInTheBlanks.query.get(questionid)
+    elif quiztype == '3':
+        question = TrueOrFalse.query.get(questionid)
+    else:
+        flash('Invalid Quiz Type', category='error')
+        return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+    
+    db.session.delete(question)
+    db.session.commit()
+    flash('Question deleted successfully', category='success')
+    return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+    
+@views.route('/addquestions<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
 @login_required
-def DeleteQuestions(quizcode, questionid):
+def addquestions(quizcode, quiztype):
     if current_user.usertype == 'user':
         flash('You dont have permission to access this page', category='error')
         activity_logs("Try to access webpages not for users")
         return redirect(url_for('views.student'))
-    pass
+    
+    if quiztype == '1':
+        form = MatchingTypeFormEdit()
+    elif quiztype == '2':
+        form = FillInTheBlanksFormEdit()
+    elif quiztype == '3':
+        form = TrueOrFalseFormEdit()
+    else:
+        flash('Invalid Quiz Type', category='error')
+        return redirect(url_for('views.quizbankedit'))
+    
+    if form.validate_on_submit():
+        if quiztype == '1':
+            question = MatchingType(
+                question=form.question.data,
+                choice1=form.choice1.data,
+                choice2=form.choice2.data,
+                choice3=form.choice3.data,
+                choice4=form.choice4.data,
+                answer=form.answer.data,
+                quiz_code=quizcode
+            )
+        elif quiztype == '2':
+            question = FillInTheBlanks(
+                question=form.question.data,
+                answer=form.answer.data,
+                quiz_code=quizcode
+            )
+        elif quiztype == '3':
+            question = TrueOrFalse(
+                question=form.question.data,
+                answer=form.answer.data,
+                quiz_code=quizcode
+            )
+        else:
+            flash('Invalid Quiz Type', category='error')
+            return redirect(url_for('views.quizbankedit'))
+        
+        db.session.add(question)
+        db.session.commit()
+        flash('Question added successfully', category='success')
+        return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+    
+    return redirect(url_for('views.quizbankedit'))
+
 
 @views.route('/editquiz<string:quizcode>', methods=['GET', 'POST'])
 @login_required
@@ -167,7 +254,6 @@ def EditQuiz():
         flash('You dont have permission to access this page', category='error')
         activity_logs("Try to access webpages not for users")
         return redirect(url_for('views.student'))
-    
     pass
 
 @views.route('/deletequiz<string:quizcode>', methods=['GET', 'POST'])
@@ -219,85 +305,87 @@ def createquiz():
         flash('New quiz successfully added!', category='success')
         #quiz id is qu
         return redirect(url_for('views.questionaire', quiz_code=code, category=form.category.data))
-        
+    
     return render_template('createquiz.html', form=form)
 
-
-@views.route('/questionaire/<string:quiz_code>/<string:category>', methods=['GET', 'POST'])
-@login_required
-def questionaire(quiz_code, category):
-    quiz = QuizList.query.get(quiz_code)
-    # yung quiz id pala ay para lang sa quiz for unique indetification hindi siya current user
-    # ang current user pala ang magiging author
-    if category == '1':
-        form = MatchingTypeForm()    
-        return render_template('questionaire.html', form=form, quiz_code=quiz_code, category=category)
-    elif category == '2':
-        form = FillInTheBlanksForm()
-        return render_template('questionaire.html', form=form, quiz_code=quiz_code, category=category)
-    elif category =='3':
-        form = TrueOrFalseForm()
-        return render_template('questionaire.html', form=form, quiz_code=quiz_code, category=category)
-    else:
-        return render_template('404.html')
+#i need to change the model to fix everything
+# pwede na to ma remove in the future basta sa create quiz route mag papasa ako sa quizbankedit ng quizcode at quiztype
+# remove ko nlng yung questionaire pati yung 3 table na html file
+# @views.route('/questionaire/<string:quiz_code>/<string:category>', methods=['GET', 'POST'])
+# @login_required
+# def questionaire(quiz_code, category):
+#     quiz = QuizList.query.get(quiz_code)
+#     # yung quiz id pala ay para lang sa quiz for unique indetification hindi siya current user
+#     # ang current user pala ang magiging author
+#     if category == '1':
+#         form = MatchingTypeForm()    
+#         return render_template('questionaire.html', form=form, quiz_code=quiz_code, category=category)
+#     elif category == '2':
+#         form = FillInTheBlanksForm()
+#         return render_template('questionaire.html', form=form, quiz_code=quiz_code, category=category)
+#     elif category =='3':
+#         form = TrueOrFalseForm()
+#         return render_template('questionaire.html', form=form, quiz_code=quiz_code, category=category)
+#     else:
+#         return render_template('404.html')
     
-@views.route('/matchingtype<string:quiz_code>', methods=['GET', 'POST'])
-@login_required
-def matchingtype(quiz_code):
+# @views.route('/matchingtype<string:quiz_code>', methods=['GET', 'POST'])
+# @login_required
+# def matchingtype(quiz_code):
 
-    form = MatchingTypeForm()
-    if form.validate_on_submit():
-        # quiz id is base on author 
-        question = form.question.data
-        choice1 = form.choice1.data
-        choice2 = form.choice2.data
-        choice3 = form.choice3.data
-        choice4 = form.choice4.data
-        answer = form.answer.data
+#     form = MatchingTypeForm()
+#     if form.validate_on_submit():
+#         # quiz id is base on author 
+#         question = form.question.data
+#         choice1 = form.choice1.data
+#         choice2 = form.choice2.data
+#         choice3 = form.choice3.data
+#         choice4 = form.choice4.data
+#         answer = form.answer.data
 
-        matchingtype = MatchingType(quiz_code=quiz_code, question=question, choice1=choice1, choice2=choice2, choice3=choice3, choice4=choice4, answer=answer)
-        db.session.add(matchingtype)
-        db.session.commit()
-        flash('Your question has been added!', 'success')
-        return redirect(url_for('views.questionaire', quiz_code=quiz_code, category='1'))
+#         matchingtype = MatchingType(quiz_code=quiz_code, question=question, choice1=choice1, choice2=choice2, choice3=choice3, choice4=choice4, answer=answer)
+#         db.session.add(matchingtype)
+#         db.session.commit()
+#         flash('Your question has been added!', 'success')
+#         return redirect(url_for('views.questionaire', quiz_code=quiz_code, category='1'))
 
-    return render_template('questionaire.html', form=form, quiz_code=quiz_code, category='1')
+#     return render_template('questionaire.html', form=form, quiz_code=quiz_code, category='1')
 
-@views.route('/fillintheblanks/<string:quiz_code>', methods=['GET', 'POST'])
-@login_required
-def fillintheblanks(quiz_code):
-    form = FillInTheBlanksForm()
-    if form.validate_on_submit():
-        question = form.question.data
-        answer = form.answer.data
-        fillintheblanks = FillInTheBlanks(quiz_code=quiz_code , question=question, answer=answer)
-        db.session.add(fillintheblanks)
-        db.session.commit()
-        flash('Your question has been added!', 'success')
-        return redirect(url_for('views.fillintheblanks', quiz_code=quiz_code , category='2'))
+# @views.route('/fillintheblanks/<string:quiz_code>', methods=['GET', 'POST'])
+# @login_required
+# def fillintheblanks(quiz_code):
+#     form = FillInTheBlanksForm()
+#     if form.validate_on_submit():
+#         question = form.question.data
+#         answer = form.answer.data
+#         fillintheblanks = FillInTheBlanks(quiz_code=quiz_code , question=question, answer=answer)
+#         db.session.add(fillintheblanks)
+#         db.session.commit()
+#         flash('Your question has been added!', 'success')
+#         return redirect(url_for('views.fillintheblanks', quiz_code=quiz_code , category='2'))
     
-    return render_template('questionaire.html', form=form, quiz_code=quiz_code , category='2')
+#     return render_template('questionaire.html', form=form, quiz_code=quiz_code , category='2')
 
 
-@views.route('/trueorfalse/<string:quiz_code>', methods=['GET', 'POST'])
-@login_required
-def trueorfalse(quiz_code):
-    form = TrueOrFalseForm()
+# @views.route('/trueorfalse/<string:quiz_code>', methods=['GET', 'POST'])
+# @login_required
+# def trueorfalse(quiz_code):
+#     form = TrueOrFalseForm()
 
-    if form.validate_on_submit():
-        question = form.question.data
-        answer = form.answer.data
+#     if form.validate_on_submit():
+#         question = form.question.data
+#         answer = form.answer.data
 
-        if answer == '0':
-            answer = False
-        else:
-            answer = True
-        TOF = TrueOrFalse(quiz_code=quiz_code , question=question, answer=answer)
-        db.session.add(TOF)
-        db.session.commit()
+#         if answer == '0':
+#             answer = False
+#         else:
+#             answer = True
+#         TOF = TrueOrFalse(quiz_code=quiz_code , question=question, answer=answer)
+#         db.session.add(TOF)
+#         db.session.commit()
 
-        flash('Your question has been added!', 'success')
-        return redirect(url_for('views.questionaire', quiz_code=quiz_code , category=3))
+#         flash('Your question has been added!', 'success')
+#         return redirect(url_for('views.questionaire', quiz_code=quiz_code , category=3))
     
 
 @views.route('/images/<filename>')
