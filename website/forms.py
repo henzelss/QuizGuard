@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField, DateTimeField, RadioField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField, DateTimeField, RadioField, IntegerField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length, NumberRange
 from wtforms import ValidationError
 from .models import User
@@ -73,7 +73,7 @@ class CreateQuiz(FlaskForm):
     submit = SubmitField('Add Quiz') 
 
 
-class MatchingTypeForm(FlaskForm):
+class MultipleChoiceForm(FlaskForm):
     question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question "})
     choice1 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 1"})
     choice2 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 2"})
@@ -82,7 +82,7 @@ class MatchingTypeForm(FlaskForm):
     answer =  StringField('Answer', validators=[DataRequired()], render_kw={"placeholder": "Enter Answer"})
     submit = SubmitField('Submit')
 
-class MatchingTypeFormEdit(FlaskForm):
+class MultipleChoiceFormEdit(FlaskForm):
     question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question "})
     choice1 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 1"})
     choice2 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 2"})
@@ -113,7 +113,8 @@ class TrueOrFalseFormEdit(FlaskForm):
 
 class QuizForm(FlaskForm):
     title = StringField('Quiz Title', validators=[DataRequired()], render_kw={"placeholder": "Enter Quiz Title "})
-    description = StringField('Quiz Description', validators=[DataRequired()], render_kw={"placeholder": "Enter Quiz Description "})
+    #description = StringField('Quiz Description', validators=[DataRequired()], render_kw={"placeholder": "Enter Quiz Description "})
+    description = TextAreaField('Description', render_kw={"placeholder": "Enter your text here", "rows": 5, "cols":50} )
     category = SelectField('Select Category', choices=[('1', 'Language'), ('2', 'Social Studies'), ('3', 'Science'), 
                                                        ('4', 'History'), ('5', 'Science'), ('6', 'Physics'),
                                                        ('7', 'Biology'), ('8', 'Chemistry'), ('10', 'Geography'),
