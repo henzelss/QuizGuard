@@ -1,7 +1,7 @@
 {% extends 'dashboard.html '%}
 {% block content %}
   <div class="container mt-5 bg-night rounded p-5">
-      <h1>Create Quiz</h1>
+      <h1>Quiz Form</h1>
       <form action="" method="POST" class="form-properties">
         <div class="accordion" id="accordionPanelsStayOpenExample">
           <div class="accordion-item bg-night">
@@ -16,12 +16,17 @@
                 {{ form.hidden_tag() }}
                 {{ form.title.label(class='text-light') }}
                 {{ form.title(class='text-dark', required='required') }}
-                {{ form.description.label(class='text-light') }}
-                {{ form.description(class='text-dark', required='required') }}
+                <p class="text-muted">Note: The description field has a character limit of 1000 characters</p>
+                <div class="form-floating">
+                  {{ form.description(class='text-dark, form-control', required='required') }}
+                  {{ form.description.label(class='text-dark') }}
+                </div>
+                
                 {{ form.category.label(class='text-light') }}
                 {{ form.category(class='text-dark form-select form-select-lg mt-1', required='required') }}
                 {{ form.quiztype.label(class='text-light') }}
                 {{ form.quiztype(class='text-dark form-select form-select-lg mt-1', required='required') }}
+                <p class="text-muted">Note: You can only change this once. After submitting the quiz type, you will not be able to change it again in the future.</p>
               </div>
             </div>
           </div>
@@ -52,6 +57,12 @@
                       {{ form.timelimit(class="timelimit") }}
                     </div>
                   </div>
+                  <div class="row">
+                      <div class="col-8">
+                        <label class="" for="">Number of Attempts</label>
+                        {{ form.attempt(class='timelimit') }}
+                      </div>
+                  </div>
                 </div>
               </div>
           </div>
@@ -79,11 +90,21 @@
             </h2>
             <div id="panelsStayOpen-collapseVisibility" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingVisibility">
               <div class="accordion-body bg-night">
-                <label for="visible">Visibility:</label>
-                <div class="visible">
-                  {{ form.visibility(class="timelimit")}}
+                <div class="row">
+                  <div class="col">
+                    {{ form.quizcode.label()}}
+                    {{ form.quizcode()}}
+                    <button type="button" class="btn btn-secondary" onclick='copyText("{{ quizcode }}")'><i class="fa-regular fa-clipboard me-1"></i>Copy Code</button>
+                    <button type="button" class="btn btn-primary" onclick='shareText("{{ quizcode }}")'><i class="fa-regular fa-share-from-square me-1"></i>Share</button>
+                  </div>
+                  <div class="col">
+                    <label for="visible">Visibility:</label>
+                    <div class="visible">
+                      {{ form.visibility(class="timelimit")}}
+                    </div>
+                    <p class="text-muted mt-1">Note: Selecting public will make the item visible to everyone while selecting private will make the item visible only to you and people that has the quiz code</p>
+                  </div>
                 </div>
-                <p class="text-muted mt-1">Note: Selecting public will make the item visible to everyone while selecting private will make the item visible only to you and people that has the quiz code</p>
               </div>
             </div>
           </div>
@@ -94,50 +115,6 @@
       </form>
   </div>
   
-  <div class="container mt-5 bg-night rounded p-5">
-      <h1 class="ms-2">Create Quiz</h1>
-      <form action="" method="POST" class="form-properties">
-          <div class="container">
-              {{ form.hidden_tag() }}
-              {{ form.title.label(class='text-light') }}
-              {{ form.title(class='text-dark') }}
-              {{ form.description.label(class='text-light') }}
-              {{ form.description(class='text-dark') }}
-              {{ form.category.label(class='text-light') }}
-              {{ form.category(class='text-dark form-select form-select-lg mt-1') }}
-              {{ form.quiztype.label(class='text-light') }}
-              {{ form.quiztype(class='text-dark form-select form-select-lg mt-1') }}
-          </div>
-          <div class="row">
-              <div class="col-2">
-                  <div class="mb-3">
-                      <label for="startdate">Start Date</label>
-                      <input type="date" id="startdate" name="startdate" class="form-control datetimepicker-input datetimepicker-date">
-                  </div>
-              </div>
-              <div class="col-2">
-                  <div class="mb-3">
-                      <label for="starttime">Start Time</label>
-                      <input type="time" name="starttime" id="starttime" class="form-control datetimepicker-input datetimepicker-date">
-                  </div>
-              </div>
-              <div class="col-2">
-                  <div class="mb-3">
-                      <label for="enddate">Deadline Date</label>
-                      <input type="date" name="enddate" id="enddate" class="form-control datetimepicker-input datetimepicker-date">
-                  </div>
-              </div>
-              <div class="col-2">
-                  <div class="mb-3">
-                      <label for="time_closed">Deadline Time</label>
-                      <input type="time" name="time_closed" id="time_closed" class="form-control datetimepicker-input datetimepicker-date">
-                  </div>
-              </div>
-          </div>
-      
-          <div class="d-flex justify-content-end">
-              {{ form.submit(class="btn submit-button text-dark") }}
-          </div>
-      </form>
-  </div>
+  <script src="{{ url_for('static', filename='clipboard.js') }}"></script> 
+  <script src="{{ url_for('static', filename='jquery-3.6.3.min.js') }}"></script>    
 {% endblock %}
