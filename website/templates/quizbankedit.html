@@ -3,6 +3,7 @@
 {% block content %}
 <div class="container mt-5 rounded bg-night p-5">
   <div class="accordion" id="accordionExample">
+    <!-- 1st Main Accordion -->
     <div class="accordion-item bg-night">
       <h2 class="accordion-header bg-night" id="headingTwo">
         <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -11,7 +12,7 @@
       </h2>
       <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
         <div class="accordion-body bg-night">
-          <form action="" method="POST" class="form-properties">
+          <form action="{{ url_for('views.editquiz', quizcode=quizcode, quiztype=quiztype)}}" method="POST" class="form-properties">
             <p class="text-muted ms-1">Note: leave the form empty if you dont want to change anything here</p>
             <div class="accordion" id="accordionPanelsStayOpenExample">
               <div class="accordion-item bg-night">
@@ -95,8 +96,8 @@
                       <div class="col">
                         {{ quizform.quizcode.label()}}
                         {{ quizform.quizcode()}}
-                        <button type="button" class="btn btn-secondary" onclick='copyText("{{ quizcode }}")'><i class="fa-regular fa-clipboard me-1"></i>Copy Code</button>
-                        <button type="button" class="btn btn-primary" onclick='shareText("{{ quizcode }}")'><i class="fa-regular fa-share-from-square me-1"></i>Share</button>
+                        <button type="button" class="btn btn-secondary" onclick='copyCode("{{ quizcode }}")'><i class="fa-regular fa-clipboard me-1"></i>Copy Code</button>
+                        <button type="button" class="btn btn-primary" onclick='shareCode("{{ quizcode }}")'><i class="fa-regular fa-share-from-square me-1"></i>Share</button>
                       </div>
                       <div class="col">
                         <label for="visible">Visibility:</label>
@@ -117,6 +118,7 @@
         </div>
       </div>
     </div>
+    <!-- 2nd Main Accordion -->
     <div class="accordion-item bg-night">
       <h2 class="accordion-header" id="headingThree">
         <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
@@ -304,14 +306,15 @@
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 <script src="{{ url_for('static', filename='clipboard.js') }}"></script> 
 <script src="{{ url_for('static', filename='jquery-3.6.3.min.js') }}"></script>  
+
 {% endblock %}
 
