@@ -6,7 +6,7 @@
     <div class="accordion-item bg-night">
       <h2 class="accordion-header bg-night" id="headingTwo">
         <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          <h1>Edit Quiz</h1>
+          <h1>Quiz Form</h1>
         </button>
       </h2>
       <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
@@ -26,8 +26,11 @@
                     {{ quizform.hidden_tag() }}
                     {{ quizform.title.label(class='text-light') }}
                     {{ quizform.title(class='text-dark', required='required') }}
-                    {{ quizform.description.label(class='text-light') }}
-                    {{ quizform.description(class='text-dark', required='required') }}
+                    <p class="text-muted">Note: The description field has a character limit of 1000 characters</p>
+                    <div class="form-floating">
+                      {{ quizform.description(class='text-dark, form-control', required='required') }}
+                      {{ quizform.description.label(class='text-dark') }}
+                    </div>
                     {{ quizform.category.label(class='text-light') }}
                     {{ quizform.category(class='text-dark form-select form-select-lg mt-1', required='required') }}
                     <p class="text-muted mt-2">Note: you can no longer change the quiz type</p>
@@ -88,11 +91,21 @@
                 </h2>
                 <div id="panelsStayOpen-collapseVisibility" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingVisibility">
                   <div class="accordion-body bg-night">
-                    <label for="visible">Visibility:</label>
-                    <div class="visible">
-                      {{ quizform.visibility(class="timelimit")}}
+                    <div class="row">
+                      <div class="col">
+                        {{ quizform.quizcode.label()}}
+                        {{ quizform.quizcode()}}
+                        <button type="button" class="btn btn-secondary" onclick='copyText("{{ quizcode }}")'><i class="fa-regular fa-clipboard me-1"></i>Copy Code</button>
+                        <button type="button" class="btn btn-primary" onclick='shareText("{{ quizcode }}")'><i class="fa-regular fa-share-from-square me-1"></i>Share</button>
+                      </div>
+                      <div class="col">
+                        <label for="visible">Visibility:</label>
+                        <div class="visible">
+                          {{ quizform.visibility(class="timelimit")}}
+                        </div>
+                        <p class="text-muted mt-1">Note: Selecting public will make the item visible to everyone while selecting private will make the item visible only to you and people that has the quiz code</p>
+                      </div>
                     </div>
-                    <p class="text-muted mt-1">Note: Selecting public will make the item visible to everyone while selecting private will make the item visible only to you and people that has the quiz code</p>
                   </div>
                 </div>
               </div>
@@ -298,5 +311,7 @@
     </div>
   </div>
 </div>
+<script src="{{ url_for('static', filename='clipboard.js') }}"></script> 
+<script src="{{ url_for('static', filename='jquery-3.6.3.min.js') }}"></script>  
 {% endblock %}
 
