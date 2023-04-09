@@ -29,7 +29,7 @@ def dashboard():
 
 @views.route('/student')
 def student():
-    #quiz_list = QuizList.query.all()
+    # quiz_list = QuizList.query.all()
     # joined the table so we can show the author fullname
     quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
     return render_template('student.html', quiz_list=quiz_list)
@@ -38,6 +38,9 @@ def student():
 @login_required
 def quizbank():
     form = SearchCode()
+    # SELECT quiz_list.*, user.firstname, user.lastname 
+    # FROM quiz_list 
+    # JOIN user ON quiz_list.author_id = user.id;
     quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
     return render_template('quizbank.html', quiz_list=quiz_list, form=form)
 
@@ -327,7 +330,8 @@ def createquiz():
         activity_logs('Added New Quiz')
         flash('New quiz successfully added!', category='success')
         #quiz id is qu
-        return redirect(url_for('views.questionaire', quiz_code=code, category=form.category.data))
+        #return redirect(url_for('views.questionaire', quiz_code=code, category=form.quiztype.data))
+        return redirect(url_for('views.quizbankedit', quizcode=code, quiztype=form.quiztype.data))
     
     return render_template('createquiz.html', form=form)
 
