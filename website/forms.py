@@ -69,7 +69,7 @@ class SearchCode(FlaskForm):
 
 class CreateQuiz(FlaskForm):
     title = StringField('Title', validators=[DataRequired()], render_kw={"placeholder": "Enter Quiz Title "})
-    category = SelectField('Select Category', choices=[('1', 'Matching Type'), ('2', 'Fill in the blanks'), ('3', 'True or False')])
+    category = SelectField('Select Category', choices=[('1', 'Multiple Choice'), ('2', 'Fill in the blanks'), ('3', 'True or False')])
     submit = SubmitField('Add Quiz') 
 
 
@@ -114,7 +114,7 @@ class TrueOrFalseFormEdit(FlaskForm):
 class QuizForm(FlaskForm):
     title = StringField('Quiz Title', validators=[DataRequired()], render_kw={"placeholder": "Enter Quiz Title "})
     #description = StringField('Quiz Description', validators=[DataRequired()], render_kw={"placeholder": "Enter Quiz Description "})
-    description = TextAreaField('Description', render_kw={"placeholder": "Enter your text here", "rows": 5, "cols":50} )
+    description = TextAreaField('Description', render_kw={"placeholder": "Enter your text here"} )
     category = SelectField('Select Category', choices=[('1', 'Language'), ('2', 'Social Studies'), ('3', 'Science'), 
                                                        ('4', 'History'), ('5', 'Science'), ('6', 'Physics'),
                                                        ('7', 'Biology'), ('8', 'Chemistry'), ('10', 'Geography'),
@@ -136,8 +136,12 @@ class QuizForm(FlaskForm):
                                                       ('30', Markup('<i class="fa-solid fa-medal me-1"></i>30 points')), 
                                                       ('50', Markup('<i class="fa-solid fa-medal me-1"></i>50 points'))])
     visibility = RadioField('Visibility', choices=[('1', Markup('<i class="fa-solid fa-earth-asia me-1"></i>public')), ('2', Markup('<i class="fa-solid fa-lock me-1"></i>private'))])
-    quizcode = StringField('Quiz Code', validators=[DataRequired()], render_kw={"placeholder": ""})
-    attempt = IntegerField('Number of Attempts', validators=[NumberRange(min=0, max=10)])
+    quizcode = StringField('Quiz Code', validators=[DataRequired()], render_kw={"readonly": True})
+    #attempt = IntegerField('Number of Attempts', validators=[NumberRange(min=0, max=10)])
+    attempt = RadioField('Number of Attempts', choices=[('0', Markup('<i class="fa-solid fa-pen me-1"></i> Infinite')), ('1', Markup('<i class="fa-solid fa-pen me-1"></i> 1 Attempts')),
+                                                        ('2', Markup('<i class="fa-solid fa-pen me-1"></i> 2 Attempts')), ('3', Markup('<i class="fa-solid fa-pen me-1"></i> 3 Attempts')), 
+                                                        ('5', Markup('<i class="fa-solid fa-pen me-1"></i> 5 Attempts')), ('10', Markup('<i class="fa-solid fa-pen me-1"></i> 10 Attempts'))
+                                                        ])
     submit = SubmitField('Save')
 
     
