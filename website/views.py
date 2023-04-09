@@ -34,6 +34,12 @@ def student():
     quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
     return render_template('student.html', quiz_list=quiz_list)
 
+@views.route('/checkcamera')
+def checkcamera():
+    pass
+
+
+
 @views.route('/quizbank')
 @login_required
 def quizbank():
@@ -65,8 +71,8 @@ def quizbankedit(quizcode, quiztype):
     if current_user.usertype == 'user':
         flash('You dont have permission to access this page', category='error')
         return redirect(url_for('views.student'))
-    
     quizform = QuizForm()
+    quizform.quizcode.data = quizcode
     if quiztype == '1':
         form = MultipleChoiceFormEdit()
         questions = MultipleChoice.query.join(QuizList).filter(QuizList.code == quizcode).all()
@@ -117,33 +123,33 @@ def quizdelete(quiz_code, quiztype):
 
 
 
-@views.route('/quizedit/<string:id>/<string:quiztype>/<string:questionid>', methods=['GET', 'POST'])
-@login_required
-def quizedit(id, quiztype):
-    if current_user.usertype == 'user':
-        return redirect(url_for('views.student'))
+# @views.route('/quizedit/<string:id>/<string:quiztype>/<string:questionid>', methods=['GET', 'POST'])
+# @login_required
+# def quizedit(id, quiztype):
+#     if current_user.usertype == 'user':
+#         return redirect(url_for('views.student'))
     
-    # form = None
-    # if quiztype == '1':
-    #     form = MatchingTypeFormEdit()
-    # elif quiztype == '2':
-    #     form = FillInTheBlanksFormEdit()
-    # elif quiztype == '3':
-    #     form = TrueOrFalseFormEdit()
-    # else:
-    #     return render_template(url_for('views.dashboard'))
+#     # form = None
+#     # if quiztype == '1':
+#     #     form = MatchingTypeFormEdit()
+#     # elif quiztype == '2':
+#     #     form = FillInTheBlanksFormEdit()
+#     # elif quiztype == '3':
+#     #     form = TrueOrFalseFormEdit()
+#     # else:
+#     #     return render_template(url_for('views.dashboard'))
 
 
-    # # saan galing yung id?
-    # if form.validate_on_submit():
-    #     if quiztype == '1':
-    #         pass
-    #     elif quiztype == '2':
-    #         pass
-    #     elif quiztype == '3':
-    #         pass
-    #     else:
-    #         return render_template(url_for('views.dashboard'))
+#     # # saan galing yung id?
+#     # if form.validate_on_submit():
+#     #     if quiztype == '1':
+#     #         pass
+#     #     elif quiztype == '2':
+#     #         pass
+#     #     elif quiztype == '3':
+#     #         pass
+#     #     else:
+#     #         return render_template(url_for('views.dashboard'))
 
 @views.route('/editquestions<string:quizcode>/<string:quiztype>/<string:questionid>', methods=['GET', 'POST'])
 @login_required
@@ -250,24 +256,50 @@ def addquestions(quizcode, quiztype):
     return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
 
 
-@views.route('/editquiz<string:quizcode>', methods=['GET', 'POST'])
+@views.route('/editquiz<string:quizcode>/<string:quiztype>/', methods=['GET', 'POST'])
 @login_required
-def EditQuiz():
-    if current_user.usertype == 'user':
-        flash('You dont have permission to access this page', category='error')
-        activity_logs("Try to access webpages not for users")
-        return redirect(url_for('views.student'))
-    pass
-
-@views.route('/deletequiz<string:quizcode>', methods=['GET', 'POST'])
-@login_required
-def DeleteQuiz():
+def editquiz(quizcode, quiztype):
     if current_user.usertype == 'user':
         flash('You dont have permission to access this page', category='error')
         activity_logs("Try to access webpages not for users")
         return redirect(url_for('views.student'))
     
-    pass
+    quiz = QuizList.query.filter_by(code=quizcode).first()
+    if not quiz:
+        flash('Quiz not found!', category='error')
+        return redirect(url_for('views.quizbank'))
+    
+    form = QuizForm(obj=quiz)
+
+    if request.method == 'POST' and request.form.get('submit'):
+        startdate_str = request.form['startdate']
+        startdate = datetime.strptime(startdate_str, '%Y-%m-%d').date()
+
+        enddate_str = request.form['enddate']
+        enddate = datetime.strptime(enddate_str, '%Y-%m-%d').date()
+
+        form.populate_obj(quiz)
+        quiz.startdate = startdate
+        quiz.enddate = enddate
+
+        db.session.commit()
+        print(quizcode)
+        print(quiztype)
+        activity_logs('Updated Quiz')
+        flash('Quiz updated successfully!', category='success')
+        return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+
+    return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+
+# @views.route('/deletequiz<string:quizcode>', methods=['GET', 'POST'])
+# @login_required
+# def DeleteQuiz():
+#     if current_user.usertype == 'user':
+#         flash('You dont have permission to access this page', category='error')
+#         activity_logs("Try to access webpages not for users")
+#         return redirect(url_for('views.student'))
+    
+#     pass
 
 
 
