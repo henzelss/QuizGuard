@@ -65,6 +65,12 @@
                           {{ quizform.timelimit(class="timelimit") }}
                         </div>
                       </div>
+                      <div class="row">
+                        <div class="col-9">
+                          <label class="" for="">Number of Attempts</label>
+                          {{ quizform.attempt(class='timelimit') }}
+                        </div>
+                      </div>
                     </div>
                   </div>
               </div>
@@ -149,9 +155,9 @@
                         </div>
                         <Strong>Answer:&nbsp</Strong>{{ question.answer }} 
                       {% elif quiztype == '2' %}
-                        <h5>Fill in the blanks Type</h5>
+                        <Strong>Answer:&nbsp</Strong>{{ question.answer }} 
                       {% elif quiztype == '3' %}
-                        <h5>True or False</h5>
+                        <Strong>Answer:&nbsp</Strong>{{ question.answer }}
                       {% endif %}
                     <div class="mt-3">
                       <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edit_question{{question.id}}"> Edit </button> 
@@ -170,7 +176,7 @@
                         {% if quiztype == '1' %}
                           <h5>Multiple Choice</h5>
                         {% elif quiztype == '2' %}
-                          <h5>Fill in the blanks Type</h5>
+                          <h5>Fill in the blanks</h5>
                         {% elif quiztype == '3' %}
                           <h5>True or False</h5>
                         {% endif %}
@@ -198,7 +204,6 @@
                         </form>
                       {% elif quiztype == '2' %}
                         <form action="{{ url_for('views.editquestions', quizcode=quizcode, quiztype=quiztype, questionid=question.id) }}" method="POST" class="p-3">
-                          <h1>Fill in the blanks </h1>
                           {{ form.hidden_tag() }}
                           {{ form.question.label(class='text-light') }}
                           {{ form.question(class='form-control text-dark')}}
@@ -208,12 +213,11 @@
                         </form>
                       {% elif quiztype == '3' %}
                         <form action="{{ url_for('views.editquestions', quizcode=quizcode, quiztype=quiztype, questionid=question.id) }}" method="POST" class="p-3"> 
-                          <h1>True or False</h1>
                           {{ form.hidden_tag() }}
                           {{ form.question.label(class='text-light') }}
                           {{ form.question(class='form-control text-dark')}}
-                          {{ form.answer.label() }}
-                          {{ form.answer()}}
+                          <label for="">Select an Option</label> <br>
+                          {{ form.answer(class="timelimit mb-1 p-5" )}}
                           {{ form.submit(class='btn btn-warning text-dark') }}
                         </form>
                       {% else %}
@@ -238,7 +242,8 @@
                     </div>
                     <div class="modal-body">
                         Do you really want to remove this question? <br>
-                        {{loop.index}}. {{question.question}}
+                        {{loop.index}}. {{question.question}} <br>
+                        <Strong>Answer:&nbsp</Strong>{{ question.answer }} 
                     </div>
                     <div class="modal-footer">
                       <a href="{{ url_for('views.deletequestion',  quizcode=quizcode, quiztype=quiztype, questionid=question.id) }}" class="btn btn-danger">Remove</a>
@@ -294,8 +299,8 @@
                           {{ form.hidden_tag() }}
                           {{ form.question.label(class='text-light') }}
                           {{ form.question(class='form-control text-dark')}}
-                          {{ form.answer.label() }}
-                          {{ form.answer()}}
+                          <label for="">Select an Option</label>
+                          {{ form.answer(class="timelimit")}}
                           <div class="d-flex justify-content-end">
                             {{ form.submit(class='class="btn submit-button text-dark"') }}
                           </div>
