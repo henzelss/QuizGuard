@@ -12,17 +12,6 @@ class User(db.Model, UserMixin):
     lastname = db.Column(db.String(150))
     usertype = db.Column(db.String(10))
 
-# class QuizList(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     code = db.Column(db.String(20), unique=True, nullable=False)
-#     title = db.Column(db.String(100), nullable=False)
-#     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-#     category = db.Column(db.String(100), nullable=False)
-#     startdate = db.Column(db.Date, nullable=True)
-#     starttime = db.Column(db.Time, nullable=True)
-#     enddate = db.Column(db.Date, nullable=True)
-#     time_closed = db.Column(db.Time, nullable=True)
-
 class QuizList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
