@@ -66,6 +66,7 @@ def register():
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    
     user =  User.query.get_or_404(current_user.id)
     form = UserProfileForm()
     existing_info = {
@@ -98,6 +99,10 @@ def profile():
 @auth.route('/accounts', methods=['GET', 'POST'])
 @login_required
 def accounts():
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        return redirect(url_for('views.student'))
+    
     accs = User.query.all()
     searchform = SearchForm()
     addform = AddNewUserForm()
@@ -122,9 +127,47 @@ def accounts():
             return redirect(url_for('auth.accounts'))
     return render_template('accounts.html', accounts=accs, addform=addform, searchform=searchform)
 
+@auth.route('/addaccounts', methods=['GET', 'POST'])
+@login_required
+def addaccounts():
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("User try to access add accounts route")
+        return redirect(url_for('views.student'))
+    
+    addform = AddNewUserForm()
+    if addform.validate_on_submit():
+        existing_email = User.query.filter_by(email=addform.email.data).first()
+    if existing_email:
+        flash('Email already registered exist',  category='error')
+        return redirect(url_for('auth.accounts'))
+    else:
+        new_user = User(
+            email=addform.email.data,
+            password=generate_password_hash(addform.password.data),
+            firstname=addform.firstname.data,
+            lastname=addform.lastname.data,
+            usertype=addform.usertype.data
+        )
+        # Add the new user to the database
+        db.session.add(new_user)
+        db.session.commit()
+        activity_logs('Added New User')
+        flash('New user added successfully!', category='success')
+        return redirect(url_for('auth.accounts'))
+    
+
+
+    
+
 @auth.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def edit(user_id):
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("Try to access webpages not for users")
+        return redirect(url_for('views.student'))
+    
     user = User.query.get_or_404(user_id)
     form = EditForm()
     existing_info = {
@@ -170,6 +213,11 @@ def edit(user_id):
 @auth.route('/delete/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def delete(user_id):
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("Try to access webpages not for users")
+        return redirect(url_for('views.student'))
+    
     user = User.query.get(user_id)
     if not user:
         flash('User not found', category='error')
@@ -187,6 +235,7 @@ def delete(user_id):
 @login_required
 def search():
     form = SearchForm()
+    addform = AddNewUserForm()
     if request.method == 'POST' and request.form.get('submit'):
         query_string = form.search.data
         print(query_string)
@@ -200,14 +249,18 @@ def search():
             return redirect('auth.accounts')
         else: 
             activity_logs('Search for a user')
-            return render_template('search.html', results=results, form=form)
+            
+            return render_template('search.html', results=results, form=form, addform=addform)
         
     return redirect(url_for('auth.accounts'))
     
 
 @auth.route('/logs')
 def logs():
-
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("Try to access webpages not for users")
+        return redirect(url_for('views.student'))
     #today = dateTime.today()
 
     #logs = ActivityLog.query.filter(ActivityLog.logtime == datetime.utcnow).all()
