@@ -478,3 +478,47 @@ def records():
   </div>
 </div>
   ----------------------------------------------------------------------------------add questions--------------------------------------------------------------------------------
+
+
+
+--------------------------------------------------------------------------how to set time limit----------------------------------------------------------------------------------------
+
+how do i set the time limit?
+To set a time limit for a quiz, you need to define a maximum time that a user can spend on the quiz. Here's an example of how you could set a time limit using Python and Flask:
+
+Create a new column called "time_limit" in your QuizList table to store the maximum time limit for the quiz in seconds.
+
+When a user starts a quiz, store the current time in a session variable.
+
+python
+Copy code
+# Example code to store current time in a session variable
+from flask import session
+import time
+
+session['start_time'] = time.time()
+When a user submits the quiz or reaches the time limit, calculate the elapsed time by subtracting the start time from the current time and compare it to the time limit. If the elapsed time is greater than the time limit, stop the quiz and display a message to the user.
+
+python
+Copy code
+# Example code to calculate elapsed time and check against time limit
+from flask import session
+import time
+
+# Get the start time from the session
+start_time = session.get('start_time', 0)
+
+# Calculate elapsed time
+elapsed_time = time.time() - start_time
+
+# Get the time limit for the quiz from the database
+quiz = QuizList.query.get(quiz_id)
+time_limit = quiz.time_limit
+
+# Check if the elapsed time is greater than the time limit
+if elapsed_time > time_limit:
+    # Stop the quiz and display a message to the user
+    flash('Time limit exceeded', category='error')
+    return redirect(url_for('views.quiz'))
+Note that this is just an example and you may need to modify the code to fit your specific needs.
+--------------------------------------------------------------------------how to set time limit----------------------------------------------------------------------------------------
