@@ -11,12 +11,12 @@
 </head>
 <body>
     
-    <div class="container-fluid text-warning px-5">
+    <div class="container text-warning px-5">
         <h3><a class="home-link" href="{{ url_for('auth.home')}}"><i class="fa-brands fa-react m-2"></i>Quiz Guard</a></h3>
     </div>
 
-    <div class="container-fluid">
-        <div class="center txt-properties">
+    <div class="container p-5">
+        <div class="center-home txt-properties">
             <h1 class="text-align-center">Login</h1>
             {% with messages = get_flashed_messages(with_categories=true)%}
             {% if messages %} 
