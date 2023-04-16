@@ -1,0 +1,27 @@
+{% extends 'dashboard.html' %}
+{% block title %}
+    <script src="{{ url_for('static', filename='checkcamera.js')}}"></script>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+{% endblock %}
+{% block content %}
+
+    <div class="container bg-night rounded p-5">
+        <h1>Camera Test</h1>
+        <video id="video" width="100%" height="auto" autoplay style='border-radius: 10px;'></video>
+        <p class="text-muted">Note: Please note that you need to open your camera to proceed. No camera no quiz thank you for your cooperation.</p>
+
+        <div class="center">
+            <a href="{{ url_for('views.quiz', quizid=quizid, quizcode=quizcode, quiztype=quiztype )}}" class="btn btn-warning" id="startQuizBtn" style="width: 100% !important; display: none;"><i class="fa-solid fa-play me-1"></i><h5>Start Quiz</h5></a>
+        </div>
+        
+    </div>
+   
+
+    <script>
+        window.onload = () =>{
+            checkcamera();
+        };
+    </script>
+
+    
+{% endblock%}
