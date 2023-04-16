@@ -1,9 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField, DateTimeField, RadioField, IntegerField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField, DateTimeField, RadioField, IntegerField, TextAreaField, HiddenField
 from wtforms.validators import DataRequired, Email, Length, NumberRange
 from wtforms import ValidationError
-from .models import User
+from .models import User, MultipleChoice
 from jinja2 import Markup
+
 
 
 
@@ -143,6 +144,8 @@ class QuizForm(FlaskForm):
                                                         ('5', Markup('<i class="fa-solid fa-pen me-1"></i> 5 Attempts')), ('10', Markup('<i class="fa-solid fa-pen me-1"></i> 10 Attempts'))
                                                         ])
     submit = SubmitField('Save')
-
     
-    
+class MultipleChoiceQuizForm(FlaskForm):
+    # choices = [(choice.id, choice.choice_text) for choice in MultipleChoice.query.filter_by(quiz_code=quizcode).all()]
+    # submit = SubmitField('Submit')
+    pass
