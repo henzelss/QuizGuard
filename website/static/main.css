@@ -4,9 +4,13 @@ body{
 
 .center {
     margin: auto;
+    width: 25%;
+    padding: 10px;
+  }
+
+.center-home{
+    margin: auto;
     width: 50%;
-    background-color: #202020;
-    border-radius: 20px;
     padding: 10px;
 }
 
