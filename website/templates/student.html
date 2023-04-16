@@ -98,6 +98,13 @@
                                         <h6>Start Date:&nbsp;{{ quiz.startdate}}</h6>
                                         <h6>End Date:&nbsp;{{ quiz.enddate}}</h6>
                                         <h6>Time Limit:&nbsp;{{ quiz.timelimit}}&nbsp;Minutes</h6>
+                                        <h6>Visibility:&nbsp; 
+                                            {% if quiz.visibility == 1 %}
+                                               Public
+                                            {% else %}
+                                               Private
+                                            {% endif %}
+                                        </h6>
                                     </div>
                                     <h6>Description:</h6>
                                     <p class="card-text text-desc">{{ quiz.description }}</p>
@@ -108,7 +115,7 @@
                                     <input type="text" id="quizcode{{ quiz.id }}" value="{{ quiz.code }}" id="quizcode" hidden>
                                     <button type="button" class="btn btn-secondary" onclick='copyText("{{ quiz.id }}")'><i class="fa-regular fa-clipboard me-1"></i>Copy Code</button>
                                     <button type="button" class="btn btn-primary" onclick='shareText("{{ quiz.id }}")'><i class="fa-regular fa-share-from-square me-1"></i>Share</button>
-                                    <button type="button" class="btn btn-warning"><i class="fa-regular fa-square-plus me-1"></i>Take Quiz</button>
+                                    <a href="{{ url_for('views.checkcamera', quizid=quiz.id, quizcode=quiz.code, quiztype=quiz.quiztype) }}" class="btn btn-warning"><i class="fa-regular fa-square-plus me-1"></i>Take Quiz</a>
                                     <!-- <button type="button" class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i>Edit</button>
                                     <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Delete</button> -->
 
