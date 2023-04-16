@@ -1,0 +1,197 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}
+    <!-- <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script> -->
+    
+    <script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='checkcamera.js')}}"></script>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"
+        integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/async/3.2.0/async.min.js"
+        integrity="sha512-6K6+H87tLdCWvY5ml9ZQXLRlPlDEt8uXmtELhuJRgFyEDv6JvndWHg3jadJuBVGPEhhA2AAt+ROMC2V7EvTIWw=="
+        crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.roboflow.com/0.2.22/roboflow.js"></script>
+
+    <script src="{{ url_for('static', filename='obj_detection.js') }}"></script>
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="container bg-night rounded p-3">
+        <div class="row">
+            <div class="col-6"><h5>{{ quiz.title }}</h5></div>
+            <div class="col-6 text-end"><small>Time Limit</small><h5 id="timer"></h5></div>
+            <div class="col-6">
+                <!-- <video id="quizvid" width="100%" height="auto" autoplay muted playsinline style='border-radius: 10px;'></video> -->
+                <!-- <video id="video" autoplay muted playsinline></video> -->
+                <div class="loading">
+                    <video id="video" width="100%" height="auto" autoplay muted playsinline style='border-radius: 10px;'></video>
+                    <div id="fps"></div>
+                </div>
+            </div>
+           
+            <div class="col-6">
+                <form action="{{ url_for('views.result', quizcode=quizcode, quiztype=quiztype)}}" method="POST">
+                    <div class="row">
+                        {% for question in questions %}
+                            <div class="accordion mt-1" id="accordionQuiz">
+                                <div class="accordion-item bg-night">
+                                    <h2 class="accordion-header bg-night" id="heading{{question.id}}">
+                                    <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{question.id}}" aria-expanded="false" aria-controls="collapse{{question.id}}">
+                                        {{ loop.index}}.&nbsp;{{ question.question}}
+                                    </button>
+                                    </h2>
+                                    <div id="collapse{{question.id}}" class="accordion-collapse collapse bg-night" aria-labelledby="heading{{question.id}}" data-bs-parent="#accordionQuiz">
+                                        <div class="accordion-body bg-night">
+                                            {% if quiztype == '1' %}
+                                                <div class="row radio=toolbar"> 
+                                                    <div class="col-6">
+                                                        <!-- <div class="custom-radio-btn"></div> -->
+                                                        <input class="" id="{{question.id}}" name="student_answer{{question.id}}" type="radio" value="{{ question.choice1 }}">
+                                                        <label for="{{question.id}}">A.&nbsp;{{ question.choice1 }}</label>
+                                                        <input type="checkbox" hidden>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <input class="" id="{{question.id}}" name="student_answer{{question.id}}" type="radio" value="{{ question.choice2 }}">
+                                                        <label for="{{question.id}}">B.&nbsp;{{ question.choice2 }}</label>
+                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <input class="" id="{{question.id}}" name="student_answer{{question.id}}" type="radio" value="{{ question.choice3 }}">
+                                                        <label for="{{question.id}}">C.&nbsp;{{ question.choice3 }}</label>
+                                                        
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <input class="" id="{{question.id}}" name="student_answer{{question.id}}" type="radio" value="{{ question.choice4 }}">
+                                                        <label for="{{question.id}}">D.&nbsp;{{ question.choice4 }}</label>
+                                                    </div>
+                                                </div>
+                                                
+                                            {% elif quiztype == '2' %}
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <input type="text" name="{{question.id}}" placeholder="Your Answer Here">
+                                                    </div>
+                                                </div>
+                                                
+                                            {% elif quiztype == '3' %}
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <input class="timelimit" id="{{question.id}}" name="{{question.id}}" type="radio" value="{{ True }}">
+                                                        <label for="{{question.id}}">True</label>
+                                                        <input class="timelimit" id="{{question.id}}" name="{{question.id}}" type="radio" value="{{ False }}">
+                                                        <label for="{{question.id}}">False</label>
+                                                    </div>
+                                                </div>
+                                                
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <input type="text" hidden value="{{ question_count }}" name="total_no_question" id="total_no_question">
+                        <div class="d-flex justify-content-end">
+                            <input type="submit" name="submit" class="btn submit-button text-dark">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   
+    
+    <!-- <script>
+        window.onload = () =>{
+            detection();
+        };
+    </script> -->
+<!-- 
+    <script>
+        window.addEventListener('beforeunload', function(event) {
+            event.preventDefault();
+            event.returnValue = 'Are you sure you want to leave? Your progress will be lost.';
+        });
+    </script> -->
+
+    <script>
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    alert("Time's up!");
+                    // redirect user to views.checkscore route
+                    window.location.href = "/checkscore";
+                }
+            }, 1000);
+        }
+
+        // get the timelimit value from the HTML and convert it to seconds
+        var timelimit = parseInt("{{ quiz.timelimit }}") * 60;
+
+        // get the element where the timer will be displayed
+        var display = document.querySelector('#timer');
+
+        // start the timer
+        startTimer(timelimit, display);
+    </script>
+
+<script type="text/javascript">
+    var tab_switching = ""
+    document.addEventListener("visibilitychange", (event) => 
+    {
+        if (document.visibilityState == "visible") {
+            
+            tab_switching = "not detected to tab switching";
+        } else {
+            //console.log("tab is inactive")
+            //document.getElementById("tab-switching").value = "The user is detected to alt tab once";
+            tab_switching = "The user is detected to alt tab or switch tab once";
+            $.ajax(
+            {
+                type:'POST',
+                contentType:'application/json;charset-utf-08',
+                dataType:'json',
+                url:'http://127.0.0.1:5000/switchtabs?value='+tab_switching ,
+                success:function (data) {
+                    var reply=data.reply;
+                    if (reply=="success")
+                    {
+                        return;
+                    }
+                    else
+                        {
+                        alert("some error ocured in session agent")
+                        }
+
+                }
+            }
+        );
+            
+        }
+
+    });
+
+
+</script>
+{% endblock %}
