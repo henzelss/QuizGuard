@@ -27,8 +27,6 @@ class QuizList(db.Model):
     visibility = db.Column(db.Integer, nullable=False)
     attempt = db.Column(db.Integer, nullable=False)
 
-
-# change Matching Type into Multiple choice
 class MultipleChoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
