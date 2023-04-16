@@ -1,11 +1,13 @@
 #routes 
-from flask import Blueprint, render_template, url_for, flash, redirect, send_from_directory, jsonify, request, Response
+from flask import Blueprint, render_template, url_for, flash, redirect, send_from_directory, jsonify, request, Response, session
+from flask_socketio import SocketIO, emit
 from datetime import datetime, time
 from flask_login import login_required, current_user
-from .models import User, QuizList, MultipleChoice, FillInTheBlanks, TrueOrFalse, Violations
-from .forms import CreateQuiz, MultipleChoiceForm, FillInTheBlanksForm, TrueOrFalseForm, MultipleChoiceFormEdit, FillInTheBlanksFormEdit, TrueOrFalseFormEdit, QuizForm, SearchCode
+from .models import User, QuizList, MultipleChoice, FillInTheBlanks, TrueOrFalse, Violations, Student
+from .forms import CreateQuiz, MultipleChoiceForm, FillInTheBlanksForm, TrueOrFalseForm, MultipleChoiceFormEdit, FillInTheBlanksFormEdit, TrueOrFalseFormEdit, QuizForm, SearchCode, MultipleChoiceQuizForm 
 from .utils import generate_random_string, activity_logs
 from .import db
+from sqlalchemy.exc import IntegrityError
 
 views = Blueprint('views', __name__)
 
@@ -28,6 +30,7 @@ def dashboard():
 
 
 @views.route('/student')
+@login_required
 def student():
     # quiz_list = QuizList.query.all()
     # joined the table so we can show the author fullname
@@ -101,12 +104,6 @@ def clonequiz(quizid, quizcode):
     db.session.commit()
     flash("Successfully clone the quiz", category="success")
     return redirect(url_for('views.myquiz'))
-
-@views.route('/checkcamera')
-def checkcamera():
-    pass
-
-
 
 @views.route('/quizbank')
 @login_required
@@ -218,36 +215,6 @@ def myquizdelete(quiz_code, quiztype):
     flash('Quiz is successfully removed', category='success')
     activity_logs('Deleted a quiz')
     return redirect(url_for('views.myquiz'))
-
-
-
-# @views.route('/quizedit/<string:id>/<string:quiztype>/<string:questionid>', methods=['GET', 'POST'])
-# @login_required
-# def quizedit(id, quiztype):
-#     if current_user.usertype == 'user':
-#         return redirect(url_for('views.student'))
-    
-#     # form = None
-#     # if quiztype == '1':
-#     #     form = MatchingTypeFormEdit()
-#     # elif quiztype == '2':
-#     #     form = FillInTheBlanksFormEdit()
-#     # elif quiztype == '3':
-#     #     form = TrueOrFalseFormEdit()
-#     # else:
-#     #     return render_template(url_for('views.dashboard'))
-
-
-#     # # saan galing yung id?
-#     # if form.validate_on_submit():
-#     #     if quiztype == '1':
-#     #         pass
-#     #     elif quiztype == '2':
-#     #         pass
-#     #     elif quiztype == '3':
-#     #         pass
-#     #     else:
-#     #         return render_template(url_for('views.dashboard'))
 
 @views.route('/editquestions<string:quizcode>/<string:quiztype>/<string:questionid>', methods=['GET', 'POST'])
 @login_required
@@ -475,85 +442,195 @@ def createquiz():
     
     return render_template('createquiz.html', form=form)
 
-#i need to change the model to fix everything
-# pwede na to ma remove in the future basta sa create quiz route mag papasa ako sa quizbankedit ng quizcode at quiztype
-# remove ko nlng yung questionaire pati yung 3 table na html file
-# @views.route('/questionaire/<string:quiz_code>/<string:category>', methods=['GET', 'POST'])
-# @login_required
-# def questionaire(quiz_code, category):
-#     quiz = QuizList.query.get(quiz_code)
-#     # yung quiz id pala ay para lang sa quiz for unique indetification hindi siya current user
-#     # ang current user pala ang magiging author
-#     if category == '1':
-#         form = MatchingTypeForm()    
-#         return render_template('questionaire.html', form=form, quiz_code=quiz_code, category=category)
-#     elif category == '2':
-#         form = FillInTheBlanksForm()
-#         return render_template('questionaire.html', form=form, quiz_code=quiz_code, category=category)
-#     elif category =='3':
-#         form = TrueOrFalseForm()
-#         return render_template('questionaire.html', form=form, quiz_code=quiz_code, category=category)
+
+@views.route('/checkcamera/<string:quizid>/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
+@login_required
+def checkcamera(quizid, quizcode, quiztype):
+    # pwede i load model dito
+    return render_template('check_camera.html', quizid=quizid, quizcode=quizcode, quiztype=quiztype)
+
+@views.route('/quiz/<string:quizid>/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
+@login_required
+def quiz(quizid, quizcode, quiztype):
+    quiz = QuizList.query.filter_by(code=quizcode).first()
+    if quiz is None:
+        # handle invalid quiz code
+        flash("Invalid Quiz Code ", category="error")
+        return redirect(url_for('views.student'))
+    questions = None
+    if quiztype == '1':
+        #form = MultipleChoiceQuizForm()
+        questions = MultipleChoice.query.filter_by(quiz_code=quizcode).all()
+    elif quiztype == '2':
+        #form = FillInTheBlanksForm()
+        questions = FillInTheBlanks.query.filter_by(quiz_code=quizcode).all()
+    elif quiztype == '3':
+        #form = TrueOrFalseForm()
+        questions = TrueOrFalse.query.filter_by(quiz_code=quizcode).all()
+
+    question_count = len(questions)
+    return render_template('quiz.html', quiz=quiz, questions=questions, quiztype=quiztype, quizcode=quizcode, question_count=question_count)
+
+# @views.route('/checkscore/<string:quizid>/<string:quiztype>', methods=['GET', 'POST'])
+# def checkscore(quizid, quiztype):
+
+#     score = 0
+#     questions = None
+#     if quiztype == '1':
+#         questions = MultipleChoice.query.filter_by(id=quizid).all()
+#     elif quiztype == '2':
+#         questions = FillInTheBlanks.query.filter_by(id=quizid).all()
+#     elif quiztype == '3':
+#         questions = TrueOrFalse.query.filter_by(id=quizid).all()
+
+#     for question in questions:
+
+#         student_answer = request.form.getlist('student_answer{}'.format(question.id))
+#         question_id = question.id
+#         question_type = question.question_type
+
+#         if question_type == '1':
+#             correct_answer = question.answer
+#         elif question_type == '2':
+#             correct_answer = question.answer
+#         elif question_type == '3':
+#             correct_answer = question.answerquiz
+#         if student_answer and student_answer.lower() == correct_answer.lower():
+#             print(f'student_answer.lower:{student_answer.lower() }, correct_answer.lower: {correct_answer.lower()}' )
+#             score += 1
+           
+#     flash(f'score {score} ', category='success')
+#     return render_template('result.html')
+
+# @views.route('/checkscore/<string:quizcode>/<string:quiztype>/', methods=['GET', 'POST'])
+# def checkscore(quizcode, quiztype ):
+
+#     if request.method =="POST" or request.form.get('submit') == 'Submit':
+#         total_no_question = request.form['total_no_question']
+#         print(total_no_question)
+#         flash(total_no_question, category="success")
+#         return render_template("result.html", total_no_question=total_no_question)
 #     else:
-#         return render_template('404.html')
+#         total_no_question = 0
+#         return render_template("result.html", total_no_question=total_no_question)
     
-# @views.route('/matchingtype<string:quiz_code>', methods=['GET', 'POST'])
-# @login_required
-# def matchingtype(quiz_code):
-
-#     form = MatchingTypeForm()
-#     if form.validate_on_submit():
-#         # quiz id is base on author 
-#         question = form.question.data
-#         choice1 = form.choice1.data
-#         choice2 = form.choice2.data
-#         choice3 = form.choice3.data
-#         choice4 = form.choice4.data
-#         answer = form.answer.data
-
-#         matchingtype = MatchingType(quiz_code=quiz_code, question=question, choice1=choice1, choice2=choice2, choice3=choice3, choice4=choice4, answer=answer)
-#         db.session.add(matchingtype)
-#         db.session.commit()
-#         flash('Your question has been added!', 'success')
-#         return redirect(url_for('views.questionaire', quiz_code=quiz_code, category='1'))
-
-#     return render_template('questionaire.html', form=form, quiz_code=quiz_code, category='1')
-
-# @views.route('/fillintheblanks/<string:quiz_code>', methods=['GET', 'POST'])
-# @login_required
-# def fillintheblanks(quiz_code):
-#     form = FillInTheBlanksForm()
-#     if form.validate_on_submit():
-#         question = form.question.data
-#         answer = form.answer.data
-#         fillintheblanks = FillInTheBlanks(quiz_code=quiz_code , question=question, answer=answer)
-#         db.session.add(fillintheblanks)
-#         db.session.commit()
-#         flash('Your question has been added!', 'success')
-#         return redirect(url_for('views.fillintheblanks', quiz_code=quiz_code , category='2'))
     
-#     return render_template('questionaire.html', form=form, quiz_code=quiz_code , category='2')
 
-
-# @views.route('/trueorfalse/<string:quiz_code>', methods=['GET', 'POST'])
+# @views.route('/record_prediction', methods=['POST'])
 # @login_required
-# def trueorfalse(quiz_code):
-#     form = TrueOrFalseForm()
+# def process_frame():
+#     prediction_class = request.form.get("prediction_class")
+#     print(prediction_class)
+#     if prediction_class:
+        
+#         #violations = Violations(current_user.id, )
+#         return "success"
+#     else:
+#         return "failed"
 
-#     if form.validate_on_submit():
-#         question = form.question.data
-#         answer = form.answer.data
+@views.route('/result/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
+def result(quizcode, quiztype ):
+    violations = Violations.query.all()
+    #violations = Violations.query.filter_by(quizcode=quizcode).order_by(Violations.date.desc()).all()
+    score = 0
+    total_no_question = 0
+    if request.method =="POST" or request.form.get('submit') == 'Submit':
+        for question in request.form:
+            print(question)
+            if question.startswith('student_answer'):
+                print(question)
+                question_id = question.replace('student_answer', '')
+                print("question id: " + question_id)
+                if quiztype == '1':
+                    selected_answer = request.form[question] #getting the answers
+                    correct_answer = MultipleChoice.query.filter_by(id=question_id).first().answer
+                    if selected_answer == correct_answer:
+                        score += 1
+                elif quiztype == '2':
+                    student_answer = request.form[question] #getting the answers
+                    correct_answer = FillInTheBlanks.query.filter_by(id=question_id).first().answer
+                    if student_answer.strip().lower() == correct_answer.strip().lower():
+                        score += 1
+                elif quiztype == '3':
+                    student_answer = request.form[question] #getting the answers
+                    correct_answer = TrueOrFalse.query.filter_by(id=question_id).first().answer
+                    if student_answer.lower() == str(correct_answer).lower():
+                        score += 1
+            else:
+                print("error")
+        total_no_question = request.form['total_no_question']
+        quiz = QuizList.query.filter_by(code=quizcode).first()
+        score *= quiz.points
+        total_no_question *= quiz.points
+        existing_student = Student.query.filter_by(user_id=current_user.id, quiz_id=quiz.id).first()
+        if existing_student:
+            existing_student.score = score
+        else:
+            student = Student(user_id=current_user.id, quiz_id=quiz.id, score=score)
+            db.session.add(student)
+        db.session.commit()
+        # student = Student(user_id=current_user.id, quiz_id=quiz.id, score=score)
+        # db.session.add(student)
+        # db.session.commit()
 
-#         if answer == '0':
-#             answer = False
-#         else:
-#             answer = True
-#         TOF = TrueOrFalse(quiz_code=quiz_code , question=question, answer=answer)
-#         db.session.add(TOF)
-#         db.session.commit()
+        #joined table of user and student table
+        students = db.session.query(Student.score, User.firstname, User.lastname).\
+          join(User, Student.user_id==User.id).\
+          filter(Student.quiz_id == quiz.id).\
+          order_by(Student.score.desc()).\
+          all()
+        return render_template('result.html', students=students, quiz=quiz, violations=violations, total_no_question=total_no_question)
 
-#         flash('Your question has been added!', 'success')
-#         return redirect(url_for('views.questionaire', quiz_code=quiz_code , category=3))
-    
+@views.route('/record_prediction', methods=['POST'])
+@login_required
+def process_frame():
+    prediction_class = request.form.get("prediction_class")
+    if prediction_class:
+        # check if the user already has a violation of this type
+        violation = Violations.query.filter_by(user_id=current_user.id, detected=prediction_class).first()
+        if violation:
+            # update the existing violation
+            violation.date = datetime.now()
+        else:
+            # create a new violation
+            violation = Violations(
+                detected=prediction_class,
+                user_id=current_user.id
+            )
+        # check if the prediction class is "phone"
+        if prediction_class == "phone":
+            violation.phone_detected = "Yes"
+        # save the violation to the database
+        try:
+            db.session.add(violation)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return "failed"
+        return "success"
+    else:
+        return "failed"
+
+@views.route('/switchtabs',methods=['POST'])
+@login_required
+def switchtabs():
+    value = request.args.get('value')
+    user_id = current_user.id
+    violation = Violations.query.filter_by(user_id=user_id).first()
+    if violation is not None:
+        violation.switch_tabs = value
+        db.session.commit()
+    else:
+        violation = Violations(switch_tabs=value, user_id=user_id, date=datetime.now())
+        db.session.add(violation)
+        db.session.commit()
+    return jsonify({'reply': 'success'})
+
+@views.route('/records')
+@login_required
+def records():
+    violations = Violations.query.all()
+    return render_template("records.html", violations=violations)
 
 @views.route('/images/<filename>')
 @login_required
