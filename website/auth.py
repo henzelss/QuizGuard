@@ -1,5 +1,5 @@
 #routes 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, Response, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from . import db
@@ -7,8 +7,12 @@ from .models import User, ActivityLog
 from .forms import LoginForm, RegisterForm, UserProfileForm, EditForm, AddNewUserForm, SearchForm
 from .utils import activity_logs
 from sqlalchemy.exc import IntegrityError
-from datetime import datetime
+from datetime import datetime, date
 from sqlalchemy import or_
+from io import BytesIO
+import pandas as pd
+from xhtml2pdf import pisa
+
 auth = Blueprint('auth', __name__)
 
 @auth.route('/', methods=['GET', 'POST'])
@@ -157,9 +161,6 @@ def addaccounts():
         return redirect(url_for('auth.accounts'))
     
 
-
-    
-
 @auth.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def edit(user_id):
@@ -259,13 +260,73 @@ def search():
 def logs():
     if current_user.usertype == 'user':
         flash('You dont have permission to access this page', category='error')
-        activity_logs("Try to access webpages not for users")
+        activity_logs("The user tried to access the live logs module")
         return redirect(url_for('views.student'))
-    #today = dateTime.today()
-
-    #logs = ActivityLog.query.filter(ActivityLog.logtime == datetime.utcnow).all()
-    logs = ActivityLog.query.all()
+    
+    today = date.today()
+    #logs = ActivityLog.query.all()
+    logs = ActivityLog.query.filter(ActivityLog.logtime >= datetime.combine(today, datetime.min.time())).all()
     return render_template('logs.html', log=logs)
+
+
+@auth.route('/exalllogs')
+def exalllogs():
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("The user tried to export the live logs")
+        return redirect(url_for('views.student'))
+    today = date.today()
+    logs = ActivityLog.query.all()
+    df = pd.DataFrame([(log.user_id, log.name, log.logtime, log.activity) for log in logs],
+                      columns=['User ID', 'Fullname', 'Time Log', 'Activity'])
+    buffer = BytesIO()
+    writer = pd.ExcelWriter(buffer, engine='xlsxwriter')
+    df.to_excel(writer, index=False, sheet_name='All Logs')
+    writer.close()
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name=f'All Logs {today}.xlsx')
+
+@auth.route('/extodaylog')
+def extodaylog():
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("The user tried to export the live logs")
+        return redirect(url_for('views.student'))
+    
+    today = date.today()
+    logs = ActivityLog.query.filter(ActivityLog.logtime >= today).all()
+    df = pd.DataFrame([(log.user_id, log.name, log.logtime, log.activity) for log in logs],
+                      columns=['User ID', 'Fullname', 'Time Log', 'Activity'])
+    buffer = BytesIO()
+    writer = pd.ExcelWriter(buffer, engine='xlsxwriter')
+    df.to_excel(writer, index=False, sheet_name='Logs Today')
+    writer.close()
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name=f'Logs Today {today}.xlsx')
+
+# @auth.route('/pdfalllogs')
+# def pdfalllogs():
+#     if current_user.usertype == 'user':
+#         flash('You dont have permission to access this page', category='error')
+#         activity_logs("The user tried to export the live logs")
+#         return redirect(url_for('views.student'))
+    
+#     logs = ActivityLog.query.all()
+#     return render_template('logs_pdf.html', logs=logs)
+    
+
+# @auth.route('/pdftodaylogs')
+# def pdftodaylogs():
+#     if current_user.usertype == 'user':
+#         flash('You dont have permission to access this page', category='error')
+#         activity_logs("The user tried to export the live logs")
+#         return redirect(url_for('views.student'))
+    
+#     today = date.today()
+#     logs = ActivityLog.query.filter(ActivityLog.logtime >= datetime.combine(today, datetime.min.time())).all()
+#     return render_template('logs_pdf.html', logs=logs)
+   
+
 
 @auth.route('/logout')
 @login_required
