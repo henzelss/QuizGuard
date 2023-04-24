@@ -1,0 +1,13 @@
+[
+  {
+    "question" : "The answer here is true. 0 is equal to true",
+    "answer"   : "0"
+  },
+
+  {
+    "question" : "The answer here is false. 1 is equal to false",
+    "answer"   : "1"
+  }
+
+]
+
