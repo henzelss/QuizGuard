@@ -3,6 +3,9 @@ from flask_login import UserMixin
 from sqlalchemy.sql import func
 from datetime import datetime
 from werkzeug.security import generate_password_hash
+import pytz
+
+tz = pytz.timezone('Asia/Manila')
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -64,11 +67,19 @@ class Violations(db.Model):
     switch_tabs = db.Column(db.String(50))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
+    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
 
 class ActivityLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     name = db.Column(db.String(255))
-    logtime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    logtime = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
     activity = db.Column(db.String(255))
     user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))
+
+class History(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    date_taken = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    

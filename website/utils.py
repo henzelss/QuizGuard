@@ -7,7 +7,7 @@ import random
 import string
 
 # Activity logs
-def activity_logs( action): 
+def activity_logs(action): 
     fullname = current_user.firstname + " " + current_user.lastname
     new_log_entry = ActivityLog(user_id=current_user.id, name=fullname, activity=action)
     db.session.add(new_log_entry)
