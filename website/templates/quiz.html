@@ -6,8 +6,8 @@
     <script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
     <script src="{{ url_for('static', filename='checkcamera.js')}}"></script>
     
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+    
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
         integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"
@@ -17,7 +17,7 @@
         integrity="sha512-6K6+H87tLdCWvY5ml9ZQXLRlPlDEt8uXmtELhuJRgFyEDv6JvndWHg3jadJuBVGPEhhA2AAt+ROMC2V7EvTIWw=="
         crossorigin="anonymous"></script>
     
-    <script src="https://cdn.roboflow.com/0.2.22/roboflow.js"></script>
+    <script src="https://cdn.roboflow.com/0.2.22/roboflow.js"></script> -->
 
     <script src="{{ url_for('static', filename='obj_detection.js') }}"></script>
 
@@ -102,7 +102,7 @@
                         {% endfor %}
                         <input type="text" hidden value="{{ question_count }}" name="total_no_question" id="total_no_question">
                         <div class="d-flex justify-content-end">
-                            <input type="submit" name="submit" class="btn submit-button text-dark">
+                            <input type="submit" name="submit" class="btn submit-button text-dark" value="Submit Answers">
                         </div>
                     </div>
                 </form>
