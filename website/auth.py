@@ -268,7 +268,7 @@ def logs():
     logs = ActivityLog.query.filter(ActivityLog.logtime >= datetime.combine(today, datetime.min.time())).all()
     return render_template('logs.html', log=logs)
 
-
+# this route will export all the logs
 @auth.route('/exalllogs')
 def exalllogs():
     if current_user.usertype == 'user':
@@ -286,6 +286,7 @@ def exalllogs():
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name=f'All Logs {today}.xlsx')
 
+# this route will export todays logs
 @auth.route('/extodaylog')
 def extodaylog():
     if current_user.usertype == 'user':
