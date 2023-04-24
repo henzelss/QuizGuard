@@ -380,3 +380,10 @@ a.text-hover:hover{
     background-color: #FAB903 !important;
 }
 
+
+.title-ellipsis{
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    width: 150px; /* adjust this width to fit your needs */
+  }
