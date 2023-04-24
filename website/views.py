@@ -1,5 +1,6 @@
 #routes 
-from flask import Blueprint, render_template, url_for, flash, redirect, send_from_directory, jsonify, request, Response, session
+from functools import wraps
+from flask import Blueprint, render_template, url_for, flash, redirect, send_from_directory, jsonify, request, Response, session, send_file, json
 from flask_socketio import SocketIO, emit
 from datetime import datetime, time
 from flask_login import login_required, current_user
@@ -8,6 +9,7 @@ from .forms import CreateQuiz, MultipleChoiceForm, FillInTheBlanksForm, TrueOrFa
 from .utils import generate_random_string, activity_logs
 from .import db
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime, date
 
 views = Blueprint('views', __name__)
 
@@ -34,9 +36,20 @@ def dashboard():
 def student():
     # quiz_list = QuizList.query.all()
     # joined the table so we can show the author fullname
+    # form = SearchCode()
+    # quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
+    # return render_template('student.html', quiz_list=quiz_list, form=form)
+
     form = SearchCode()
-    quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
-    return render_template('student.html', quiz_list=quiz_list, form=form)
+    current_date = date.today()
+    quiz_list = (
+        db.session.query(QuizList, User.firstname, User.lastname)
+        .join(User, QuizList.author_id == User.id)
+        .filter(QuizList.startdate <= current_date)
+        .filter(QuizList.enddate >= current_date)
+        .all()
+    )
+    return render_template('student.html', quiz_list=quiz_list, form=form, current_user=current_user)
 
 @views.route('/professor')
 def professor():
@@ -105,29 +118,51 @@ def clonequiz(quizid, quizcode):
     flash("Successfully clone the quiz", category="success")
     return redirect(url_for('views.myquiz'))
 
+# @views.route('/quizbank')
+# @login_required
+# def quizbank():
+#     form = SearchCode()
+#     # SELECT quiz_list.*, user.firstname, user.lastname 
+#     # FROM quiz_list 
+#     # JOIN user ON quiz_list.author_id = user.id;
+#     quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
+#     return render_template('quizbank.html', quiz_list=quiz_list, form=form, current_user=current_user)
+
 @views.route('/quizbank')
 @login_required
 def quizbank():
-    form = SearchCode()
+    if current_user.is_authenticated == False:
+        flash("You can access this page without logging in", category="danger")
+    # user is authenticated, do something
     # SELECT quiz_list.*, user.firstname, user.lastname 
     # FROM quiz_list 
     # JOIN user ON quiz_list.author_id = user.id;
-    quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
+    form = SearchCode()
+    current_date = date.today()
+    quiz_list = (
+        db.session.query(QuizList, User.firstname, User.lastname)
+        .join(User, QuizList.author_id == User.id)
+        .filter(QuizList.startdate <= current_date)
+        .filter(QuizList.enddate >= current_date)
+        .all()
+    )
     return render_template('quizbank.html', quiz_list=quiz_list, form=form, current_user=current_user)
 
 @views.route('/searchquiz',  methods=['GET', 'POST'])
+@login_required
 def searchquiz():
     form = SearchCode()
     if form.validate_on_submit():
         code = form.search.data
-        quiz = QuizList.query.filter_by(code=code).first()
+        #quiz = QuizList.query.filter_by(code=code).first()
+        quiz = db.session.query(QuizList).filter_by(code=code).first()
         if quiz:
             author = User.query.filter_by(id=quiz.author_id).first()
             return render_template('searchbank.html', quiz=quiz, form=form, author=author, current_user=current_user)
         else:
             flash('Quiz not found', category='error')
             return redirect(url_for('views.quizbank'))
-    return render_template('searchbank.html', form=form)
+    return render_template('searchbank.html', form=form)    
 
 @views.route('/quizbankedit/<string:quizcode>/<string:quiztype>/', methods=['GET', 'POST'])
 @login_required
@@ -471,64 +506,8 @@ def quiz(quizid, quizcode, quiztype):
     question_count = len(questions)
     return render_template('quiz.html', quiz=quiz, questions=questions, quiztype=quiztype, quizcode=quizcode, question_count=question_count)
 
-# @views.route('/checkscore/<string:quizid>/<string:quiztype>', methods=['GET', 'POST'])
-# def checkscore(quizid, quiztype):
-
-#     score = 0
-#     questions = None
-#     if quiztype == '1':
-#         questions = MultipleChoice.query.filter_by(id=quizid).all()
-#     elif quiztype == '2':
-#         questions = FillInTheBlanks.query.filter_by(id=quizid).all()
-#     elif quiztype == '3':
-#         questions = TrueOrFalse.query.filter_by(id=quizid).all()
-
-#     for question in questions:
-
-#         student_answer = request.form.getlist('student_answer{}'.format(question.id))
-#         question_id = question.id
-#         question_type = question.question_type
-
-#         if question_type == '1':
-#             correct_answer = question.answer
-#         elif question_type == '2':
-#             correct_answer = question.answer
-#         elif question_type == '3':
-#             correct_answer = question.answerquiz
-#         if student_answer and student_answer.lower() == correct_answer.lower():
-#             print(f'student_answer.lower:{student_answer.lower() }, correct_answer.lower: {correct_answer.lower()}' )
-#             score += 1
-           
-#     flash(f'score {score} ', category='success')
-#     return render_template('result.html')
-
-# @views.route('/checkscore/<string:quizcode>/<string:quiztype>/', methods=['GET', 'POST'])
-# def checkscore(quizcode, quiztype ):
-
-#     if request.method =="POST" or request.form.get('submit') == 'Submit':
-#         total_no_question = request.form['total_no_question']
-#         print(total_no_question)
-#         flash(total_no_question, category="success")
-#         return render_template("result.html", total_no_question=total_no_question)
-#     else:
-#         total_no_question = 0
-#         return render_template("result.html", total_no_question=total_no_question)
-    
-    
-
-# @views.route('/record_prediction', methods=['POST'])
-# @login_required
-# def process_frame():
-#     prediction_class = request.form.get("prediction_class")
-#     print(prediction_class)
-#     if prediction_class:
-        
-#         #violations = Violations(current_user.id, )
-#         return "success"
-#     else:
-#         return "failed"
-
 @views.route('/result/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
+@login_required
 def result(quizcode, quiztype ):
     violations = Violations.query.all()
     #violations = Violations.query.filter_by(quizcode=quizcode).order_by(Violations.date.desc()).all()
@@ -549,6 +528,8 @@ def result(quizcode, quiztype ):
                 elif quiztype == '2':
                     student_answer = request.form[question] #getting the answers
                     correct_answer = FillInTheBlanks.query.filter_by(id=question_id).first().answer
+                    print("Student Answer: " + student_answer.strip().lower())
+                    print("Corrent Answer: " + correct_answer.strip().lower())
                     if student_answer.strip().lower() == correct_answer.strip().lower():
                         score += 1
                 elif quiztype == '3':
@@ -558,10 +539,10 @@ def result(quizcode, quiztype ):
                         score += 1
             else:
                 print("error")
-        total_no_question = request.form['total_no_question']
+        total_no_question = int(request.form['total_no_question'])
         quiz = QuizList.query.filter_by(code=quizcode).first()
-        score *= quiz.points
-        total_no_question *= quiz.points
+        score = score * quiz.points
+        total_score = total_no_question * quiz.points   
         existing_student = Student.query.filter_by(user_id=current_user.id, quiz_id=quiz.id).first()
         if existing_student:
             existing_student.score = score
@@ -579,7 +560,14 @@ def result(quizcode, quiztype ):
           filter(Student.quiz_id == quiz.id).\
           order_by(Student.score.desc()).\
           all()
-        return render_template('result.html', students=students, quiz=quiz, violations=violations, total_no_question=total_no_question)
+        return render_template('result.html', students=students, quiz=quiz, violations=violations, total_score=total_score)
+    # else:
+    #     quiz = QuizList.query.filter_by(code=quizcode).first()
+    #     total_no_question = quiz.questions.count()
+    #     student = Student.query.filter_by(user_id=current_user.id, quiz_id=quiz.id).first()
+    #     if student:
+    #         score = student.score
+    #     return render_template('result.html', students=students, quiz=quiz, violations=violations, total_no_question=total_no_question, score=score)
 
 @views.route('/record_prediction', methods=['POST'])
 @login_required
@@ -626,6 +614,119 @@ def switchtabs():
         db.session.commit()
     return jsonify({'reply': 'success'})
 
+
+
+
+# this is function is for bulk entry of questions for multiple choice type quiz        
+@views.route('/upload_multiple/<string:quizcode>/<string:quiztype>', methods=['POST'])
+@login_required
+def upload_multiple(quizcode, quiztype):
+    file = request.files['file']
+    if file.filename.endswith('.txt'):
+        contents = file.read()
+        questions = json.loads(contents)
+        for question in questions:
+            multiple_choice = MultipleChoice( quiz_code=quizcode, 
+                                             question=question['question'], 
+                                             choice1=question['choice1'], 
+                                             choice2=question['choice2'], 
+                                             choice3=question['choice3'],
+                                             choice4=question['choice4'],
+                                             answer=question['answer'])
+            db.session.add(multiple_choice)
+
+        db.session.commit()
+        flash("Questions uploaded successfully", category="success")
+        return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+    else:
+        flash("Invalid File Type", category="warning")
+        return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+
+# this is function is for bulk entry of questions for fill in the blank type quiz
+@views.route('/upload_fob/<string:quizcode>/<string:quiztype>', methods=['POST'])
+@login_required
+def upload_fob(quizcode, quiztype):
+    # get the file
+    file = request.files['file']
+    # check if the file endswith .txt
+    if file.filename.endswith('.txt'):
+        # read the contents of the file
+        contents = file.read()
+        # questions = [ {}, {}] is equal to a list of dictionary
+        questions = json.loads(contents)
+        # now loop to the list
+        for question in questions:
+            # place the question and answer to the table to be inserted
+            fill_in_the_blanks = FillInTheBlanks( quiz_code=quizcode, question=question['question'], answer=question['answer'])
+            # the the question 
+            db.session.add(fill_in_the_blanks)
+            #then repeat until it ends 
+
+        # commit the changes to the table
+        db.session.commit()
+        # flash the message
+        flash("Questions uploaded successfully", category="success")
+        # redirect the user back to the quizbankedit
+        return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+    else:
+        # if the user didnt upload anything or upload a wrong file
+        flash("Invalid File Type", category="warning")
+        # redirect the user back to the quizbankedit
+        return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+
+@views.route('/upload_tor/<string:quizcode>/<string:quiztype>', methods=['POST'])
+@login_required
+def upload_tor(quizcode, quiztype):
+   
+    file = request.files['file']
+    if file.filename.endswith('.txt'):
+
+        contents = file.read()
+        print()
+        questions = json.loads(contents)
+        for question in questions:
+            answer = None
+            if question['answer'] == 0:
+                answer = True
+            else:
+                answer = False 
+            true_or_false = TrueOrFalse(
+                            quiz_code=quizcode,
+                            question=question['question'],
+                            answer=answer
+                        )
+            db.session.add(true_or_false)
+
+        db.session.commit()
+        flash("Questions uploaded successfully", category="success")
+        return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+    else:
+        flash("Invalid File Type", category="warning")
+        return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+    
+
+#multiple choice
+@views.route('/download_multiple/')
+@login_required
+def download_multiple():
+    filepath = '../data/multiple.txt'
+    return send_file(filepath, as_attachment=True)
+
+#fill in the blanks
+@views.route('/download_fob')
+@login_required
+def download_fob():
+    filepath = '../data/fob.txt'
+    return send_file(filepath, as_attachment=True)
+
+# true or false
+@views.route('/download_tor')
+@login_required
+def download_tor():
+    filepath = '../data/tor.txt'
+    return send_file(filepath, as_attachment=True)
+
+
 @views.route('/records')
 @login_required
 def records():
@@ -641,11 +742,6 @@ def images(filename):
 @login_required
 def error():
     return render_template('error.html')
-
-@views.route('/SearchQuiz')
-@login_required
-def SearchQuiz():
-    return render_template('quizcode.html')
 
 #error page handler | page not found
 @views.errorhandler(404)
