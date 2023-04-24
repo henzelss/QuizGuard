@@ -27,7 +27,7 @@
                               {% for student in students %}
                                 <tr>
                                     <td>{{ student.firstname|title }}&nbsp;{{ student.lastname|title }}</td>
-                                    <td>{{ student.score}}/{{total_no_question}}</td>
+                                    <td>{{ student.score}}/{{total_score}}</td>
                                 </tr>
                               {% endfor %}
                         </tbody>
@@ -35,34 +35,34 @@
                   </div>
                 </div>
             </div>
-            <div class="accordion-item bg-night">
-                <h2 class="accordion-header" id="headingViolations">
-                  <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseViolations" aria-expanded="false" aria-controls="collapseViolations">
+            <div class="accordion-item bg-night d-print-none">
+                <h2 class="accordion-header d-print-none" id="headingViolations ">
+                  <button class="accordion-button collapsed bg-night d-print-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapseViolations" aria-expanded="false" aria-controls="collapseViolations">
                     <h1>Quiz Violations</h1>
                   </button>
                 </h2>
-                <div id="collapseViolations" class="accordion-collapse collapse bg-night" aria-labelledby="headingViolations" data-bs-parent="#accordionResult">
-                  <div class="accordion-body bg-night">
-                      <table class="table table-dark table-responsive">
+                <div id="collapseViolations" class="accordion-collapse collapse bg-night d-print-none" aria-labelledby="headingViolations" data-bs-parent="#accordionResult">
+                  <div class="accordion-body bg-night d-print-none">
+                      <table class="table table-dark table-responsive d-print-none">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Detected</th>
-                                <th>Phone Detected</th>
-                                <th>Focus</th>
-                                <th>Switch Tabs</th>
                                 <th>User ID</th>
+                                <th>Full Name</th>
+                                <th>Laptop Detected</th>
+                                <th>Phone Detected</th>
+                                <th>Head Pose</th>
+                                <th>Switch Tabs</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for violation in violations %}
                                 <tr>
-                                    <td>{{ violation.id }}</td>
+                                    <td>{{ violation.user_id }}</td>
+                                    <td>Full name</td>
                                     <td>{{ violation.detected }}</td>
                                     <td>{{ violation.phone_detected }}</td>
                                     <td>{{ violation.focus }}</td>
                                     <td>{{ violation.switch_tabs }}</td>
-                                    <td>{{ violation.user_id }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -81,5 +81,11 @@
     function printTable() {
       window.print();
     }
+      // prevent users from going back to the test
+      // window.history.pushState(null, null, location.href);
+      // window.onpopstate = function(event) 
+      // {
+      //   window.history.pushState(null, null, location.href);
+      // };
   </script>
 {% endblock %}
