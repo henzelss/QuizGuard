@@ -149,3 +149,7 @@ class MultipleChoiceQuizForm(FlaskForm):
     # choices = [(choice.id, choice.choice_text) for choice in MultipleChoice.query.filter_by(quiz_code=quizcode).all()]
     # submit = SubmitField('Submit')
     pass
+
+
+class BulkInsertForm(FlaskForm):
+    description = TextAreaField('Description', render_kw={"placeholder": "Enter your text here", 'autocomplete': 'off'} )
