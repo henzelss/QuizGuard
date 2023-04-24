@@ -1,0 +1,17 @@
+fix the database model 
+add quizcode in the violation
+add history table 
+
+
+in the student table add attempt column
+rooms for student
+
+bulk adding question
+
+check the number of attempts
+
+back up database
+
+changes images on every quiz
+
+

@@ -522,3 +522,50 @@ if elapsed_time > time_limit:
     return redirect(url_for('views.quiz'))
 Note that this is just an example and you may need to modify the code to fit your specific needs.
 --------------------------------------------------------------------------how to set time limit----------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------Accounts---------------------------------------------------------------------------------------
+<div class="container">
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            <div class="col">
+                <div class="card  card-design">
+                    <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Accounts</h5>
+                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                        <a href="{{ url_for('auth.accounts') }}" class="btn btn-warning btn-links-hover">Manage</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card card-design">
+                    <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+                    <div class="card-body">
+                        <h5 class="card-title">Create Quiz</h5>
+                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                        <a href="{{ url_for('views.createquiz')}}" class="btn btn-warning btn-links-hover">Create Quiz</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card card-design">
+                    <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+                    <div class="card-body">
+                        <h5 class="card-title">Live Logs</h5>
+                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                        <a href="{{ url_for('auth.logs')}}" class="btn btn-warning btn-links-hover">View Logs</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card card-design">
+                    <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+                    <div class="card-body">
+                        <h5 class="card-title">Quiz Bank</h5>
+                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                        <a href="{{ url_for('views.quizbank')}}" class="btn btn-warning btn-links-hover">Quiz Bank</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+------------------------------------------------------------------------------------------Accounts---------------------------------------------------------------------------------------
