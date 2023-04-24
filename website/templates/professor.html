@@ -3,7 +3,7 @@
 {% block title %} <title>Professor | Dashboard</title>{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<!-- <div class="container mt-5">
   <div class="row row-cols-1 row-cols-md-2 g-4">
     <div class="col">
       <div class="card card-design">
@@ -34,8 +34,7 @@
           <a href="{{ url_for('views.records')}}" class="btn btn-warning btn-links-hover">Open Records</a>
         </div>
       </div>
-    </div>
-    <!-- <div class="col">
+    </div> <div class="col">
       <div class="card card-design">
         <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
         <div class="card-body">
@@ -44,7 +43,48 @@
           <a href="" class="btn btn-warning btn-links-hover">Create Accounts</a>
         </div>
       </div>
-    </div> -->
+    </div> 
+  </div>
+</div> -->
+
+<div class="container">
+  <div class="row row-cols-1 row-cols-md-2 g-4">
+      <div class="col-4 ">
+          <div class="card bg-night h-100">
+              <img src="{{ url_for('views.images', filename='Slide5.jpg') }}" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title">Student Records</h5>
+                <p class="card-text">It allows administrators to manage user accounts, including creating, modifying, and deleting them, as well as controlling their access permissions.</p>
+              </div>
+              <div class="card-footer">
+                  <a href="{{ url_for('views.records') }}" class="btn btn-warning btn-links-hover">View Records</a>
+              </div>
+            </div>
+      </div>
+      <div class="col-4 ">
+          <div class="card bg-night h-100">
+              <img src="{{ url_for('views.images', filename='Slide2.jpg') }}" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title">Create Quiz</h5>
+                <p class="card-text">It allows administrator and professors to create new quizzes, specifying various settings such as quiz details, quiz type, time limit and the visibility</p>
+              </div>
+              <div class="card-footer">
+                  <a href="{{ url_for('views.createquiz')}}" class="btn btn-warning btn-links-hover">Create Quiz</a>
+              </div>
+            </div>
+      </div>
+      <div class="col-4 ">
+          <div class="card bg-night h-100">
+              <img src="{{ url_for('views.images', filename='Slide3.jpg') }}" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title">Quiz Bank</h5>
+                <p class="card-text">Quiz Bank is a repository of pre-existing quizzes and tests that can be used by users to quickly create new quizzes or tests. It typically includes a search function to help users find the specific quizzes they need.</p>
+              </div>
+              <div class="card-footer">
+                  <a href="{{ url_for('views.quizbank')}}" class="btn btn-warning btn-links-hover">View Bank</a>
+              </div>
+            </div>
+      </div>
   </div>
 </div>
 {% endblock %}
