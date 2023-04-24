@@ -5,48 +5,55 @@
 {% block content %}
     <div class="container">
         <div class="row row-cols-1 row-cols-md-2 g-4">
-            <div class="col">
-                <div class="card  card-design">
-                    <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+            <div class="col-3 ">
+                <div class="card bg-night h-100">
+                    <img src="{{ url_for('views.images', filename='Slide1.jpg') }}" class="card-img-top" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">Manage Accounts</h5>
-                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                      <h5 class="card-title">Manage Accounts</h5>
+                      <p class="card-text">It allows administrators to manage user accounts, including creating, modifying, and deleting them, as well as controlling their access permissions.</p>
+                    </div>
+                    <div class="card-footer">
                         <a href="{{ url_for('auth.accounts') }}" class="btn btn-warning btn-links-hover">Manage</a>
                     </div>
-                </div>
+                  </div>
             </div>
-            <div class="col">
-                <div class="card card-design">
-                    <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+            <div class="col-3 ">
+                <div class="card bg-night h-100">
+                    <img src="{{ url_for('views.images', filename='Slide2.jpg') }}" class="card-img-top" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">Create Quiz</h5>
-                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                      <h5 class="card-title">Create Quiz</h5>
+                      <p class="card-text">It allows administrator and professors to create new quizzes, specifying various settings such as quiz details, quiz type, time limit and the visibility</p>
+                    </div>
+                    <div class="card-footer">
                         <a href="{{ url_for('views.createquiz')}}" class="btn btn-warning btn-links-hover">Create Quiz</a>
                     </div>
-                </div>
+                  </div>
             </div>
-            <div class="col">
-                <div class="card card-design">
-                    <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
+            <div class="col-3 ">
+                <div class="card bg-night h-100">
+                    <img src="{{ url_for('views.images', filename='Slide3.jpg') }}" class="card-img-top" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">Live Logs</h5>
-                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                      <h5 class="card-title">Quiz Bank</h5>
+                      <p class="card-text">Quiz Bank is a repository of pre-existing quizzes and tests that can be used by users to quickly create new quizzes or tests. It typically includes a search function to help users find the specific quizzes they need.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ url_for('views.quizbank')}}" class="btn btn-warning btn-links-hover">View Bank</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-3 ">
+                <div class="card bg-night h-100">
+                    <img src="{{ url_for('views.images', filename='Slide4.jpg') }}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Live logs</h5>
+                      <p class="card-text">It provides administrators a detailed view of what is happening in the system in real-time, including user activity, system events, and error messages.</p>
+                    </div>
+                    <div class="card-footer">
                         <a href="{{ url_for('auth.logs')}}" class="btn btn-warning btn-links-hover">View Logs</a>
                     </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card card-design">
-                    <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
-                    <div class="card-body">
-                        <h5 class="card-title">Quiz Bank</h5>
-                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        <a href="{{ url_for('views.quizbank')}}" class="btn btn-warning btn-links-hover">Quiz Bank</a>
-                    </div>
-                </div>
+                  </div>
             </div>
         </div>
     </div>
    
-
 {% endblock %}
