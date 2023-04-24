@@ -29,7 +29,7 @@
             <tr>
               <td>{{ logs.user_id }}</td>
               <td>{{ logs.name}}</td>
-              <td>{{ logs.logtime }}</td>
+              <td>{{ logs.logtime.strftime('%Y-%m-%d %H:%M %p') }}</td>
               <td>{{ logs.activity }}</td>
             </tr>
           {% endfor %}
