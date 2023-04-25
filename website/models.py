@@ -82,4 +82,15 @@ class History(db.Model):
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date_taken = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class AccountStatus(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status = db.Column(db.String(255))
     
+class Room(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
