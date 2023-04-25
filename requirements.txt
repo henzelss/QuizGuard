@@ -4,7 +4,6 @@ Flask-SQLAlchemy
 flask_login
 flask_socketio
 eventlet
-torch
 xhtml2pdf
 xlsxwriter
 email-validator
