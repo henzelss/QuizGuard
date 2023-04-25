@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, url_for, flash, redirect, send_fro
 from flask_socketio import SocketIO, emit
 from datetime import datetime, time
 from flask_login import login_required, current_user
-from .models import User, QuizList, MultipleChoice, FillInTheBlanks, TrueOrFalse, Violations, Student
+from .models import User, QuizList, MultipleChoice, FillInTheBlanks, TrueOrFalse, Violations, Student, Room
 from .forms import CreateQuiz, MultipleChoiceForm, FillInTheBlanksForm, TrueOrFalseForm, MultipleChoiceFormEdit, FillInTheBlanksFormEdit, TrueOrFalseFormEdit, QuizForm, SearchCode, MultipleChoiceQuizForm 
 from .utils import generate_random_string, activity_logs
 from .import db
@@ -434,46 +434,45 @@ def editquiz(quizcode, quiztype):
 @views.route('/createquiz', methods=['GET', 'POST'])
 @login_required
 def createquiz():
-
-    if current_user.usertype == 'user':
-        flash('You dont have permission to access this page', category='error')
-        activity_logs("Try to access webpages not for users")
-        return redirect(url_for('views.student'))
+    # if current_user.usertype == 'user':
+    #     flash('You dont have permission to access this page', category='error')
+    #     activity_logs("Try to access webpages not for users")
+    #     return redirect(url_for('views.student'))
 
     form = QuizForm()
-    if request.method == 'GET':
-        new_code = generate_random_string(8)
-        form.quizcode.data = new_code
-        print('generated code: ' + new_code)
-    elif request.method == 'POST' and request.form.get('submit'):
+    # if request.method == 'GET':
+    #     new_code = generate_random_string(8)
+    #     form.quizcode.data = new_code
+    #     print('generated code: ' + new_code)
+    # elif request.method == 'POST' and request.form.get('submit'):
 
-        startdate_str = request.form['startdate']
-        startdate = datetime.strptime(startdate_str, '%Y-%m-%d').date()
+    #     startdate_str = request.form['startdate']
+    #     startdate = datetime.strptime(startdate_str, '%Y-%m-%d').date()
 
-        enddate_str = request.form['enddate']
-        enddate = datetime.strptime(enddate_str, '%Y-%m-%d').date()
+    #     enddate_str = request.form['enddate']
+    #     enddate = datetime.strptime(enddate_str, '%Y-%m-%d').date()
 
-        new_quiz = QuizList(
-            author_id=current_user.id,
-            code=form.quizcode.data,
-            title=form.title.data,
-            description=form.description.data,
-            category=form.category.data,
-            quiztype=form.quiztype.data,
-            startdate=startdate,
-            enddate=enddate,
-            timelimit=form.timelimit.data,
-            points=form.points.data,
-            visibility=form.visibility.data,
-            attempt=form.attempt.data
-        )
+    #     new_quiz = QuizList(
+    #         author_id=current_user.id,
+    #         code=form.quizcode.data,
+    #         title=form.title.data,
+    #         description=form.description.data,
+    #         category=form.category.data,
+    #         quiztype=form.quiztype.data,
+    #         startdate=startdate,
+    #         enddate=enddate,
+    #         timelimit=form.timelimit.data,
+    #         points=form.points.data,
+    #         visibility=form.visibility.data,
+    #         attempt=form.attempt.data
+    #     )
 
-        db.session.add(new_quiz)
-        db.session.commit()
-        activity_logs('Added New Quiz')
-        flash('New quiz successfully added!', category='success')
+    #     db.session.add(new_quiz)
+    #     db.session.commit()
+    #     activity_logs('Added New Quiz')
+    #     flash('New quiz successfully added!', category='success')
 
-        return redirect(url_for('views.quizbankedit', quizcode=form.quizcode.data, quiztype=form.quiztype.data))
+    #     return redirect(url_for('views.quizbankedit', quizcode=form.quizcode.data, quiztype=form.quiztype.data))
     
     return render_template('createquiz.html', form=form)
 
@@ -568,6 +567,7 @@ def result(quizcode, quiztype ):
     #     if student:
     #         score = student.score
     #     return render_template('result.html', students=students, quiz=quiz, violations=violations, total_no_question=total_no_question, score=score)
+
 
 @views.route('/record_prediction', methods=['POST'])
 @login_required
@@ -703,7 +703,24 @@ def upload_tor(quizcode, quiztype):
     else:
         flash("Invalid File Type", category="warning")
         return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
-    
+
+
+# @views.route('/monitoring/<string:quizcode>/<string:userid>')
+# @login_required
+# def monitoring(quizcode, userid):
+
+#     return render_template("monitoring.html")
+
+
+@views.route('/monitoring<string:quizid>')
+@login_required
+def monitoring(quizid):
+
+    room = Room()
+    return render_template('monitoring.html')
+
+
+
 
 #multiple choice
 @views.route('/download_multiple/')
