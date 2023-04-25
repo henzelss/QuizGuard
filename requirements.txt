@@ -10,3 +10,4 @@ email-validator
 SQLAlchemy
 Jinja2
 pytz
+gunicorn==19.7.1
