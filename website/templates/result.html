@@ -21,6 +21,7 @@
                                 </div>
                                 <th scope="col">Full Name</th>
                                 <th scope="col">Score</th>
+                                <th scope="col">Achievement</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -28,6 +29,7 @@
                                 <tr>
                                     <td>{{ student.firstname|title }}&nbsp;{{ student.lastname|title }}</td>
                                     <td>{{ student.score}}/{{total_score}}</td>
+                                    <td>Honesty</td>
                                 </tr>
                               {% endfor %}
                         </tbody>
