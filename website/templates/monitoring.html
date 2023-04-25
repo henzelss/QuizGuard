@@ -1,0 +1,133 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<div class="container mt-5 rounded">
+    <div class="accordion bg-night rounded" id="accordionPanelsStayOpenExample">
+        <div class="accordion-item bg-night">
+            <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+            <button class="accordion-button bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+              <i class="fa-solid fa-users me-2"></i><h4>Student List</h4>
+            </button>
+            </h2>
+            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                <div class="accordion-body bg-night">
+                  <table class="table table-hover table-dark">
+                    <thead>
+                      <tr>
+                        <th scope="col">Full Name</th>
+                        <th scope="col">Laptop Detected</th>
+                        <th scope="col">Phone Detected</th>
+                        <th scope="col">Head Direction</th>
+                        <th scope="col">Switch Tabs</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Fernando Lagahit</td>
+                        <td>True</td>
+                        <td>True</td>
+                        <td>Front</td>  
+                        <td>the user is detected switching tabs</td>
+                        <td>
+                          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WarningModal">
+                            <i class="fa-solid fa-envelope me-1"></i>Warning
+                          </button>
+                          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#TerminateModal">
+                            <i class="fa-solid fa-hammer me-1"></i>Disqualified
+                          </button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Henzel Quitaneg</td>
+                        <td>True</td>
+                        <td>False</td>
+                        <td>Front</td>  
+                        <td>the user is detected switching tabs</td>
+                        <td>
+                          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WarningModal">
+                            <i class="fa-solid fa-envelope me-1"></i>Warning
+                          </button>
+                          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#TerminateModal">
+                            <i class="fa-solid fa-hammer me-1"></i>Disqualified
+                          </button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Jeffrey Guevarra</td>
+                        <td>True</td>
+                        <td>False</td>
+                        <td>Front</td>  
+                        <td>the user is detected switching tabs</td>
+                        <td>
+                          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WarningModal">
+                            <i class="fa-solid fa-envelope me-1"></i>Warning
+                          </button>
+                          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#TerminateModal">
+                            <i class="fa-solid fa-hammer me-1"></i>Disqualified
+                          </button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>John Nino Malambus</td>
+                        <td>True</td>
+                        <td>False</td>
+                        <td>Front</td>  
+                        <td>the user is detected switching tabs</td>
+                        <td>
+                          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WarningModal">
+                            <i class="fa-solid fa-envelope me-1"></i>Warning
+                          </button>
+                          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#TerminateModal">
+                            <i class="fa-solid fa-hammer me-1"></i>Disqualified
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <!-- Modal -->
+                  <div class="modal fade" id="TerminateModal" tabindex="-1" aria-labelledby="TerminateModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content bg-shade-18">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="TerminateModalLabel">Disqualified</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          Are you sure you want to disqualified the user from taking quiz?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger"><i class="fa-solid fa-hammer me-1"></i>Disqualified</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- modal -->
+                  <div class="modal fade" id="WarningModal" tabindex="-1" aria-labelledby="WarningModal" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content bg-shade-18">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="WarningModalLabel">Message</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body bg-shade-18">
+                            <form action="">
+                              <div class="form-floating">
+                                <textarea class="form-control bg-night text-light" style='border:none !important;' placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                                <label for="floatingTextarea2">Comments</label>
+                              </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-warning"><i class="fa-solid fa-paper-plane me-1"></i>send</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
