@@ -1,4 +1,13 @@
-pip install eventlet
-pip install torch
-pip install xhtml2pdf
-pip install xlsxwriter
+Flask
+Flask-WTF
+Flask-SQLAlchemy
+flask_login
+flask_socketio
+eventlet
+torch
+xhtml2pdf
+xlsxwriter
+email-validator
+SQLAlchemy
+Jinja2
+pytz
