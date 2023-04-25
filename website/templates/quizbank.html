@@ -115,6 +115,7 @@
                                 </div>
                                 <div class="modal-footer mt-3">
                                         <input type="text" id="quizcode{{ quiz.id }}" value="{{ quiz.code }}" id="quizcode" hidden>
+                                       
                                         <button type="button" class="btn btn-secondary" onclick='copyText("{{ quiz.id }}")'><i class="fa-regular fa-clipboard me-1"></i>Copy Code</button>
                                         <button type="button" class="btn btn-primary" onclick='shareText("{{ quiz.id }}")'><i class="fa-regular fa-share-from-square me-1"></i>Share</button>
                                     {% if current_user.id == quiz.author_id %}
@@ -122,9 +123,9 @@
                                         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#quizdelete{{quiz.id}}"><i class="fa-solid fa-trash me-1"></i>Remove</button>
                                     {% elif current_user.id != quiz.author_id %}
                                         <a href="{{ url_for('views.clonequiz', quizid=quiz.id, quizcode=quiz.code)}}" class="btn btn-info"><i class="fa-regular fa-clone me-1"></i>Copy Quiz</a>
-                                    {% elif current_user.usertype == 'admin'%}
-                                        <a href="{{ url_for('views.quizbankedit', quizcode=quiz.code, quiztype=quiz.quiztype)}}" class="btn btn-warning"><i class="fa-solid fa-pen-to-square me-1"></i>Edit</a>
-                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#quizdelete{{quiz.id}}"><i class="fa-solid fa-trash me-1"></i>Remove</button>
+                                    {% endif %}
+                                    {% if current_user.usertype == 'admin'%}
+                                        <a href="{{ url_for('views.monitoring', quizid=quiz.id)}}" class="btn btn-success"><i class="fa-solid fa-desktop me-1"></i>Monitor</a>
                                     {% endif %}
                                 </div>
                             </div>
