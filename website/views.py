@@ -131,8 +131,6 @@ def clonequiz(quizid, quizcode):
 @views.route('/quizbank')
 @login_required
 def quizbank():
-    if current_user.is_authenticated == False:
-        flash("You can access this page without logging in", category="danger")
     # user is authenticated, do something
     # SELECT quiz_list.*, user.firstname, user.lastname 
     # FROM quiz_list 
