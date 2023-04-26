@@ -118,33 +118,35 @@ def clonequiz(quizid, quizcode):
     flash("Successfully clone the quiz", category="success")
     return redirect(url_for('views.myquiz'))
 
-# @views.route('/quizbank')
-# @login_required
-# def quizbank():
-#     form = SearchCode()
-#     # SELECT quiz_list.*, user.firstname, user.lastname 
-#     # FROM quiz_list 
-#     # JOIN user ON quiz_list.author_id = user.id;
-#     quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
-#     return render_template('quizbank.html', quiz_list=quiz_list, form=form, current_user=current_user)
-
 @views.route('/quizbank')
 @login_required
 def quizbank():
-    # user is authenticated, do something
+    form = SearchCode()
     # SELECT quiz_list.*, user.firstname, user.lastname 
     # FROM quiz_list 
     # JOIN user ON quiz_list.author_id = user.id;
-    form = SearchCode()
-    current_date = date.today()
-    quiz_list = (
-        db.session.query(QuizList, User.firstname, User.lastname)
-        .join(User, QuizList.author_id == User.id)
-        .filter(QuizList.startdate <= current_date)
-        .filter(QuizList.enddate >= current_date)
-        .all()
-    )
+    quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
     return render_template('quizbank.html', quiz_list=quiz_list, form=form, current_user=current_user)
+
+# @views.route('/quizbank')
+# @login_required
+# def quizbank():
+#     # user is authenticated, do something
+#     # SELECT quiz_list.*, user.firstname, user.lastname 
+#     # FROM quiz_list 
+#     # JOIN user ON quiz_list.author_id = user.id;
+#     form = SearchCode()
+#     current_date = date.today()
+#     quiz_list = (
+#         db.session.query(QuizList, User.firstname, User.lastname)
+#         .join(User, QuizList.author_id == User.id)
+#         .filter(QuizList.startdate <= current_date)
+#         .filter(QuizList.enddate >= current_date)
+#         .all()
+#     )
+#     print(f'quiz_list : {quiz_list}')
+
+#     return render_template('quizbank.html', quiz_list=quiz_list, form=form, current_user=current_user)
 
 @views.route('/searchquiz',  methods=['GET', 'POST'])
 @login_required
