@@ -23,66 +23,23 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Fernando Lagahit</td>
-                        <td>True</td>
-                        <td>True</td>
-                        <td>Front</td>  
-                        <td>the user is detected switching tabs</td>
-                        <td>
-                          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WarningModal">
-                            <i class="fa-solid fa-envelope me-1"></i>Warning
-                          </button>
-                          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#TerminateModal">
-                            <i class="fa-solid fa-hammer me-1"></i>Disqualified
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Henzel Quitaneg</td>
-                        <td>True</td>
-                        <td>False</td>
-                        <td>Front</td>  
-                        <td>the user is detected switching tabs</td>
-                        <td>
-                          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WarningModal">
-                            <i class="fa-solid fa-envelope me-1"></i>Warning
-                          </button>
-                          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#TerminateModal">
-                            <i class="fa-solid fa-hammer me-1"></i>Disqualified
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Jeffrey Guevarra</td>
-                        <td>True</td>
-                        <td>False</td>
-                        <td>Front</td>  
-                        <td>the user is detected switching tabs</td>
-                        <td>
-                          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WarningModal">
-                            <i class="fa-solid fa-envelope me-1"></i>Warning
-                          </button>
-                          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#TerminateModal">
-                            <i class="fa-solid fa-hammer me-1"></i>Disqualified
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>John Nino Malambus</td>
-                        <td>True</td>
-                        <td>False</td>
-                        <td>Front</td>  
-                        <td>the user is detected switching tabs</td>
-                        <td>
-                          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WarningModal">
-                            <i class="fa-solid fa-envelope me-1"></i>Warning
-                          </button>
-                          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#TerminateModal">
-                            <i class="fa-solid fa-hammer me-1"></i>Disqualified
-                          </button>
-                        </td>
-                      </tr>
+                      {% for current_person in current_room %}
+                        <tr>
+                          <td>{{current_person.firstname | title }}&nbsp;{{current_person.lastname | title }}</td>
+                          <td>{{ current_person.laptop }}</td>
+                          <td>{{ current_person.phone }}</td>
+                          <td>{{ current_person.head_pose }}</td>  
+                          <td>{{ current_person.switch_tabs }}</td>
+                          <td>
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WarningModal">
+                              <i class="fa-solid fa-envelope me-1"></i>Warning
+                            </button>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#TerminateModal">
+                              <i class="fa-solid fa-hammer me-1"></i>Disqualified
+                            </button>
+                          </td>
+                        </tr>
+                      {% endfor %}
                     </tbody>
                   </table>
                   <!-- Modal -->
@@ -90,11 +47,11 @@
                     <div class="modal-dialog">
                       <div class="modal-content bg-shade-18">
                         <div class="modal-header">
-                          <h5 class="modal-title" id="TerminateModalLabel">Disqualified</h5>
+                          <h5 class="modal-title" id="TerminateModalLabel">Disqualified?</h5>
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          Are you sure you want to disqualified the user from taking quiz?
+                          Are you sure you want to disqualified this user from taking quiz?
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-danger"><i class="fa-solid fa-hammer me-1"></i>Disqualified</button>
