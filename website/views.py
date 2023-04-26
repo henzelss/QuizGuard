@@ -439,7 +439,7 @@ def createquiz():
     #     activity_logs("Try to access webpages not for users")
     #     return redirect(url_for('views.student'))
 
-    form = QuizForm()
+    # form = QuizForm()
     # if request.method == 'GET':
     #     new_code = generate_random_string(8)
     #     form.quizcode.data = new_code
@@ -473,7 +473,7 @@ def createquiz():
     #     flash('New quiz successfully added!', category='success')
 
     #     return redirect(url_for('views.quizbankedit', quizcode=form.quizcode.data, quiztype=form.quiztype.data))
-    
+    form = QuizForm()
     return render_template('createquiz.html', form=form)
 
 
@@ -722,6 +722,7 @@ def monitoring(quizid):
 
 
 
+
 #multiple choice
 @views.route('/download_multiple/')
 @login_required
@@ -766,7 +767,7 @@ def page_not_found(e):
     return render_template("404.html"), 404
 
 #error page handler | Internal server error
-@views.errorhandler(500)
-def page_not_found(e):
-    return render_template("500.html"), 500
+# @views.errorhandler(500)
+# def page_not_found(e):
+#     return render_template("500.html"), 500
 
