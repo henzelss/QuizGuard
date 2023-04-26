@@ -17,9 +17,10 @@
         integrity="sha512-6K6+H87tLdCWvY5ml9ZQXLRlPlDEt8uXmtELhuJRgFyEDv6JvndWHg3jadJuBVGPEhhA2AAt+ROMC2V7EvTIWw=="
         crossorigin="anonymous"></script>
     
-    <script src="https://cdn.roboflow.com/0.2.22/roboflow.js"></script> 
 
-    <script src="{{ url_for('static', filename='obj_detection.js') }}"></script>
+    <!--    <script src="https://cdn.roboflow.com/0.2.22/roboflow.js"></script>  -->
+
+    <!-- <script src="{{ url_for('static', filename='obj_detection.js') }}"></script> -->
 
 {% endblock %}
 
@@ -168,41 +169,39 @@
     </script>
 
 <script type="text/javascript">
+    var quiz_code = "{{ quiz.code }}";
     var tab_switching = ""
     document.addEventListener("visibilitychange", (event) => 
     {
         if (document.visibilityState == "visible") {
             
             tab_switching = "not detected to tab switching";
-        } else {
-            //console.log("tab is inactive")
-            //document.getElementById("tab-switching").value = "The user is detected to alt tab once";
-            tab_switching = "The user is detected to alt tab or switch tab once";
-            $.ajax(
-            {
-                type:'POST',
-                contentType:'application/json;charset-utf-08',
-                dataType:'json',
-                url:'http://127.0.0.1:5000/switchtabs?value='+tab_switching ,
-                success:function (data) {
-                    var reply=data.reply;
-                    if (reply=="success")
-                    {
-                        return;
-                    }
-                    else
+        } 
+        else{
+                //console.log("tab is inactive")
+                //document.getElementById("tab-switching").value = "The user is detected to alt tab once";
+                tab_switching = "The user is detected to alt tab or switch tab once";
+                $.ajax(
+                {
+                    type:'POST',
+                    contentType:'application/json;charset-utf-08',
+                    dataType:'json',
+                    url: 'http://127.0.0.1:5000/switchtabs?value=' + tab_switching + '&quiz_code=' + quiz_code,
+                    success:function (data) {
+                        var reply=data.reply;
+                        if (reply=="success")
                         {
-                        alert("some error ocured in session agent")
+                            return;
                         }
+                        else
+                            {
+                            alert("some error ocured in session agent")
+                            }
 
+                    }
                 }
-            }
-        );
-            
+            );
         }
-
     });
-
-
 </script>
 {% endblock %}
