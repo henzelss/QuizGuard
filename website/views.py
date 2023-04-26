@@ -485,6 +485,11 @@ def checkcamera(quizid, quizcode, quiztype):
 @views.route('/quiz/<string:quizid>/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
 @login_required
 def quiz(quizid, quizcode, quiztype):
+
+    room = Room(quiz_code=quizcode, user_id=current_user, toast_message="", status="active")
+    db.session.add(room)
+    db.session.commit()
+
     quiz = QuizList.query.filter_by(code=quizcode).first()
     if quiz is None:
         # handle invalid quiz code
@@ -501,14 +506,27 @@ def quiz(quizid, quizcode, quiztype):
         #form = TrueOrFalseForm()
         questions = TrueOrFalse.query.filter_by(quiz_code=quizcode).all()
 
-    question_count = len(questions)
-    return render_template('quiz.html', quiz=quiz, questions=questions, quiztype=quiztype, quizcode=quizcode, question_count=question_count)
+    if questions is None or len(questions) == 0:
+        print('question len is none')
+        flash("No questions found for this quiz", category="error")
+        return redirect(url_for('views.student'))
+    else:
+        print('question len is not none')
+        question_count = len(questions)
+        return render_template('quiz.html', quiz=quiz, questions=questions, quiztype=quiztype, quizcode=quizcode, question_count=question_count)
+
+    # question_count = len(questions)
+    # return render_template('quiz.html', quiz=quiz, questions=questions, quiztype=quiztype, quizcode=quizcode, question_count=question_count)
 
 @views.route('/result/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
 @login_required
 def result(quizcode, quiztype ):
-    violations = Violations.query.all()
-    #violations = Violations.query.filter_by(quizcode=quizcode).order_by(Violations.date.desc()).all()
+    #violations = Violations.query.all()
+    violations = db.session.query(User.id, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs).\
+                join(Violations, User.id == Violations.user_id).\
+                join(QuizList, QuizList.code == Violations.quiz_code).\
+                filter(Violations.user_id == current_user.id).\
+                filter(QuizList.code == quizcode).all()
     score = 0
     total_no_question = 0
     if request.method =="POST" or request.form.get('submit') == 'Submit':
@@ -551,6 +569,11 @@ def result(quizcode, quiztype ):
         # student = Student(user_id=current_user.id, quiz_id=quiz.id, score=score)
         # db.session.add(student)
         # db.session.commit()
+        # Delete student from room table
+        room_student = Room.query.filter_by(user_id=current_user.id).first()
+        if room_student:
+            db.session.delete(room_student)
+            db.session.commit()
 
         #joined table of user and student table
         students = db.session.query(Student.score, User.firstname, User.lastname).\
@@ -599,17 +622,33 @@ def process_frame():
     else:
         return "failed"
 
-@views.route('/switchtabs',methods=['POST'])
+# @views.route('/switchtabs',methods=['POST'])
+# @login_required
+# def switchtabs():
+#     value = request.args.get('value')
+#     user_id = current_user.id
+#     violation = Violations.query.filter_by(user_id=user_id).first()
+#     if violation is not None:
+#         violation.switch_tabs = value
+#         db.session.commit()
+#     else:
+#         violation = Violations(switch_tabs=value, user_id=user_id)
+#         db.session.add(violation)
+#         db.session.commit()
+#     return jsonify({'reply': 'success'})
+
+@views.route('/switchtabs', methods=['POST'])
 @login_required
 def switchtabs():
     value = request.args.get('value')
     user_id = current_user.id
-    violation = Violations.query.filter_by(user_id=user_id).first()
+    quiz_code = request.args.get('quiz_code')
+    violation = Violations.query.filter_by(user_id=user_id, quiz_code=quiz_code).first()
     if violation is not None:
         violation.switch_tabs = value
         db.session.commit()
     else:
-        violation = Violations(switch_tabs=value, user_id=user_id, date=datetime.now())
+        violation = Violations(switch_tabs=value, user_id=user_id, quiz_code=quiz_code)
         db.session.add(violation)
         db.session.commit()
     return jsonify({'reply': 'success'})
@@ -639,7 +678,7 @@ def upload_multiple(quizcode, quiztype):
         flash("Questions uploaded successfully", category="success")
         return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
     else:
-        flash("Invalid File Type", category="warning")
+        flash("Unsuccessfull insert please check the format or the file type", category="warning")
         return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
 
 # this is function is for bulk entry of questions for fill in the blank type quiz
@@ -705,23 +744,48 @@ def upload_tor(quizcode, quiztype):
         return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
 
 
-# @views.route('/monitoring/<string:quizcode>/<string:userid>')
-# @login_required
-# def monitoring(quizcode, userid):
 
-#     return render_template("monitoring.html")
+@views.route('/top5')
+def top5():
+    pass
+
+@views.route('/top10')
+def top10():
+    pass
+
+@views.route('/ExportAllResult')
+def ExportAllResult():
+    pass
 
 
-@views.route('/monitoring<string:quizid>')
+
+@views.route('/monitoring/<string:quizcode>')
 @login_required
-def monitoring(quizid):
-
-    room = Room()
-    return render_template('monitoring.html')
-
-
-
-
+def monitoring(quizcode):
+    # room = Room.query.filter_by(quiz_code=quizcode, user_id=current_user.id).first()
+    # violations = Violations.query.filter_by(quiz_code=quizcode, user_id=current_user.id).first()
+    # current_room = db.session.query(Room, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs)\
+    # .join(User)\
+    # .join(Violations)\
+    # .filter(Room.quiz_code == quizcode, Room.user_id == current_user.id)\
+    # .first()
+    room_query = db.session.query(Room, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs)\
+    .select_from(Room)\
+    .join(User, Room.user_id == User.id)\
+    .join(Violations, (Room.user_id == Violations.user_id) & (Room.quiz_code == Violations.quiz_code))\
+    .filter(Room.quiz_code == quizcode, Room.user_id == current_user.id)\
+    .first()
+    current_room = []
+    if room_query is not None:
+        for room, firstname, lastname, laptop, phone, head_pose, switch_tabs in room_query:
+            current_room.append({'firstname': firstname, 'lastname': lastname, 'laptop': laptop, 'phone': phone, 'head_pose': head_pose, 'switch_tabs': switch_tabs})
+            # Your code to pass the query results to the template goes here
+    else:
+        flash("The room is currently empty right now ", category='warning')
+        return redirect(url_for('views.dashboard'))
+    
+    flash(f"Welcome { current_user.firstname}", category='warning')
+    return render_template('monitoring.html', current_room=current_room)
 
 #multiple choice
 @views.route('/download_multiple/')
@@ -767,7 +831,7 @@ def page_not_found(e):
     return render_template("404.html"), 404
 
 #error page handler | Internal server error
-# @views.errorhandler(500)
-# def page_not_found(e):
-#     return render_template("500.html"), 500
+@views.errorhandler(500)
+def page_not_found(e):
+    return render_template("500.html"), 500
 
