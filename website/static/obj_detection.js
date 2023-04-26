@@ -154,19 +154,19 @@ $(function () {
             const height = prediction.bbox.height;
             console.log(prediction.class);
 
-            if (prediction.class) {
-                $.ajax({
-                    url: "/record_prediction",
-                    method: "POST",
-                    data: { prediction_class: prediction.class },
-                    success: function (response) {
-                        console.log(response);
-                    },
-                    error: function (xhr, status, error) {
-                        console.log(error);
-                    }
-                });
-            }
+            // if (prediction.class) {
+            //     $.ajax({
+            //         url: "/record_prediction",
+            //         method: "POST",
+            //         data: { prediction_class: prediction.class },
+            //         success: function (response) {
+            //             console.log(response);
+            //         },
+            //         error: function (xhr, status, error) {
+            //             console.log(error);
+            //         }
+            //     });
+            // }
 
             // Draw the text last to ensure it's on top.
             ctx.font = font;
@@ -184,6 +184,7 @@ $(function () {
 
     var prevTime;
     var pastFrameTimes = [];
+    var lastobj = "front"
     const detectFrame = function () {
         if (!model) return requestAnimationFrame(detectFrame);
 
@@ -200,6 +201,22 @@ $(function () {
                     var total = 0;
                     _.each(pastFrameTimes, function (t) {
                         total += t / 1000;
+                        var current = prediction.class;
+                        if(current != lastobj) // only send prediction if the current action is change
+                        {
+                            lastobj = current;
+                            $.ajax({
+                                url: "/record_prediction",
+                                method: "POST",
+                                data: { prediction_class: prediction.class },
+                                success: function (response) {
+                                    console.log(response);
+                                },
+                                error: function (xhr, status, error) {
+                                    console.log(error);
+                                }
+                            })
+                        }
                     });
 
                     var fps = pastFrameTimes.length / total;
