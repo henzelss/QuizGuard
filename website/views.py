@@ -434,46 +434,45 @@ def editquiz(quizcode, quiztype):
 @views.route('/createquiz', methods=['GET', 'POST'])
 @login_required
 def createquiz():
-    # if current_user.usertype == 'user':
-    #     flash('You dont have permission to access this page', category='error')
-    #     activity_logs("Try to access webpages not for users")
-    #     return redirect(url_for('views.student'))
+    if current_user.usertype == 'user':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("Try to access webpages not for users")
+        return redirect(url_for('views.student'))
 
-    # form = QuizForm()
-    # if request.method == 'GET':
-    #     new_code = generate_random_string(8)
-    #     form.quizcode.data = new_code
-    #     print('generated code: ' + new_code)
-    # elif request.method == 'POST' and request.form.get('submit'):
-
-    #     startdate_str = request.form['startdate']
-    #     startdate = datetime.strptime(startdate_str, '%Y-%m-%d').date()
-
-    #     enddate_str = request.form['enddate']
-    #     enddate = datetime.strptime(enddate_str, '%Y-%m-%d').date()
-
-    #     new_quiz = QuizList(
-    #         author_id=current_user.id,
-    #         code=form.quizcode.data,
-    #         title=form.title.data,
-    #         description=form.description.data,
-    #         category=form.category.data,
-    #         quiztype=form.quiztype.data,
-    #         startdate=startdate,
-    #         enddate=enddate,
-    #         timelimit=form.timelimit.data,
-    #         points=form.points.data,
-    #         visibility=form.visibility.data,
-    #         attempt=form.attempt.data
-    #     )
-
-    #     db.session.add(new_quiz)
-    #     db.session.commit()
-    #     activity_logs('Added New Quiz')
-    #     flash('New quiz successfully added!', category='success')
-
-    #     return redirect(url_for('views.quizbankedit', quizcode=form.quizcode.data, quiztype=form.quiztype.data))
     form = QuizForm()
+    if request.method == 'GET':
+        new_code = generate_random_string(8)
+        form.quizcode.data = new_code
+        print('generated code: ' + new_code)
+    elif request.method == 'POST' and request.form.get('submit'):
+
+        startdate_str = request.form['startdate']
+        startdate = datetime.strptime(startdate_str, '%Y-%m-%d').date()
+
+        enddate_str = request.form['enddate']
+        enddate = datetime.strptime(enddate_str, '%Y-%m-%d').date()
+
+        new_quiz = QuizList(
+            author_id=current_user.id,
+            code=form.quizcode.data,
+            title=form.title.data,
+            description=form.description.data,
+            category=form.category.data,
+            quiztype=form.quiztype.data,
+            startdate=startdate,
+            enddate=enddate,
+            timelimit=form.timelimit.data,
+            points=form.points.data,
+            visibility=form.visibility.data,
+            attempt=form.attempt.data
+        )
+
+        db.session.add(new_quiz)
+        db.session.commit()
+        activity_logs('Added New Quiz')
+        flash('New quiz successfully added!', category='success')
+        return redirect(url_for('views.quizbankedit', quizcode=form.quizcode.data, quiztype=form.quiztype.data))
+    
     return render_template('createquiz.html', form=form)
 
 
@@ -561,12 +560,13 @@ def result(quizcode, quiztype ):
           all()
         return render_template('result.html', students=students, quiz=quiz, violations=violations, total_score=total_score)
     # else:
-    #     quiz = QuizList.query.filter_by(code=quizcode).first()
-    #     total_no_question = quiz.questions.count()
-    #     student = Student.query.filter_by(user_id=current_user.id, quiz_id=quiz.id).first()
-    #     if student:
-    #         score = student.score
-    #     return render_template('result.html', students=students, quiz=quiz, violations=violations, total_no_question=total_no_question, score=score)
+    #     # quiz = QuizList.query.filter_by(code=quizcode).first()
+    #     # total_no_question = quiz.questions.count()
+    #     # student = Student.query.filter_by(user_id=current_user.id, quiz_id=quiz.id).first()
+    #     # if student:
+    #     #     score = student.score
+    #     # return render_template('result.html', students=students, quiz=quiz, violations=violations, total_no_question=total_no_question, score=score)
+    #     return
 
 
 @views.route('/record_prediction', methods=['POST'])
