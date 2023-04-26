@@ -23,7 +23,7 @@ class QuizList(db.Model):
     description = db.Column(db.String(1000), nullable=False)
     category = db.Column(db.String(10), nullable=False)
     quiztype = db.Column(db.String(10), nullable=False)
-    startdate = db.Column(db.Date, nullable=True)
+    startdate = db.Column(db.Date, nullable=True)   
     enddate = db.Column(db.Date, nullable=True)
     timelimit = db.Column(db.Integer, nullable=False)
     points = db.Column(db.Integer, nullable=False)
@@ -57,15 +57,26 @@ class Student(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
     score = db.Column(db.Integer, nullable=False)
+    
+
+# class Violations(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     detected = db.Column(db.String(50))
+#     multiple_people = db.Column(db.String(50))
+#     phone_detected = db.Column(db.String(50))
+#     focus = db.Column(db.String(50))
+#     switch_tabs = db.Column(db.String(50))
+#     date = db.Column(db.DateTime(timezone=True), default=func.now())
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
+#     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
+
 
 class Violations(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    detected = db.Column(db.String(50))
-    multiple_people = db.Column(db.String(50))
-    phone_detected = db.Column(db.String(50))
-    focus = db.Column(db.String(50))
+    laptop = db.Column(db.String(50))
+    phone = db.Column(db.String(50))
+    head_pose = db.Column(db.String(50))
     switch_tabs = db.Column(db.String(50))
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
 
@@ -83,14 +94,23 @@ class History(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date_taken = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-class AccountStatus(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    status = db.Column(db.String(255))
+# class AccountStatus(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+#     status = db.Column(db.String(255))
+
     
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    toast_message = db.Column(db.String(255))
+    status = db.Column(db.String(255))
+
+
+class Achievements(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    image_path = db.Column(db.String(255))
 
