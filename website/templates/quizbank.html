@@ -26,7 +26,7 @@
 
     <div class="container mt-5 rounded" > 
         <div class="row">
-            {% for quiz, firstname, lastname in quiz_list %}
+            {% for quiz, firstname, lastname in quiz_list if quiz.visibility == 1%}
                 <div class="col-md-3 col-sm-6 col-12">
                     <button class="btn text-start shadow-none"  data-bs-toggle="modal" data-bs-target="#quiz{{ quiz.id }}">
                         <div class="card bg-night" style="width: 18rem;">
@@ -124,7 +124,7 @@
                                     {% elif current_user.id != quiz.author_id %}
                                         <a href="{{ url_for('views.clonequiz', quizid=quiz.id, quizcode=quiz.code)}}" class="btn btn-info"><i class="fa-regular fa-clone me-1"></i>Copy Quiz</a>
                                     {% endif %}
-                                    {% if current_user.usertype == 'admin' or current_user.usertype == 'professor' and current_user.id == quiz.author_id%}
+                                    {% if current_user.id == quiz.author_id%}
                                         <a href="{{ url_for('views.monitoring', quizcode=quiz.code)}}" class="btn btn-success"><i class="fa-solid fa-desktop me-1"></i>Monitor</a>
                                     {% endif %}
                                 </div>
