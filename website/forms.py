@@ -139,7 +139,7 @@ class QuizForm(FlaskForm):
     visibility = RadioField('Visibility', choices=[('1', Markup('<i class="fa-solid fa-earth-asia me-1"></i>public')), ('2', Markup('<i class="fa-solid fa-lock me-1"></i>private'))])
     quizcode = StringField('Quiz Code', validators=[DataRequired()], render_kw={"readonly": True})
     #attempt = IntegerField('Number of Attempts', validators=[NumberRange(min=0, max=10)])
-    attempt = RadioField('Number of Attempts', choices=[('0', Markup('<i class="fa-solid fa-pen me-1"></i> Infinite')), ('1', Markup('<i class="fa-solid fa-pen me-1"></i> 1 Attempts')),
+    attempt = RadioField('Number of Attempts', choices=[('100', Markup('<i class="fa-solid fa-pen me-1"></i> Infinite')), ('1', Markup('<i class="fa-solid fa-pen me-1"></i> 1 Attempts')),
                                                         ('2', Markup('<i class="fa-solid fa-pen me-1"></i> 2 Attempts')), ('3', Markup('<i class="fa-solid fa-pen me-1"></i> 3 Attempts')), 
                                                         ('5', Markup('<i class="fa-solid fa-pen me-1"></i> 5 Attempts')), ('10', Markup('<i class="fa-solid fa-pen me-1"></i> 10 Attempts'))
                                                         ])
