@@ -197,7 +197,7 @@ def edit(user_id):
 
         if request.form['password'] != request.form['retype']:
             flash("The password and retype password doesnt match")
-            return redirect(url_for('auth.edit'))
+            return redirect(url_for('auth.edit', user_id=user_id))
 
         try: 
             db.session.commit()
@@ -275,6 +275,7 @@ def exalllogs():
         flash('You dont have permission to access this page', category='error')
         activity_logs("The user tried to export the live logs")
         return redirect(url_for('views.student'))
+    
     today = date.today()
     logs = ActivityLog.query.all()
     df = pd.DataFrame([(log.user_id, log.name, log.logtime, log.activity) for log in logs],
@@ -304,6 +305,10 @@ def extodaylog():
     writer.close()
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name=f'Logs Today {today}.xlsx')
+
+
+
+
 
 # @auth.route('/pdfalllogs')
 # def pdfalllogs():
