@@ -486,10 +486,13 @@ def checkcamera(quizid, quizcode, quiztype):
 @login_required
 def quiz(quizid, quizcode, quiztype):
 
-    room = Room(quiz_code=quizcode, user_id=current_user, toast_message="", status="active")
-    db.session.add(room)
-    db.session.commit()
-
+    room = Room.query.filter_by(quiz_code=quizcode, user_id=current_user.id).first()
+    if not room:
+        # If not, create a new Room object and add it to the database
+        room = Room(quiz_code=quizcode, user_id=current_user.id, toast_message="", status="active")
+        db.session.add(room)
+        db.session.commit()
+        
     quiz = QuizList.query.filter_by(code=quizcode).first()
     if quiz is None:
         # handle invalid quiz code
