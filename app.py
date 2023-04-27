@@ -4,6 +4,7 @@ from flask_cors import CORS
 #wrap the program in socket io
 
 app = create_app()
+CORS(app) 
 socketio.init_app(app)
 
 # only if we run this file not when we import our file
