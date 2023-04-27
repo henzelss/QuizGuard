@@ -596,25 +596,67 @@ def result(quizcode, quiztype ):
     #     return
 
 
+# @views.route('/record_prediction', methods=['POST'])
+# @login_required
+# def process_frame():
+#     prediction_class = request.form.get("prediction_class")
+#     if prediction_class:
+#         # check if the user already has a violation of this type
+#         violation = Violations.query.filter_by(user_id=current_user.id, detected=prediction_class).first()
+#         if violation:
+#             # update the existing violation
+#             violation.date = datetime.now()
+#         else:
+#             # create a new violation
+#             violation = Violations(
+#                 detected=prediction_class,
+#                 user_id=current_user.id
+#             )
+#         # check if the prediction class is "phone"
+#         if prediction_class == "phone":
+#             violation.phone_detected = "Yes"
+#         # save the violation to the database
+#         try:
+#             db.session.add(violation)
+#             db.session.commit()
+#         except IntegrityError:
+#             db.session.rollback()
+#             return "failed"
+#         return "success"
+#     else:
+#         return "failed"
+
 @views.route('/record_prediction', methods=['POST'])
 @login_required
 def process_frame():
     prediction_class = request.form.get("prediction_class")
     if prediction_class:
         # check if the user already has a violation of this type
-        violation = Violations.query.filter_by(user_id=current_user.id, detected=prediction_class).first()
+        violation = Violations.query.filter_by(user_id=current_user.id).first()
         if violation:
             # update the existing violation
-            violation.date = datetime.now()
+            if prediction_class == "laptop":
+                violation.laptop = "True"
+            elif prediction_class == "phone":
+                violation.phone = "True"
+            elif prediction_class == "head_pose":
+                violation.head_pose = "True"
+            elif prediction_class == "switch_tabs":
+                violation.switch_tabs = "The user is detected to alt tab or switch tab once"
         else:
             # create a new violation
             violation = Violations(
-                detected=prediction_class,
-                user_id=current_user.id
+                user_id=current_user.id,
+                quiz_code=request.form.get("quiz_code")
             )
-        # check if the prediction class is "phone"
-        if prediction_class == "phone":
-            violation.phone_detected = "Yes"
+            if prediction_class == "laptop":
+                violation.laptop = "True"
+            elif prediction_class == "phone":
+                violation.phone = "True"
+            elif prediction_class == "head_pose":
+                violation.head_pose = "True"
+            elif prediction_class == "switch_tabs":
+                violation.switch_tabs = "The user is detected to alt tab or switch tab once"
         # save the violation to the database
         try:
             db.session.add(violation)
@@ -625,6 +667,18 @@ def process_frame():
         return "success"
     else:
         return "failed"
+
+
+
+
+
+
+
+
+
+
+
+
 
 # @views.route('/switchtabs',methods=['POST'])
 # @login_required
