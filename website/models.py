@@ -79,6 +79,13 @@ class Violations(db.Model):
     switch_tabs = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
+    
+class Room(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    toast_message = db.Column(db.String(255))
+    status = db.Column(db.String(255))
 
 class ActivityLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -93,21 +100,6 @@ class History(db.Model):
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date_taken = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-# class AccountStatus(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-#     status = db.Column(db.String(255))
-
-    
-class Room(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    toast_message = db.Column(db.String(255))
-    status = db.Column(db.String(255))
-
 
 class Achievements(db.Model):
     id = db.Column(db.Integer, primary_key=True)

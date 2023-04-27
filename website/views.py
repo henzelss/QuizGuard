@@ -1,7 +1,7 @@
 #routes 
 from functools import wraps
 from flask import Blueprint, render_template, url_for, flash, redirect, send_from_directory, jsonify, request, Response, session, send_file, json
-from flask_socketio import SocketIO, emit
+from website.socketio import socketio
 from datetime import datetime, time
 from flask_login import login_required, current_user
 from .models import User, QuizList, MultipleChoice, FillInTheBlanks, TrueOrFalse, Violations, Student, Room
@@ -10,6 +10,7 @@ from .utils import generate_random_string, activity_logs
 from .import db
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, date
+
 
 views = Blueprint('views', __name__)
 
@@ -485,7 +486,7 @@ def checkcamera(quizid, quizcode, quiztype):
 @views.route('/quiz/<string:quizid>/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
 @login_required
 def quiz(quizid, quizcode, quiztype):
-
+    
     room = Room.query.filter_by(quiz_code=quizcode, user_id=current_user.id).first()
     if not room:
         # If not, create a new Room object and add it to the database
@@ -513,7 +514,7 @@ def quiz(quizid, quizcode, quiztype):
         print('question len is none')
         flash("No questions found for this quiz", category="error")
         return redirect(url_for('views.student'))
-    else:
+    else: 
         print('question len is not none')
         question_count = len(questions)
         return render_template('quiz.html', quiz=quiz, questions=questions, quiztype=quiztype, quizcode=quizcode, question_count=question_count)
@@ -573,12 +574,12 @@ def result(quizcode, quiztype ):
         # db.session.add(student)
         # db.session.commit()
         # Delete student from room table
+        #joined table of user and student table
         room_student = Room.query.filter_by(user_id=current_user.id).first()
         if room_student:
             db.session.delete(room_student)
             db.session.commit()
 
-        #joined table of user and student table
         students = db.session.query(Student.score, User.firstname, User.lastname).\
           join(User, Student.user_id==User.id).\
           filter(Student.quiz_id == quiz.id).\
@@ -765,38 +766,24 @@ def ExportAllResult():
 @views.route('/monitoring/<string:quizcode>')
 @login_required
 def monitoring(quizcode):
-    # room = Room.query.filter_by(quiz_code=quizcode, user_id=current_user.id).first()
-    # violations = Violations.query.filter_by(quiz_code=quizcode, user_id=current_user.id).first()
-    # current_room = db.session.query(Room, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs)\
-    # .join(User)\
-    # .join(Violations)\
-    # .filter(Room.quiz_code == quizcode, Room.user_id == current_user.id)\
-    # .first()
-
-    # room_query = db.session.query(Room, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs)\
-    # .select_from(Room)\
-    # .join(User, Room.user_id == User.id)\
-    # .join(Violations, (Room.user_id == Violations.user_id) & (Room.quiz_code == Violations.quiz_code))\
-    # .filter_by(quiz_code=quizcode)\
-    # .all()
-
-    room_query = db.session.query(Room, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs)\
-    .select_from(Room)\
-    .join(User, Room.user_id == User.id)\
-    .join(Violations, (Room.user_id == Violations.user_id) & (Room.quiz_code == Violations.quiz_code))\
-    .filter(Room.quiz_code == quizcode, Room.user_id != current_user.id)\
-    .all()
+    room_query = db.session.query(Room, User.id, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs, QuizList.code)\
+        .select_from(Room)\
+        .join(User, Room.user_id == User.id)\
+        .join(Violations, (Room.user_id == Violations.user_id) & (Room.quiz_code == Violations.quiz_code))\
+        .join(QuizList, QuizList.code == Room.quiz_code)\
+        .filter(Room.quiz_code == quizcode, Room.user_id != current_user.id)\
+        .all()
 
     current_room = []
     if room_query is not None:
-        for room, firstname, lastname, laptop, phone, head_pose, switch_tabs in room_query:
-            current_room.append({'firstname': firstname, 'lastname': lastname, 'laptop': laptop, 'phone': phone, 'head_pose': head_pose, 'switch_tabs': switch_tabs})
+        for room, user_id, firstname, lastname, laptop, phone, head_pose, switch_tabs, quiz_code in room_query:
+            current_room.append({'user_id': user_id, 'firstname': firstname, 'lastname': lastname, 'laptop': laptop, 'phone': phone, 'head_pose': head_pose, 'switch_tabs': switch_tabs, 'quiz_code': quiz_code})
             # Your code to pass the query results to the template goes here
     else:
         flash("The room is currently empty right now ", category='warning')
         return redirect(url_for('views.quizbank'))
     flash("This is the current user inside the quiz", category="success")
-    return render_template('monitoring.html', current_room=room_query)
+    return render_template('monitoring.html', current_room=current_room)
 
 #multiple choice
 @views.route('/download_multiple/')
@@ -819,6 +806,27 @@ def download_tor():
     filepath = '../data/tor.txt'
     return send_file(filepath, as_attachment=True)
 
+
+
+@views.route('/send_message/<string:quizcode>/<int:userid>', methods=['POST'])
+def send_message(quizcode, userid):
+    # Get the quiz code and user ID
+    quiz_code = quizcode
+    userid = userid
+    message = request.form.get('message')
+    # Get the current room for the quiz and user
+    room = Room.query.filter_by(quiz_code=quiz_code, user_id=userid).first()
+    if room:
+        room.toast_message = message
+    else:
+        room = Room(user_id=userid, toast_message=message, status='active')
+        db.session.add(room)
+    
+    db.session.commit()
+    # Send message to the user asynchronously
+    socketio.emit('toast_message', {'message': room.toast_message}, room=userid)
+    
+    return redirect(url_for('views.monitoring',  quizcode=quizcode)), 204
 
 @views.route('/records')
 @login_required

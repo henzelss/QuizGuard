@@ -1,11 +1,14 @@
 from website import create_app
+from website.socketio import socketio
+from flask_cors import CORS
 #wrap the program in socket io
 
 app = create_app()
+socketio.init_app(app)
 
 # only if we run this file not when we import our file
 if __name__ == '__main__':
-    app.run(debug=True) 
+    socketio.run(app, debug=True, port=7000)
 
 
 # Model- View - Presenter 
