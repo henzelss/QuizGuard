@@ -772,12 +772,14 @@ def monitoring(quizcode):
     # .join(Violations)\
     # .filter(Room.quiz_code == quizcode, Room.user_id == current_user.id)\
     # .first()
+
     room_query = db.session.query(Room, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs)\
     .select_from(Room)\
     .join(User, Room.user_id == User.id)\
     .join(Violations, (Room.user_id == Violations.user_id) & (Room.quiz_code == Violations.quiz_code))\
-    .filter(Room.quiz_code == quizcode, Room.user_id == current_user.id)\
-    .first()
+    .filter_by(quiz_code=quizcode)\
+    .all()
+    
     current_room = []
     if room_query is not None:
         for room, firstname, lastname, laptop, phone, head_pose, switch_tabs in room_query:
@@ -788,7 +790,7 @@ def monitoring(quizcode):
         return redirect(url_for('views.dashboard'))
     
     flash(f"Welcome { current_user.firstname}", category='warning')
-    return render_template('monitoring.html', current_room=current_room)
+    return render_template('monitoring.html', current_room=room)
 
 #multiple choice
 @views.route('/download_multiple/')
