@@ -779,7 +779,7 @@ def monitoring(quizcode):
     .join(Violations, (Room.user_id == Violations.user_id) & (Room.quiz_code == Violations.quiz_code))\
     .filter_by(quiz_code=quizcode)\
     .all()
-    
+
     current_room = []
     if room_query is not None:
         for room, firstname, lastname, laptop, phone, head_pose, switch_tabs in room_query:
@@ -790,7 +790,7 @@ def monitoring(quizcode):
         return redirect(url_for('views.dashboard'))
     
     flash(f"Welcome { current_user.firstname}", category='warning')
-    return render_template('monitoring.html', current_room=room)
+    return render_template('monitoring.html', current_room=room_query)
 
 #multiple choice
 @views.route('/download_multiple/')
