@@ -785,7 +785,6 @@ def monitoring(quizcode):
     .join(User, Room.user_id == User.id)\
     .join(Violations, (Room.user_id == Violations.user_id) & (Room.quiz_code == Violations.quiz_code))\
     .filter(Room.quiz_code == quizcode, Room.user_id != current_user.id)\
-    .distinct()\
     .all()
 
     current_room = []
@@ -796,8 +795,7 @@ def monitoring(quizcode):
     else:
         flash("The room is currently empty right now ", category='warning')
         return redirect(url_for('views.quizbank'))
-    
-    flash(f"Welcome { current_user.firstname}", category='warning')
+    flash("This is the current user inside the quiz", category="success")
     return render_template('monitoring.html', current_room=room_query)
 
 #multiple choice
