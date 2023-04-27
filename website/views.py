@@ -773,11 +773,19 @@ def monitoring(quizcode):
     # .filter(Room.quiz_code == quizcode, Room.user_id == current_user.id)\
     # .first()
 
+    # room_query = db.session.query(Room, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs)\
+    # .select_from(Room)\
+    # .join(User, Room.user_id == User.id)\
+    # .join(Violations, (Room.user_id == Violations.user_id) & (Room.quiz_code == Violations.quiz_code))\
+    # .filter_by(quiz_code=quizcode)\
+    # .all()
+
     room_query = db.session.query(Room, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs)\
     .select_from(Room)\
     .join(User, Room.user_id == User.id)\
     .join(Violations, (Room.user_id == Violations.user_id) & (Room.quiz_code == Violations.quiz_code))\
-    .filter_by(quiz_code=quizcode)\
+    .filter(Room.quiz_code == quizcode, Room.user_id != current_user.id)\
+    .distinct()\
     .all()
 
     current_room = []
@@ -787,7 +795,7 @@ def monitoring(quizcode):
             # Your code to pass the query results to the template goes here
     else:
         flash("The room is currently empty right now ", category='warning')
-        return redirect(url_for('views.dashboard'))
+        return redirect(url_for('views.quizbank'))
     
     flash(f"Welcome { current_user.firstname}", category='warning')
     return render_template('monitoring.html', current_room=room_query)
