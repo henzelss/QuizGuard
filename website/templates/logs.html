@@ -1,21 +1,21 @@
 {% extends "dashboard.html" %}
 
 {% block content %}
-  <div class="container mt-5 bg-night p-3 rounded">
+  <div class="container mt-5 bg-container p-3 rounded" style="overflow:scroll; height:80%;">
     <div class="row">
-      <div class="col-6"><h1 class="text-start">Live Logs</h1></div>
+      <div class="col-6"><h1 class="text-start text-light">Live Logs</h1></div>
       <div class="col-6">
         <div class="d-flex justify-content-end">
           <!-- <button class="btn btn-warning d-print-none">Print PDF</button> -->
-          <button type="button" class="btn btn-warning d-print-none" data-bs-toggle="modal" data-bs-target="#ExportModal">
-            <i class="fa-solid fa-file-export me-1"></i> Export Logs
+          <button type="button" class="btn btn-success d-print-none" data-bs-toggle="modal" data-bs-target="#ExportModal">
+            <i class="fa-solid fa-file-export me-1"></i> Download Logs
           </button>
         </div>
       </div>
     </div>
     
-    <div class="table-responsive">
-      <table class="table bg-night">
+    <div class="table-responsive" >
+      <table class="table bg-container text-light" >
         <thead>
           <tr>
             <th>User ID</th>
@@ -41,21 +41,21 @@
 
   <!-- Modal -->
   <div class="modal fade d-print-none" id="ExportModal" tabindex="-1" aria-labelledby="ExportModalLabel" aria-hidden="true">
-    <div class="modal-dialog d-print-none bg-night rounded">
-      <div class="modal-content d-print-none bg-night">
-        <div class="modal-header d-print-none bg-night">
-          <h5 class="modal-title" id="ExportModalLabel">Export Logs</h5>
+    <div class="modal-dialog d-print-none bg-container rounded">
+      <div class="modal-content d-print-none bg-container">
+        <div class="modal-header d-print-none bg-container">
+          <h5 class="modal-title text-light" id="ExportModalLabel">Download Logs</h5>
           <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body d-print-none bg-night">
+        <div class="modal-body d-print-none bg-container text-light">
           <div class="row">
             <div class="col">
-              <p>Export All Logs</p>
+              <p>Download All Logs</p>
                 <a href="{{ url_for('auth.exalllogs') }}" class="btn btn-success me-1 d-print-none"><i class="fa-solid fa-file-csv me-1"></i>Excel</a>
                 <!-- <a href="" class="btn btn-danger btn-pdf d-print-none"><i class="fa-solid fa-file-pdf"></i>PDF</a> -->
             </div>
             <div class="col">
-              <p>Export Today Logs</p>
+              <p>Download Today Logs</p>
                 <a href="{{ url_for('auth.extodaylog') }}" class="btn btn-success me-1 d-print-none"><i class="fa-solid fa-file-csv me-1"></i>Excel</a>
                 <!-- <a href="" class="btn btn-danger btn-pdf d-print-none"><i class="fa-solid fa-file-pdf"></i>PDF</a> -->
             </div>

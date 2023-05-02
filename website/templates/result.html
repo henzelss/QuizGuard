@@ -1,28 +1,28 @@
 {% extends "dashboard.html" %}
 
 {% block content %}
-  <div class="container bg-night rounded p-5">
+  <div class="container bg-container rounded p-5 text-light">
       
       <div class="accordion" id="accordionResult">
-          <div class="accordion-item bg-night">
+          <div class="accordion-item">
               <h2 class="accordion-header" id="headingTwo">
-                <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                   <h1>Quiz Result</h1>
                 </button>
               </h2>
-              <div id="collapseTwo" class="accordion-collapse collapse bg-night" aria-labelledby="headingTwo" data-bs-parent="#accordionResult">
-                <div class="accordion-body bg-night">
-                  <table class="table bg-night table-responsive">
+              <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionResult">
+                <div class="accordion-body">
+                  <table class="table table-responsive text-dark">
                       <thead>
                           <tr>
                               <div class="row">
-                                  <div class="col"><h5>Leader Board</h5></div>
+                                  <div class="col text-dark"><h5>Leader Board</h5></div>
                                   <!-- <div class="col d-flex justify-content-end"><button class="btn btn-warning d-print-none" >Print PDF</button></div> -->
-                                  <div class="d-flex justify-content-end">
+                                  <!-- <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-warning d-print-none" data-bs-toggle="modal" data-bs-target="#ExportModal">
                                       <i class="fa-solid fa-file-export me-1"></i> Export
                                     </button>
-                                  </div>
+                                  </div> -->
                               </div>
                               <th scope="col">Rank</th>
                               <th scope="col">Full Name</th>
@@ -50,15 +50,15 @@
                 </div>
               </div>
           </div>
-          <div class="accordion-item bg-night d-print-none">
+          <div class="accordion-item d-print-none">
               <h2 class="accordion-header d-print-none" id="headingViolations ">
-                <button class="accordion-button collapsed bg-night d-print-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapseViolations" aria-expanded="false" aria-controls="collapseViolations">
+                <button class="accordion-button collapsed d-print-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapseViolations" aria-expanded="false" aria-controls="collapseViolations">
                   <h1>Quiz Violations</h1>
                 </button>
               </h2>
-              <div id="collapseViolations" class="accordion-collapse collapse bg-night d-print-none" aria-labelledby="headingViolations" data-bs-parent="#accordionResult">
-                <div class="accordion-body bg-night d-print-none">
-                    <table class="table table-dark table-responsive d-print-none">
+              <div id="collapseViolations" class="accordion-collapse collapse d-print-none" aria-labelledby="headingViolations" data-bs-parent="#accordionResult">
+                <div class="accordion-body d-print-none">
+                    <table class="table table-responsive d-print-none">
                       <thead>
                           <tr>
                               <th>User ID</th>
@@ -90,13 +90,13 @@
 
   <!-- Modal -->
   <div class="modal fade d-print-none" id="ExportModal" tabindex="-1" aria-labelledby="ExportModalLabel" aria-hidden="true">
-    <div class="modal-dialog d-print-none bg-night rounded">
-      <div class="modal-content d-print-none bg-night">
-        <div class="modal-header d-print-none bg-night">
+    <div class="modal-dialog d-print-none rounded">
+      <div class="modal-content d-print-none">
+        <div class="modal-header d-print-none">
           <h5 class="modal-title" id="ExportModalLabel">Export</h5>
           <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body d-print-none bg-night">
+        <div class="modal-body d-print-none">
           <div class="row">
               <div class="col-2">
                 <p class="text-start">Export</p>

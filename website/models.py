@@ -13,6 +13,8 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     firstname = db.Column(db.String(150))
     lastname = db.Column(db.String(150))
+    school = db.Column(db.String(150))
+    imagepath = db.Column(db.String(150))
     usertype = db.Column(db.String(10))
 
 class QuizList(db.Model):
@@ -71,14 +73,32 @@ class Student(db.Model):
 #     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
 
 
+# class Violations(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     laptop = db.Column(db.String(50))
+#     phone = db.Column(db.String(50))
+#     head_pose = db.Column(db.String(50))
+#     switch_tabs = db.Column(db.String(50))
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
+#     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
+
 class Violations(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     laptop = db.Column(db.String(50))
+    laptop_image = db.Column(db.String(50))
+    laptop_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
     phone = db.Column(db.String(50))
+    phone_image = db.Column(db.String(50))
+    phone_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
     head_pose = db.Column(db.String(50))
+    head_pose_image = db.Column(db.String(50))
+    head_pose_image_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
     switch_tabs = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
+
+
+
     
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)

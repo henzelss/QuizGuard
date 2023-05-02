@@ -108,7 +108,7 @@ $(function () {
 
         $("body").append(canvas);
     };
-
+    
     const renderPredictions = function (predictions) {
         
         var dimensions = videoDimensions(video);
@@ -117,6 +117,37 @@ $(function () {
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+        let previousObject = null;
+        // let previousDetectionTime = null;
+        // predictions.forEach(function (prediction) {
+        //     const x = prediction.bbox.x;
+        //     const y = prediction.bbox.y;
+
+        //     const width = prediction.bbox.width;
+        //     const height = prediction.bbox.height;
+
+        //     // Draw the bounding box.
+        //     ctx.strokeStyle = prediction.color;
+        //     ctx.lineWidth = 4;
+        //     ctx.strokeRect(
+        //         (x - width / 2) / scale,
+        //         (y - height / 2) / scale,
+        //         width / scale,
+        //         height / scale
+        //     );
+
+        //     // Draw the label background.
+        //     ctx.fillStyle = prediction.color;
+        //     const textWidth = ctx.measureText(prediction.class).width;
+        //     const textHeight = parseInt(font, 10); // base 10
+        //     ctx.fillRect(
+        //         (x - width / 2) / scale,
+        //         (y - height / 2) / scale,
+        //         textWidth + 8,
+        //         textHeight + 4
+        //     );
+        // });
+
         predictions.forEach(function (prediction) {
             const x = prediction.bbox.x;
             const y = prediction.bbox.y;
@@ -124,106 +155,42 @@ $(function () {
             const width = prediction.bbox.width;
             const height = prediction.bbox.height;
 
-            // Draw the bounding box.
-            ctx.strokeStyle = prediction.color;
-            ctx.lineWidth = 4;
-            ctx.strokeRect(
-                (x - width / 2) / scale,
-                (y - height / 2) / scale,
-                width / scale,
-                height / scale
-            );
 
-            // Draw the label background.
-            ctx.fillStyle = prediction.color;
-            const textWidth = ctx.measureText(prediction.class).width;
-            const textHeight = parseInt(font, 10); // base 10
-            ctx.fillRect(
-                (x - width / 2) / scale,
-                (y - height / 2) / scale,
-                textWidth + 8,
-                textHeight + 4
-            );
-        });
-
-        predictions.forEach(function (prediction) {
-            const x = prediction.bbox.x;
-            const y = prediction.bbox.y;
-
-            const width = prediction.bbox.width;
-            const height = prediction.bbox.height;
-
-
-            var current = prediction.class;
-            if(current != lastobj) // only send prediction if the current action is change
-            {
-                
-                console.log(prediction.class);
-                lastobj = current;
-                $.ajax({
-                    url: "/record_prediction",
-                    method: "POST",
-                    data: { prediction_class: prediction.class },
-                    success: function (response) {
-                        console.log(response);
-                    },
-                    error: function (xhr, status, error) {
-                        console.log(error);
-                    }
-                })
+            if (prediction.class === "Front" || prediction.class === "Left" || prediction.class === "Right" || prediction.class === "FrontRight" || prediction.class === "FrontLeft" || prediction.class==="Back" || prediction.class==="Laptop" || prediction.class==="Phone") {
+                const snapshotCanvas = document.createElement("canvas");
+                snapshotCanvas.width = video.videoWidth;
+                snapshotCanvas.height = video.videoHeight;
+                const snapshotCtx = snapshotCanvas.getContext("2d");
+                snapshotCtx.drawImage(video, 0, 0, snapshotCanvas.width, snapshotCanvas.height);
+                const snapshot = snapshotCanvas.toDataURL("image/jpeg");
+        
+                // Check if the detected object has changed since the last prediction
+                if (prediction.class !== previousObject) {
+                    // const detectionTime = new Date().getTime();
+                    // const duration = previousDetectionTime ? detectionTime - previousDetectionTime : 0;
+        
+                    // Send data to server.
+                    $.ajax({
+                        url: "/record_prediction",
+                        method: "POST",
+                        data: {
+                            prediction_class: prediction.class,
+                            snapshot: snapshot
+                        },
+                        success: function (response) {
+                            console.log(response);
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(error);
+                        }
+                    });
+        
+                    // Update previous object and detection time
+                    previousObject = prediction.class;
+                    // previousDetectionTime = detectionTime;
+                }
             }
-            
-            // if (prediction.class) {
-            //     $.ajax({
-            //         url: "/record_prediction",
-            //         method: "POST",
-            //         data: { prediction_class: prediction.class },
-            //         success: function (response) {
-            //             console.log(response);
-            //         },
-            //         error: function (xhr, status, error) {
-            //             console.log(error);
-            //         }
-            //     });
-            // }
-
-            // if (prediction.class){
-            //     var action = "true"
-            //     $.ajax({
-            //         type: 'POST',
-            //         contentType: 'application/json;charset-utf-08',
-            //         dataType:'json',
-            //         url: 'http://127.0.0.1:5000/record_prediction?action=' + action + '&prediction_class=' + prediction.class,
-            //         success:function(data)
-            //         {
-            //             var reply=data.reply;
-            //             if (reply=="success")
-            //             {
-            //                 return;
-            //             }
-            //             else
-            //                 {
-            //                 alert("some error ocured in session agent")
-            //                 }
-            //         }
-            //     });
-            // }
-
-            
            
-            // $.ajax({
-            //     url: "/record_prediction",
-            //     method: "POST",
-            //     data: { 
-            //         prediction_class: prediction.class
-            //     },
-            //     success: function (response) {
-            //         console.log(response);
-            //     },
-            //     error: function (xhr, status, error) {
-            //         console.log(error);
-            //     }
-            // });
 
             // Draw the text last to ensure it's on top.
             ctx.font = font;
@@ -241,7 +208,6 @@ $(function () {
 
     var prevTime;
     var pastFrameTimes = [];
-    var lastobj = "front"
     const detectFrame = function () {
         if (!model) return requestAnimationFrame(detectFrame);
 

@@ -1,11 +1,15 @@
 {% extends 'dashboard.html' %}
 
 {% block title %}
-    <!-- <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script> -->
-    
+    <!-- <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script> --> 
     <script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
     <script src="{{ url_for('static', filename='checkcamera.js')}}"></script>
-    
+    <script src="{{ url_for('static', filename='jquery-3.6.3.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='pages.js')}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='radio.css') }}">
+    <script src="{{ url_for('static', filename='quiz_countdown.js')}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='quiz_countdown.css') }}">
+
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
         integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
@@ -15,142 +19,111 @@
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/async/3.2.0/async.min.js"
         integrity="sha512-6K6+H87tLdCWvY5ml9ZQXLRlPlDEt8uXmtELhuJRgFyEDv6JvndWHg3jadJuBVGPEhhA2AAt+ROMC2V7EvTIWw=="
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"></script> 
     
 
-    <script src="https://cdn.roboflow.com/0.2.22/roboflow.js"></script> 
+    <script src="https://cdn.roboflow.com/0.2.22/roboflow.js"></script>
 
-    <script src="{{ url_for('static', filename='obj_detection.js') }}"></script>
+    <script src="{{ url_for('static', filename='obj_detection_copy.js') }}"></script> 
 
 {% endblock %}
-
-
 {% block content %}
-    <div class="container bg-night rounded p-3">
+    
+    <div id="countdown-overlay">
+        <div id="countdown-container">
+        <span id="countdown-number">5</span>
+        </div>
+    </div>
+    
+ 
+    <div class="show-div container-fluid mt-5 bg-container p-5 rounded">
         <div class="row">
-            <div class="col-6"><h5>{{ quiz.title }}</h5></div>
-            <div class="col-6 text-end"><small>Time Limit</small><h5 id="timer"></h5></div>
-            <div class="col-6">
-                <!-- <video id="quizvid" width="100%" height="auto" autoplay muted playsinline style='border-radius: 10px;'></video> -->
-                <!-- <video id="video" autoplay muted playsinline></video> -->
+            <div class="col">
+                <h1 class="text-light"> {{ quiz.title }}</h1>
+            </div>
+            <div class="col d-flex justify-content-end">
+                <h5 class="text-light"><Strong>Time Limit:</Strong></h5>&nbsp;
+                <h5 class="text-light" id="timer"></h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col bg-container p-3">
                 <div class="loading">
                     <video id="video" width="100%" height="auto" autoplay muted playsinline style='border-radius: 10px;'></video>
                     <div id="fps"></div>
                 </div>
             </div>
-           
-            <div class="col-6">
-                <form action="{{ url_for('views.result', quizcode=quizcode, quiztype=quiztype)}}" method="POST">
-                    <div class="row">
+            <div class="col d-grid gap-2 quiz">
+                <div class="divs">
+                    <form action="{{ url_for('views.result', quizcode=quizcode, quiztype=quiztype)}}" method="POST">
                         {% for question in questions %}
-                            <div class="accordion mt-1" id="accordionQuiz">
-                                <div class="accordion-item bg-night">
-                                    <h2 class="accordion-header bg-night" id="heading{{question.id}}">
-                                    <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{question.id}}" aria-expanded="false" aria-controls="collapse{{question.id}}">
-                                        {{ loop.index}}.&nbsp;{{ question.question}}
-                                    </button>
-                                    </h2>
-                                    <div id="collapse{{question.id}}" class="accordion-collapse collapse bg-night" aria-labelledby="heading{{question.id}}" data-bs-parent="#accordionQuiz">
-                                        <div class="accordion-body bg-night">
-                                            {% if quiztype == '1' %}
-                                                <div class="row radio=toolbar"> 
-                                                    <div class="col-6">
-                                                        <!-- <div class="custom-radio-btn"></div> -->
-                                                        <input class="" id="{{question.id}}" name="student_answer{{question.id}}" type="radio" value="{{ question.choice1 }}">
-                                                        <label for="{{question.id}}">A.&nbsp;{{ question.choice1 }}</label>
-                                                        <input type="checkbox" hidden>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <input class="" id="{{question.id}}" name="student_answer{{question.id}}" type="radio" value="{{ question.choice2 }}">
-                                                        <label for="{{question.id}}">B.&nbsp;{{ question.choice2 }}</label>
-                                                        
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <input class="" id="{{question.id}}" name="student_answer{{question.id}}" type="radio" value="{{ question.choice3 }}">
-                                                        <label for="{{question.id}}">C.&nbsp;{{ question.choice3 }}</label>
-                                                        
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <input class="" id="{{question.id}}" name="student_answer{{question.id}}" type="radio" value="{{ question.choice4 }}">
-                                                        <label for="{{question.id}}">D.&nbsp;{{ question.choice4 }}</label>
-                                                    </div>
-                                                </div>
-                                                
-                                            {% elif quiztype == '2' %}
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <input type="text" name="{{question.id}}" placeholder="Your Answer Here">
-                                                    </div>
-                                                </div>
-                                                
-                                            {% elif quiztype == '3' %}
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <input class="timelimit" id="{{question.id}}" name="{{question.id}}" type="radio" value="{{ True }}">
-                                                        <label for="{{question.id}}">True</label>
-                                                        <input class="timelimit" id="{{question.id}}" name="{{question.id}}" type="radio" value="{{ False }}">
-                                                        <label for="{{question.id}}">False</label>
-                                                    </div>
-                                                </div>
-                                                
-                                            {% endif %}
+                            {% if quiztype == '1' %}
+                                <div class="question set{{loop.index}}">
+                                    <h1 class="text-light">{{ loop.index}}.&nbsp;{{ question.question}}</h1>
+                                    <div class="row">
+                                        <div class="col">
+                                            <input type="radio" class="btn-radio" id="{{question.id}}-choice1" name="student_answer{{question.id}}" value="{{ question.choice1 }}">
+                                            <label for="{{question.id}}-choice1">A.&nbsp;{{ question.choice1 }}</label>
+                                        </div>
+                                        <div class="col">
+                                            <input type="radio" id="{{question.id}}-choice2" name="student_answer{{question.id}}" value="{{ question.choice2 }}">
+                                            <label for="{{question.id}}-choice2">B.&nbsp;{{ question.choice2 }}</label>     
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <input type="radio" id="{{question.id}}-choice3" name="student_answer{{question.id}}" value="{{ question.choice3 }}">
+                                            <label for="{{question.id}}-choice3">C.&nbsp;{{ question.choice3 }}</label>
+                                        </div>
+                                        <div class="col">
+                                            <input type="radio" id="{{question.id}}-choice4" name="student_answer{{question.id}}" value="{{ question.choice4 }}">
+                                            <label for="{{question.id}}-choice4">D.&nbsp;{{ question.choice4 }}</label>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            {% elif quiztype == '2' %}
+                                <div class="question set{{loop.index}}"> 
+                                    <h1 class="text-light">{{ loop.index}}.&nbsp;{{ question.question}}</h1>
+                                    <input type="text" name="student_answer{{question.id}}" placeholder="Your Answer Here">
+                                </div>
+                            {% elif quiztype == '3' %}  
+                                <div class="question set{{loop.index}}"> 
+                                    <h1 class="text-light">{{ loop.index}}.&nbsp;{{ question.question}}</h1>
+                                    <input type="radio" class="btn-radio" id="{{question.id}}-choice1" name="student_answer{{question.id}}" value="0">
+                                    <label for="{{question.id}}-choice1">True</label>
+                                    <input type="radio" class="btn-radio" id="{{question.id}}-choice2" name="student_answer{{question.id}}" value="1">
+                                    <label for="{{question.id}}-choice2">False</label>
+                                </div>
+                            {% endif %}
                         {% endfor %}
+                        <a id="prev" class="btn submit-button text-dark mt-3">prev</a>
+                        <a id="next" class="btn submit-button text-dark mt-3">next</a>
+                        
                         <input type="text" hidden value="{{ question_count }}" name="total_no_question" id="total_no_question">
+                        <input type="text" hidden value="{{ quizcode }}" name="quiz_code">
                         <div class="d-flex justify-content-end">
                             <input type="submit" name="submit" class="btn submit-button text-dark" value="Submit Answers">
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-        <div class="toast-container">
-            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-              <div class="toast-header">
-                <img src="..." class="rounded me-2" alt="...">
-                <strong class="me-auto">Quiz App</strong>
-                <small class="text-muted">just now</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-              </div>
-              <div class="toast-body">
-                <!-- Display the message here -->
-              </div>
-            </div>
-        </div>          
     </div>
-
-    <script>
-        $(function() {
-            var socket = io.connect('http://' + document.domain + ':' + location.port);
-            socket.on('connect', function() {
-                console.log('Socket connected');
-            });
-            socket.on('toast_message', function(data) {
-                $('.toast-body').html(data.message);
-                $('.toast').toast('show');
-            });
-        });
-    </script>
-
-   
     
-    <!-- <script>
-        window.onload = () =>{
-            detection();
-        };
-    </script> -->
-<!-- 
-    <script>
-        window.addEventListener('beforeunload', function(event) {
-            event.preventDefault();
-            event.returnValue = 'Are you sure you want to leave? Your progress will be lost.';
-        });
-    </script> -->
+    
+    
+
+
+
+    <script type="text/javascript">
+        function preventBack() {
+            window.history.forward(); 
+        }
+          
+        setTimeout("preventBack()", 0);
+          
+        window.onunload = function () { null };
+    </script>
 
     <script>
         function startTimer(duration, display) {
@@ -168,11 +141,10 @@
                     clearInterval(timerInterval);
                     alert("Time's up!");
                     // redirect user to views.checkscore route
-                    window.location.href = "/checkscore";
+                    window.location.href = "/result";
                 }
             }, 1000);
         }
-
         // get the timelimit value from the HTML and convert it to seconds
         var timelimit = parseInt("{{ quiz.timelimit }}") * 60;
 

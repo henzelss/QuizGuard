@@ -1,51 +1,51 @@
 {% extends "dashboard.html" %}
 
 {% block content %}
-<div class="container mt-5 rounded bg-night p-5">
+<div class="container-fluid mt-5 rounded  p-5 bg-container">
   <div class="accordion" id="accordionExample">
     <!-- 1st Main Accordion -->
-    <div class="accordion-item bg-night">
-      <h2 class="accordion-header bg-night" id="headingTwo">
-        <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
           <h1>Quiz Form</h1>
         </button>
       </h2>
       <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-        <div class="accordion-body bg-night">
+        <div class="accordion-body">
           <form action="{{ url_for('views.editquiz', quizcode=quizcode, quiztype=quiztype)}}" method="POST" class="form-properties">
             <p class="text-muted ms-1">Note: leave the form empty if you dont want to change anything here</p>
             <div class="accordion" id="accordionPanelsStayOpenExample">
-              <div class="accordion-item bg-night">
+              <div class="accordion-item">
                 <h2 class="accordion-header" id="panelsStayOpen-headingQuizDetails">
-                  <button class="accordion-button bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizDetails" aria-expanded="true" aria-controls="panelsStayOpen-collapseQuizDetails">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizDetails" aria-expanded="true" aria-controls="panelsStayOpen-collapseQuizDetails">
                     Quiz Details
                   </button>
                 </h2>
                 <div id="panelsStayOpen-collapseQuizDetails" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingQuizDetails">
-                  <div class="accordion-body bg-night">
+                  <div class="accordion-body bg-accordion">
                     <!-- Quiz Form  -->
                     {{ quizform.hidden_tag() }}
-                    {{ quizform.title.label(class='text-light') }}
+                    {{ quizform.title.label(class='text-dark') }}
                     {{ quizform.title(class='text-dark', required='required') }}
                     <p class="text-muted">Note: The description field has a character limit of 1000 characters</p>
                     <div class="form-floating">
                       {{ quizform.description(class='text-dark, form-control', required='required') }}
                       {{ quizform.description.label(class='text-dark') }}
                     </div>
-                    {{ quizform.category.label(class='text-light') }}
+                    {{ quizform.category.label(class='text-dark') }}
                     {{ quizform.category(class='text-dark form-select form-select-lg mt-1', required='required') }}
                     <p class="text-muted mt-2">Note: you can no longer change the quiz type</p>
                   </div>
                 </div>
               </div>
-              <div class="accordion-item bg-night">
+              <div class="accordion-item">
                 <h2 class="accordion-header" id="panelsStayOpen-headingQuizTimeSettings">
-                  <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizTimeSettings" aria-expanded="false" aria-controls="panelsStayOpen-collapseQuizTimeSettings">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizTimeSettings" aria-expanded="false" aria-controls="panelsStayOpen-collapseQuizTimeSettings">
                     Quiz Time Settings
                   </button>
                 </h2>
                 <div id="panelsStayOpen-collapseQuizTimeSettings" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingQuizTimeSettings">
-                  <div class="accordion-body bg-night">
+                  <div class="accordion-body bg-accordion">
                       <!-- Quiz Form  -->
                       <div class="row">
                         <div class="col-2" >
@@ -74,14 +74,14 @@
                     </div>
                   </div>
               </div>
-              <div class="accordion-item bg-night">
+              <div class="accordion-item">
                 <h2 class="accordion-header" id="panelsStayOpen-headingQuizScore">
-                  <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizScore" aria-expanded="false" aria-controls="panelsStayOpen-collapseQuizScore">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizScore" aria-expanded="false" aria-controls="panelsStayOpen-collapseQuizScore">
                     Quiz Score
                   </button>
                 </h2>
                 <div id="panelsStayOpen-collapseQuizScore" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingQuizScore">
-                  <div class="accordion-body bg-night">
+                  <div class="accordion-body bg-accordion">
                     <!-- Quiz Form  -->
                     <label for="rbtn">Points Per Item:</label>
                     <div class="rbtn" >
@@ -90,14 +90,14 @@
                   </div>
                 </div>
               </div>
-              <div class="accordion-item bg-night">
+              <div class="accordion-item">
                 <h2 class="accordion-header" id="panelsStayOpen-headingVisibility">
-                  <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseVisibility" aria-expanded="false" aria-controls="panelsStayOpen-collapseVisibility">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseVisibility" aria-expanded="false" aria-controls="panelsStayOpen-collapseVisibility">
                     Quiz Visibility
                   </button>
                 </h2>
                 <div id="panelsStayOpen-collapseVisibility" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingVisibility">
-                  <div class="accordion-body bg-night">
+                  <div class="accordion-body bg-accordion">
                     <div class="row">
                       <div class="col">
                         {{ quizform.quizcode.label()}}
@@ -125,24 +125,24 @@
       </div>
     </div>
     <!-- 2nd Main Accordion -->
-    <div class="accordion-item bg-night">
+    <div class="accordion-item">
       <h2 class="accordion-header" id="headingThree">
-        <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           <h1>Quiz Questions</h1>
         </button>
       </h2>
-      <div id="collapseThree" class="accordion-collapse collapse bg-night" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-        <div class="accordion-body bg-night">
+      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
           <div class="accordion" id="accordionQuestion">
             {% for question in questions %}
-              <div class="accordion-item bg-night">
+              <div class="accordion-item">
                 <h2 class="accordion-header" id="headingQuestions">
-                  <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuestion{{question.id}}" aria-expanded="false" aria-controls="collapseQuestion{{question.id}}">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuestion{{question.id}}" aria-expanded="false" aria-controls="collapseQuestion{{question.id}}">
                     <Strong>{{loop.index}}.&nbsp;</Strong>{{ question.question }}
                   </button>
                 </h2>
-                <div id="collapseQuestion{{question.id}}" class="accordion-collapse collapse bg-night" aria-labelledby="headingQuestions" data-bs-parent="#accordionQuestion">
-                  <div class="accordion-body">
+                <div id="collapseQuestion{{question.id}}" class="accordion-collapse collapse" aria-labelledby="headingQuestions" data-bs-parent="#accordionQuestion">
+                  <div class="accordion-body bg-accordion">
                       {% if quiztype == '1' %}
                         
                         <div class="row">
@@ -170,7 +170,7 @@
               <!--Edit Modal -->
               <div class="modal fade" id="edit_question{{question.id}}" tabindex="-1" aria-labelledby="edit_question{{question.id}}" aria-hidden="true">
                 <div class="modal-dialog">
-                  <div class="modal-content bg-night">
+                  <div class="modal-content bg-container text-light">
                     <div class="modal-header">
                       <h5 class="modal-title" id="edit_question{{question.id}}Label">
                         {% if quiztype == '1' %}
@@ -235,7 +235,7 @@
               <!--Delete Modal -->
               <div class="modal fade" id="delete_question{{question.id}}" tabindex="-1" aria-labelledby="delete_question{{question.id}}" aria-hidden="true">
                 <div class="modal-dialog">
-                  <div class="modal-content bg-night">
+                  <div class="modal-content bg-container text-light">
                     <div class="modal-header">
                       <h5 class="modal-title" id="delete_question{{question.id}}Label">Warning</h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -253,29 +253,29 @@
               </div>
             {% endfor %}
             
-            <div class="accordion-item bg-night">
+            <div class="accordion-item">
               <h2 class="accordion-header" id="headingAddQuestions">
-                <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#AddQuestions" aria-expanded="false" aria-controls="AddQuestions">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#AddQuestions" aria-expanded="false" aria-controls="AddQuestions">
                   <Strong>Add New Questions</Strong>
                 </button>
               </h2>
               <div id="AddQuestions" class="accordion-collapse collapse" aria-labelledby="headingAddQuestions" data-bs-parent="#accordionQuestion">
-                <div class="accordion-body bg-night">
+                <div class="accordion-body bg-accordion">
                   <!-- Add Question form here -->
                   {% if quiztype == '1' %}
                         <form action="{{ url_for('views.addquestions',  quizcode=quizcode, quiztype=quiztype )}}" method="POST" class="p-3">
                           {{ form.hidden_tag() }}
-                          {{ form.question.label(class='text-light') }}
+                          {{ form.question.label(class='text-dark') }}
                           {{ form.question(class='form-control text-dark')}}
-                          {{ form.choice1.label(class='text-light') }}
+                          {{ form.choice1.label(class='text-dark') }}
                           {{ form.choice1(class='form-control text-dark')}}
-                          {{ form.choice2.label(class='text-light') }}
+                          {{ form.choice2.label(class='text-dark') }}
                           {{ form.choice2(class='form-control text-dark')}}
-                          {{ form.choice3.label(class='text-light') }}
+                          {{ form.choice3.label(class='text-dark') }}
                           {{ form.choice3(class='form-control text-dark')}}
-                          {{ form.choice4.label(class='text-light') }}
+                          {{ form.choice4.label(class='text-dark') }}
                           {{ form.choice4(class='form-control text-dark')}}
-                          {{ form.answer.label(class='text-light') }}
+                          {{ form.answer.label(class='text-dark') }}
                           {{ form.answer(class='form-control text-dark')}}
                           <div class="d-flex justify-content-end">
                             {{ form.submit(class='class="btn submit-button text-dark"') }}
@@ -312,14 +312,14 @@
               </div>
             </div>
 
-            <div class="accordion-item bg-night">
+            <div class="accordion-item">
               <h2 class="accordion-header" id="headingBulkInsertQuestion">
-                <button class="accordion-button collapsed bg-night" type="button" data-bs-toggle="collapse" data-bs-target="#BulkInsertQuestion" aria-expanded="false" aria-controls="BulkInsertQuestion">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#BulkInsertQuestion" aria-expanded="false" aria-controls="BulkInsertQuestion">
                   <Strong>Insert Questions</Strong>
                 </button>
               </h2>
               <div id="BulkInsertQuestion" class="accordion-collapse collapse" aria-labelledby="headingBulkInsertQuestion" data-bs-parent="#accordionQuestion">
-                <div class="accordion-body bg-night">
+                <div class="accordion-body bg-accordion">
                   <!-- Add Question form here -->
                   {% if quiztype == '1' %}
                   <form action="{{ url_for('views.upload_multiple', quizcode=quizcode, quiztype=quiztype) }}" method="POST" enctype="multipart/form-data">

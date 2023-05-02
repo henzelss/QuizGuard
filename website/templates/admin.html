@@ -4,52 +4,53 @@
 
 {% block content %}
     <div class="container">
+      <h1 class="ms-4">Dashboard</h1>
         <div class="row row-cols-1 row-cols-md-2 g-4">
             <div class="col-3 ">
-                <div class="card bg-night h-100">
-                    <img src="{{ url_for('views.images', filename='image1.jpg') }}" class="card-img-top" alt="...">
+                <div class="card bg-light-blue h-100">
+                    <img src="{{ url_for('static',  filename='/images/image1.jpg') }}" class="card-img-top" alt="...">
                     <div class="card-body">
                       <h5 class="card-title">Manage Accounts</h5>
                       <p class="card-text">It allows administrators to manage user accounts, including creating, modifying, and deleting them, as well as controlling their access permissions.</p>
                     </div>
                     <div class="card-footer">
-                        <a href="{{ url_for('auth.accounts') }}" class="btn btn-warning btn-links-hover">Manage</a>
+                        <a href="{{ url_for('auth.accounts') }}" class="btn btn-primary">Manage</a>
                     </div>
                   </div>
             </div>
             <div class="col-3 ">
-                <div class="card bg-night h-100">
-                    <img src="{{ url_for('views.images', filename='image2.jpg') }}" class="card-img-top" alt="...">
+                <div class="card bg-light-blue h-100">
+                    <img src="{{ url_for('static',  filename='/images/image2.jpg') }}" class="card-img-top" alt="...">
                     <div class="card-body">
                       <h5 class="card-title">Create Quiz</h5>
                       <p class="card-text">It allows administrator and professors to create new quizzes, specifying various settings such as quiz details, quiz type, time limit and the visibility</p>
                     </div>
                     <div class="card-footer">
-                        <a href="{{ url_for('views.createquiz')}}" class="btn btn-warning btn-links-hover">Create Quiz</a>
+                        <a href="{{ url_for('views.createquiz')}}" class="btn btn-primary">Create Quiz</a>
                     </div>
                   </div>
             </div>
             <div class="col-3 ">
-                <div class="card bg-night h-100">
-                    <img src="{{ url_for('views.images', filename='image3.jpg') }}" class="card-img-top" alt="...">
+                <div class="card bg-light-blue h-100">
+                    <img src="{{ url_for('static',  filename='/images/image3.jpg') }}" class="card-img-top" alt="...">
                     <div class="card-body">
                       <h5 class="card-title">Quiz Bank</h5>
                       <p class="card-text">Quiz Bank is a repository of pre-existing quizzes and tests that can be used by users to quickly create new quizzes or tests. It typically includes a search function to help users find the specific quizzes they need.</p>
                     </div>
                     <div class="card-footer">
-                        <a href="{{ url_for('views.quizbank')}}" class="btn btn-warning btn-links-hover">View Bank</a>
+                        <a href="{{ url_for('views.quizbank')}}" class="btn btn-primary">View Bank</a>
                     </div>
                   </div>
             </div>
             <div class="col-3 ">
-                <div class="card bg-night h-100">
-                    <img src="{{ url_for('views.images', filename='image4.jpg') }}" class="card-img-top" alt="...">
+                <div class="card bg-light-blue h-100">
+                    <img src="{{ url_for('static',  filename='/images/image4.jpg') }}" class="card-img-top" alt="...">
                     <div class="card-body">
                       <h5 class="card-title">Live logs</h5>
                       <p class="card-text">It provides administrators a detailed view of what is happening in the system in real-time, including user activity, system events, and error messages.</p>
                     </div>
                     <div class="card-footer">
-                        <a href="{{ url_for('auth.logs')}}" class="btn btn-warning btn-links-hover">View Logs</a>
+                        <a href="{{ url_for('auth.logs')}}" class="btn btn-primary">View Logs</a>
                     </div>
                   </div>
             </div>

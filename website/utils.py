@@ -1,6 +1,6 @@
 # from werkzeug.security import generate_password_hash
 from . import db
-from .models import ActivityLog
+from .models import ActivityLog, Violations
 from datetime import datetime
 from flask_login import current_user
 import random
@@ -43,4 +43,3 @@ def check_category(category):
         return "Creative Arts"
     else:
         return None
-    

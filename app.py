@@ -5,11 +5,12 @@ from flask_cors import CORS
 
 app = create_app()
 CORS(app) 
-socketio.init_app(app)
+#socketio.init_app(app)
 
 # only if we run this file not when we import our file
 if __name__ == '__main__':
-    socketio.run(app, debug=True, port=7000)
+    # socketio.run(app, debug=True, port=7000)
+    app.run(debug=True)
 
 
 # Model- View - Presenter 

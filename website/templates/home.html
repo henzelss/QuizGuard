@@ -4,63 +4,77 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/bootstrap.css">
-    <link rel="stylesheet" href="../static/main.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css')}}">
     <script src="https://kit.fontawesome.com/874ad22535.js" crossorigin="anonymous"></script>
     <title>Quiz Guard </title>
 </head>
 <body>
-    
-    <div class="container text-warning px-5">
-        <h3><a class="home-link" href="{{ url_for('auth.home')}}"><i class="fa-brands fa-react m-2"></i>Quiz Guard</a></h3>
+    <div class="container p-5">
+        <div class="row">
+            <div class="col bg-blue-sky rounded-start ">
+                <!--image here chatgpt  -->
+                <div class="align-items-end">
+                    <img class="" src="{{ url_for('static', filename='/images/student.png') }}" alt="Home">
+                </div>
+            </div>
+            <div class="col bg-light-blue  p-5 rounded-end">
+                <a href="" class="text-center text-dark"><h1><i class="fa-brands fa-react m-2"></i>Quiz Guard</h1></a>
+                <h4 class="text-dark">Login</h4>
+                {% with messages = get_flashed_messages(with_categories=true)%}
+                    {% if messages %} 
+                        {% for category, message in messages %}
+                            {% if category == 'error' %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                                    </svg>
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% else %}  
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                                        <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                                    </svg>
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif%}
+                {% endwith%}
+                <form action="" method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="form-floating">
+                        {{ form.email(class="form-control text-dark shadow-sm", id="floatingInput", value=temp[0] if temp else '' ) }} 
+                        {{ form.email.label(class='text-muted floatingInput') }} 
+                        <p class="text-dark">We will not share your email to others</p>
+                    </div>
+                    <div class="form-floating">
+                        {{ form.password(class='form-control text-dark shadow-sm', id="floatingInput", value=temp[1] if temp else '') }} 
+                        {{ form.password.label(class='text-muted floatingInput') }}
+                    </div>
+                    {{ form.remember() }}
+                    {{ form.remember.label(class='text-dark') }} <br>
+                    <a class="" href="{{ url_for('auth.register') }}">Create account here</a>
+                    {{ form.submit(class='btn btn-primary text-light shadow-sm') }}
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="container p-5">
-        <div class="center-home txt-properties">
-            <h1 class="text-align-center">Login</h1>
-            {% with messages = get_flashed_messages(with_categories=true)%}
-            {% if messages %} 
-                {% for category, message in messages %}
-                    {% if category == 'error' %}
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
-                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-                            </svg>
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% else %}  
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-                                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
-                            </svg>
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif%}
-            {% endwith%}
+    <div class="container">
+        <div class="row">
 
-            <form action="" method="POST">
-                {{ form.hidden_tag() }}
-                {{ form.email.label(class='text-light') }} <br>
-                {{ form.email(class='text-dark') }} <br>
-                <p class="text-muted">We will not share your email to others</p>
-                {{ form.password.label(class='text-light') }} <br>
-                {{ form.password(class='text-dark') }} <br>
-                {{ form.remember() }}
-                {{ form.remember.label(class='text-light') }} <br>
-                
-                <a class="links" href="{{ url_for('auth.register') }}">Create account here</a>
-                {{ form.submit(class='btn btn-warning bg-warning text-dark') }}
-            </form>
         </div>
-  </div>
+    </div>
 
-    
-    <script src="../static/bootstrap.js"></script>
-    <script src="../static/main.js"></script>
+
+
+
+    <script src="{{ url_for('static', filename='bootstrap.js' )}}"></script>
+    <script src="{{ url_for('static', filename='main.js' )}}"></script>
 
 </body>
 </html>

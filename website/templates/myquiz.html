@@ -6,13 +6,13 @@
 
 {% block content %}
 
-    <div class="container mt-5 rounded bg-night p-3" > 
+    <div class="container mt-5 rounded bg-container p-3" > 
         <div class="row">
-            <h3 class="ms-3">My Quizzes</h3>
+            <h3 class="ms-3 text-light">My Quizzes</h3>
             {% for quiz, firstname, lastname in quiz_list %}
                 <div class="col-md-3 col-sm-6 col-12 gap-3">
                     <button class="btn text-start shadow-none"  data-bs-toggle="modal" data-bs-target="#quiz{{ quiz.id }}">
-                        <div class="card bg-night" style="width: 18rem;">
+                        <div class="card bg-light-blue" style="width: 18rem;">
                             <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
                             <div class="card-body">
                                 <h5 class="card-text title-ellipsis">{{ quiz.title }}</h5>
@@ -23,7 +23,7 @@
                 <!-- Modal -->
                 <div class="modal fade" id="quiz{{ quiz.id }}" tabindex="-1" aria-labelledby="quiz{{ quiz.id }}label" aria-hidden="true">
                     <div class="modal-dialog rounded">
-                        <div class="modal-content bg-night">
+                        <div class="modal-content bg-container text-light">
                             <div class="modal-header">
                                 <h6 class="modal-title" id="quiz{{ quiz.id }}label">{{ quiz.title}}</h6>
                                 <!-- <h5 class="modal-title" id="quiz{{ quiz.id }}label">{{ quiz.title }}</h5> -->
@@ -109,6 +109,9 @@
                                         <a href="{{ url_for('views.quizbankedit', quizcode=quiz.code, quiztype=quiz.quiztype)}}" class="btn btn-warning"><i class="fa-solid fa-pen-to-square me-1"></i>Edit</a>
                                         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#quizdelete{{quiz.id}}"><i class="fa-solid fa-trash me-1"></i>Remove</button>
                                     {% endif %}
+                                    {% if current_user.id == quiz.author_id%}
+                                        <a href="{{ url_for('views.monitoring', quizcode=quiz.code, quiztype=quiz.quiztype)}}" class="btn btn-success"><i class="fa-solid fa-desktop me-1"></i>Monitor</a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -118,16 +121,16 @@
                 <!-- Modal -->
                 <div class="modal fade" id="quizdelete{{quiz.id}}" tabindex="-1" aria-labelledby="quizdelete{{quiz.id}}Label" aria-hidden="true">
                     <div class="modal-dialog">
-                        <div class="modal-content bg-night">
+                        <div class="modal-content bg-container">
                             <div class="modal-header">
-                                <h5 class="modal-title bg-night" id="quizdelete{{quiz.id}}Label">Remove Quiz</h5>
+                                <h5 class="modal-title bg-container" id="quizdelete{{quiz.id}}Label">Remove Quiz</h5>
                                 <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-body bg-night">
+                            <div class="modal-body bg-container">
                                 Removing this will make the quiz no longer available to all users
                                 are you sure you want to remove it?
                             </div>
-                            <div class="modal-footer bg-night">
+                            <div class="modal-footer bg-container">
                                 <a href="{{ url_for('views.myquizdelete', quiz_code=quiz.code, quiztype=quiz.category )}}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Remove</a>
                             </div>
                         </div>

@@ -1,79 +1,24 @@
+.btn-radio, input[type="radio"]{
+  border-radius: 20px !important;
+  visibility: hidden !important;
+  height: 0px !important;
+  width: 100%  !important;
+}
 
-/* input[type="radio"]{
-    visibility: hidden !important;
-    height: 0 !important;
-    width: 0 !important;
-    
+.btn-radio, label {
+  display: table-cell !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  background-color: #14274E;
+  color: white !important;
+  padding: 50px 100px !important;
+  border-radius: 3px !important;
+ 
 }
 
 
-label 
-{
-    display: table-cell !important;
-    vertical-align: middle !important;
-    text-align: center !important;
-    cursor: pointer !important;
-    background-color: #454545 !important; 
-    color: white !important;
-    padding: 5px 10px !important;
-    border-radius: 3px !important;
-    
+.btn-radio, input[type="radio"]:checked + label{
+  background-color: #9BA4B4;
 }
-
-input[type="radio"]:checked + label{
-    background-color: #58ba83 !important;
-  } */
-
-.radio-toolbar {
-    margin: 10px !important;
-}
-
-.radio-toolbar input[type="radio"] {
-    opacity: 0 !important;
-    position: fixed !important;
-    width: 0 !important;
-}
-
-.radio-toolbar label {
-    display: inline-block !important;
-    background-color: #ddd !important;
-    padding: 10px 20px !important;
-    font-family: sans-serif, Arial !important;
-    font-size: 16px !important;
-    border: 2px solid #444 !important;
-    border-radius: 4px !important;
-}
-
-.radio-toolbar label:hover {
-    background-color: #dfd !important;
-}
-
-.radio-toolbar input[type="radio"]:focus + label {
-    border: 2px dashed #444 !important;
-}
-
-.radio-toolbar input[type="radio"]:checked + label {
-    background-color: #bfb !important;
-    border-color: #4c4 !important;
-}
-  
-
-  /* .custom-radio-btn input[type="radio"] {
-    display: none;
-  }
-  
-  .custom-radio-btn label {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    margin-right: 0.5rem;
-    border: 2px solid #ccc;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-  }
-  
-  .custom-radio-btn input[type="radio"]:checked + label {
-    background-color: #58ba83;
-    color: #fff;
-  } */
 

@@ -1,6 +1,8 @@
 #routes 
+import base64
 from functools import wraps
-from flask import Blueprint, render_template, url_for, flash, redirect, send_from_directory, jsonify, request, Response, session, send_file, json
+import io
+from flask import Blueprint, make_response, render_template, url_for, flash, redirect, send_from_directory, jsonify, request, Response, session, send_file, json
 from website.socketio import socketio
 from datetime import datetime, time
 from flask_login import login_required, current_user
@@ -10,6 +12,9 @@ from .utils import generate_random_string, activity_logs
 from .import db
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, date
+import pandas as pd
+import xlsxwriter
+import os
 
 
 views = Blueprint('views', __name__)
@@ -487,6 +492,7 @@ def checkcamera(quizid, quizcode, quiztype):
 @login_required
 def quiz(quizid, quizcode, quiztype):
     
+    session['quizcode'] = quizcode
     room = Room.query.filter_by(quiz_code=quizcode, user_id=current_user.id).first()
     if not room:
         # If not, create a new Room object and add it to the database
@@ -595,74 +601,84 @@ def result(quizcode, quiztype ):
     #     # return render_template('result.html', students=students, quiz=quiz, violations=violations, total_no_question=total_no_question, score=score)
     #     return
 
-
-# @views.route('/record_prediction', methods=['POST'])
-# @login_required
-# def process_frame():
-#     prediction_class = request.form.get("prediction_class")
-#     if prediction_class:
-#         # check if the user already has a violation of this type
-#         violation = Violations.query.filter_by(user_id=current_user.id, detected=prediction_class).first()
-#         if violation:
-#             # update the existing violation
-#             violation.date = datetime.now()
-#         else:
-#             # create a new violation
-#             violation = Violations(
-#                 detected=prediction_class,
-#                 user_id=current_user.id
-#             )
-#         # check if the prediction class is "phone"
-#         if prediction_class == "phone":
-#             violation.phone_detected = "Yes"
-#         # save the violation to the database
-#         try:
-#             db.session.add(violation)
-#             db.session.commit()
-#         except IntegrityError:
-#             db.session.rollback()
-#             return "failed"
-#         return "success"
-#     else:
-#         return "failed"
-
 @views.route('/record_prediction', methods=['POST'])
 @login_required
 def process_frame():
     prediction_class = request.form.get("prediction_class")
+    snapshot = request.form.get("snapshot")
+    # duration = request.form.get("duration")
+    timestamp = datetime.now()
     if prediction_class:
         # check if the user already has a violation of this type
-        violation = Violations.query.filter_by(user_id=current_user.id).first()
+        violation = Violations.query.filter_by(user_id=current_user.id, quiz_code=session['quizcode']).first()
         if violation:
             # update the existing violation
-            if prediction_class == "laptop":
+            if prediction_class == "Laptop":
                 violation.laptop = "True"
-            elif prediction_class == "phone":
+                if violation.laptop_image is not None:
+                    old_image_path = os.path.join("website", "static", "images", violation.laptop_image)
+                    if os.path.isfile(old_image_path):
+                        os.remove(old_image_path)
+                filename = f"{current_user.id}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')}.jpg"
+                violation.laptop_image = filename
+                violation.laptop_timestamp = timestamp
+                save_path = os.path.join("website", "static", "images", filename)
+            elif prediction_class == "Phone":
                 violation.phone = "True"
-            elif prediction_class == "head_pose":
-                violation.head_pose = "True"
-            elif prediction_class == "switch_tabs":
-                violation.switch_tabs = "The user is detected to alt tab or switch tab once"
+                if violation.phone_image is not None:
+                    old_image_path = os.path.join("website", "static", "images", violation.phone_image)
+                    if os.path.isfile(old_image_path):
+                        os.remove(old_image_path)
+                filename = f"{current_user.id}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')}.jpg"
+                violation.phone_image = filename
+                violation.phone_timestamp = timestamp
+                save_path = os.path.join("website", "static", "images", filename)
+            elif prediction_class in ["Front", "Left", "Right", "FrontLeft", "FrontRight", "Back"]:
+                violation.head_pose = prediction_class
+                if violation.head_pose_image is not None:
+                    old_image_path = os.path.join("website", "static", "images", violation.head_pose_image)
+                    if os.path.isfile(old_image_path):
+                        os.remove(old_image_path)
+                filename = f"{current_user.id}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')}.jpg"
+                violation.head_pose_image = filename
+                violation.head_pose_image_timestamp = timestamp
+                save_path = os.path.join("website", "static", "images", filename)
         else:
             # create a new violation
             violation = Violations(
                 user_id=current_user.id,
-                quiz_code=request.form.get("quiz_code")
+                quiz_code=session['quizcode']
             )
-            if prediction_class == "laptop":
+            if prediction_class == "Laptop":
                 violation.laptop = "True"
-            elif prediction_class == "phone":
+                filename = f"{current_user.id}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')}.jpg"
+                violation.laptop_image = filename
+                violation.laptop_timestamp = timestamp
+                save_path = os.path.join("website", "static", "images", filename)
+            elif prediction_class == "Phone":
                 violation.phone = "True"
-            elif prediction_class == "head_pose":
-                violation.head_pose = "True"
-            elif prediction_class == "switch_tabs":
-                violation.switch_tabs = "The user is detected to alt tab or switch tab once"
+                filename = f"{current_user.id}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')}.jpg"
+                violation.phone_image = filename
+                violation.phone_timestamp = timestamp
+                save_path = os.path.join("website", "static", "images", filename)
+            elif prediction_class in ["Front", "Left", "Right", "FrontLeft", "FrontRight", "Back"]:
+                violation.head_pose = prediction_class
+                filename = f"{current_user.id}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')}.jpg"
+                violation.head_pose_image = filename
+                violation.head_pose_image_timestamp=timestamp
+                save_path = os.path.join("website", "static", "images", filename)
+
+        # save the snapshot to file
+        with open(save_path, "wb") as f:
+            f.write(base64.b64decode(snapshot.split(",")[1]))
         # save the violation to the database
         try:
             db.session.add(violation)
             db.session.commit()
+            print(f"Violation added to the database: {prediction_class}")
         except IntegrityError:
             db.session.rollback()
+            print("Error: Violation could not be added to the database.")
             return "failed"
         return "success"
     else:
@@ -670,12 +686,52 @@ def process_frame():
 
 
 
+# @views.route('/record_prediction', methods=['POST'])
+# @login_required
+# def record_prediction():
+#     prediction_class = request.form.get('prediction_class')
+#     action = request.form.get('action')
 
+#     quiz_code = session['quizcode']
+    
+#     # Get the user's current violation (if any) for the given quiz code
+#     violation = Violations.query.filter_by(user_id=current_user.id, quiz_code=quiz_code).first()
+    
+#     # Update or create the violation for the given prediction class
+#     if violation:
+#         print(f'in the if statement')
+#         if prediction_class == "laptop":
+#             violation.laptop = "True"
+#             print(f'if: {violation}')
+#         elif prediction_class == "phone":
+#             violation.phone = "True"
+#             print(f'if: {violation}')
+#         elif prediction_class == "head_pose":
+#             violation.head_pose = "True"
+#             print(f'if: {violation}')
+#         db.session.add(violation)  # add the updated violation to the session
+#     else:
+#         print(f'in the else statement')
+#         if prediction_class == "laptop":
+#             violation = Violations(user_id=current_user.id, quiz_code=quiz_code, laptop="True")
+#             print(f'else: {violation}')
+#         elif prediction_class == "phone":
+#             violation = Violations(user_id=current_user.id, quiz_code=quiz_code, phone="True")
+#             print(f'else: {violation}')
+#         elif prediction_class == "head_pose":
+#             violation = Violations(user_id=current_user.id, quiz_code=quiz_code, head_pose="True")
+#             print(f'else: {violation}')
+#         db.session.add(violation)
+        
+#     try:
+#         db.session.commit()
+#         print("Violation added to the database.")
+#     except:
+#         db.session.rollback()
+#         print("Error: Violation could not be added to the database.")
+#         return "failed"
 
-
-
-
-
+#     return "success"
 
 
 
@@ -710,6 +766,42 @@ def switchtabs():
         db.session.add(violation)
         db.session.commit()
     return jsonify({'reply': 'success'})
+
+# @views.route('/switchtabs', methods=['POST'])
+# @login_required
+# def switchtabs():
+#     value = request.args.get('value')
+#     user_id = current_user.id
+#     quiz_code = request.args.get('quiz_code')
+#     violation = Violations.query.filter_by(user_id=user_id, quiz_code=quiz_code).first()
+#     if violation is not None:
+#         violation.switch_tabs = value
+#         db.session.commit()
+#     else:
+#         violation = Violations(switch_tabs=value, user_id=user_id, quiz_code=quiz_code)
+#         db.session.add(violation)
+#         db.session.commit()
+#     return jsonify({'reply': 'success'})
+
+# @views.route('/switchtabs', methods=['POST'])
+# @login_required
+# def switchtabs():
+#     value = request.args.get('value')
+#     user_id = current_user.id
+#     quiz_code = request.args.get('quiz_code')
+#     violation = Violations.query.filter_by(user_id=user_id, quiz_code=quiz_code).first()
+#     if violation is not None:
+#         violation.switch_tabs = value
+#         db.session.commit()
+#     else:
+#         violation = Violations(switch_tabs=value, user_id=user_id, quiz_code=quiz_code)
+#         db.session.add(violation)
+#         db.session.commit()
+    
+#     response = make_response(jsonify({'reply': 'success'}))
+#     response.headers['Access-Control-Allow-Origin'] = '*'
+    
+#     return response
 
 
 
@@ -815,29 +907,40 @@ def top10():
 def ExportAllResult():
     pass
 
-
-
-@views.route('/monitoring/<string:quizcode>')
+@views.route('/monitoring/<string:quizcode>/<string:quiztype>')
 @login_required
-def monitoring(quizcode):
-    room_query = db.session.query(Room, User.id, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs, QuizList.code)\
-        .select_from(Room)\
-        .join(User, Room.user_id == User.id)\
-        .join(Violations, (Room.user_id == Violations.user_id) & (Room.quiz_code == Violations.quiz_code))\
-        .join(QuizList, QuizList.code == Room.quiz_code)\
-        .filter(Room.quiz_code == quizcode, Room.user_id != current_user.id)\
-        .all()
-
-    current_room = []
-    if room_query is not None:
-        for room, user_id, firstname, lastname, laptop, phone, head_pose, switch_tabs, quiz_code in room_query:
-            current_room.append({'user_id': user_id, 'firstname': firstname, 'lastname': lastname, 'laptop': laptop, 'phone': phone, 'head_pose': head_pose, 'switch_tabs': switch_tabs, 'quiz_code': quiz_code})
-            # Your code to pass the query results to the template goes here
+def monitoring(quizcode, quiztype):
+    if quiztype == "1":
+        questions = MultipleChoice.query.filter_by(quiz_code=quizcode).all()
+    elif quiztype == "2":
+        questions = FillInTheBlanks.query.filter_by(quiz_code=quizcode).all()
+    elif quiztype == "3":
+        questions = TrueOrFalse.query.filter_by(quiz_code=quizcode).all()
     else:
-        flash("The room is currently empty right now ", category='warning')
-        return redirect(url_for('views.quizbank'))
-    flash("This is the current user inside the quiz", category="success")
-    return render_template('monitoring.html', current_room=current_room)
+        flash("Invalid Quiztype", category="warning")
+        return redirect(url_for("views.quizbank"))
+
+    total_score = len(questions) * QuizList.query.filter_by(code=quizcode).first().points
+
+    results = db.session.query(User.firstname, User.lastname, Student.score).\
+            join(Student, User.id == Student.user_id).\
+            join(QuizList, QuizList.id == Student.quiz_id).\
+            filter(QuizList.code == quizcode).\
+            order_by(Student.score.desc()).all()
+
+    violations = db.session.query(User.id, User.firstname, User.lastname, Violations.laptop, Violations.laptop_image , Violations.laptop_timestamp, 
+                                  Violations.phone, Violations.phone_image, Violations.phone_timestamp, 
+                                  Violations.head_pose, Violations.head_pose_image, Violations.head_pose_image_timestamp, 
+                                  Violations.switch_tabs).\
+                join(Violations, User.id == Violations.user_id).\
+                join(QuizList, QuizList.code == Violations.quiz_code).\
+                filter(QuizList.code == quizcode).all()
+    
+    if results is None and violations is None:
+        flash("Error 862", category="warning")
+        return redirect(url_for("views.quizbank"))
+
+    return render_template('monitoring.html', violations=violations, results=results, total_score=total_score)
 
 #multiple choice
 @views.route('/download_multiple/')
@@ -885,13 +988,156 @@ def send_message(quizcode, userid):
 @views.route('/records')
 @login_required
 def records():
-    violations = Violations.query.all()
-    return render_template("records.html", violations=violations)
+    quiz_list = db.session.query(QuizList, User.firstname, User.lastname)\
+            .join(User, QuizList.author_id == User.id)\
+            .filter(User.id == current_user.id)\
+            .all()
+    return render_template("records.html", quiz_list=quiz_list)
+
+
+@views.route('/export_results/<string:quizcode>/<string:quiztype>')
+@login_required
+def export_reports(quizcode, quiztype):
+    if quiztype == "1":
+        questions = MultipleChoice.query.filter_by(quiz_code=quizcode).all()
+    elif quiztype == "2":
+        questions = FillInTheBlanks.query.filter_by(quiz_code=quizcode).all()
+    elif quiztype == "3":
+        questions = TrueOrFalse.query.filter_by(quiz_code=quizcode).all()
+    else:
+        flash("Invalid Quiztype", category="warning")
+        return redirect(url_for("views.quizbank"))
+
+    total_score = len(questions) * QuizList.query.filter_by(code=quizcode).first().points
+
+    results = db.session.query(User.firstname, User.lastname, Student.score).\
+            join(Student, User.id == Student.user_id).\
+            join(QuizList, QuizList.id == Student.quiz_id).\
+            filter(QuizList.code == quizcode).\
+            order_by(Student.score.desc()).all()
+
+    # Create a new Excel workbook and add a worksheet
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet()
+
+    # Write the headers to the worksheet
+    worksheet.write(0, 0, "First Name")
+    worksheet.write(0, 1, "Last Name")
+    worksheet.write(0, 2, "Score")
+
+    # Write the data to the worksheet
+    row = 1  # initialize row outside of loop
+    for result in results:
+        worksheet.write(row, 0, result[0])
+        worksheet.write(row, 1, result[1])
+        worksheet.write(row, 2, result[2])
+        row += 1  # increment row inside the loop
+
+    # Write the total score to the worksheet
+    worksheet.write(row, 1, "Total Score")
+    worksheet.write(row, 2, total_score)
+
+    # Close the workbook
+    workbook.close()
+
+    # Set the file name and headers for the response
+    filename = f"Quiz_Results_{quizcode}.xlsx"
+    response = make_response(output.getvalue())
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+    response.headers["Content-type"] = "application/vnd.ms-excel"
+    return response
+
+@views.route('/export_violations/<string:quizcode>/<string:quiztype>')
+@login_required
+def export_violations(quizcode, quiztype):
+    violations = db.session.query(User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs).\
+                join(Violations, User.id == Violations.user_id).\
+                join(QuizList, QuizList.code == Violations.quiz_code).\
+                filter(QuizList.code == quizcode).all()
+
+    # Create a new Excel workbook and add a worksheet
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet()
+
+    # Write the headers to the worksheet
+    worksheet.write(0, 0, "First Name")
+    worksheet.write(0, 1, "Last Name")
+    worksheet.write(0, 2, "Laptop")
+    worksheet.write(0, 3, "Phone")
+    worksheet.write(0, 4, "Head Pose")
+    worksheet.write(0, 5, "Switch Tabs")
+
+    # Write the data to the worksheet
+    for row, violation in enumerate(violations, start=1):
+        worksheet.write(row, 0, violation[0])
+        worksheet.write(row, 1, violation[1])
+        worksheet.write(row, 2, violation[2])
+        worksheet.write(row, 3, violation[3])
+        worksheet.write(row, 4, violation[4])
+        worksheet.write(row, 5, violation[5])
+
+    # Close the workbook
+    workbook.close()
+
+    # Set the file name and headers for the response
+    filename = f"{quizcode}_violations.xlsx"
+    response = make_response(output.getvalue())
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+    response.headers["Content-type"] = "application/vnd.ms-excel"
+
+    return response
+
+@views.route("/view_student_profile/<string:quizcode>")
+@login_required
+def view_student_profile(quizcode):
+    pass
+
+@views.route("/view_student_result/<string:quizcode>/<string:quiztype>")
+def view_student_result(quizcode, quiztype):
+
+    if quiztype == "1":
+        questions = MultipleChoice.query.filter_by(quiz_code=quizcode).all()
+    elif quiztype == "2":
+        questions = FillInTheBlanks.query.filter_by(quiz_code=quizcode).all()
+    elif quiztype == "3":
+        questions = TrueOrFalse.query.filter_by(quiz_code=quizcode).all()
+    else:
+        flash("Invalid Quiztype", category="warning")
+        return redirect(url_for("views.quizbank"))
+
+    total_score = len(questions) * QuizList.query.filter_by(code=quizcode).first().points
+
+    results = db.session.query(User.firstname, User.lastname, Student.score).\
+            join(Student, User.id == Student.user_id).\
+            join(QuizList, QuizList.id == Student.quiz_id).\
+            filter(QuizList.code == quizcode).\
+            order_by(Student.score.desc()).all()
+    
+    return render_template("view_result.html", results=results, total_score=total_score )
+
+
+
+
+
 
 @views.route('/images/<filename>')
 @login_required
 def images(filename):
     return  send_from_directory("images", filename)
+
+# @views.route('/images/<filename>')
+# @login_required
+# def images(filename):
+#     try:
+#         image_dir = os.path.join(current_app.root_path, 'images')
+#         return send_from_directory(image_dir, filename)
+#     except FileNotFoundError:
+#         current_app.logger.error(f"Image file '{filename}' not found.")
+#         return "Image not found.", 404
+
+
 
 @views.route('/error')
 @login_required

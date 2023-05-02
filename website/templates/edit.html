@@ -1,7 +1,7 @@
 {% extends 'dashboard.html' %}
 
 {% block content %}
-  <div class="container bg-night rounded" >
+  <div class="container bg-container rounded" >
         <div class="row">
             <div class="col">
                 <div class="container txt-properties mt-5 ">
@@ -43,7 +43,7 @@
                         {{ form.usertype.label(class='text-light') }}
                         {{ form.usertype(class="form-select form-select-lg mb-3", required=True) }}
                 
-                        {{ form.submit(class='btn btn-warning bg-warning text-dark') }}
+                        {{ form.submit(class='btn btn-success text-light') }}
                     </form>
                 </div>
             </div>

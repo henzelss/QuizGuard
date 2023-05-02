@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
       
-    <div class="container bg-night mt-5 rounded">
+    <div class="container bg-container mt-5 rounded">
         <form action="{{ url_for('views.searchquiz') }}" method="POST" class="my-5">
             <div class="row">
                 {{ form.hidden_tag() }}
@@ -23,22 +23,22 @@
         </form>
     </div>
 
-    <div class="container mt-5 rounded p-3" >
+    <div class="container mt-5 rounded p-3 bg-container" >
         <div class="row">
-            {% for quiz, firstname, lastname in quiz_list %}
+            {% for quiz, firstname, lastname in quiz_list if quiz.visibility != 2 %}
                 <div class="col-3">
                     <button class="btn text-start shadow-none"  data-bs-toggle="modal" data-bs-target="#quiz{{ quiz.id }}">
-                        <div class="card bg-night" style="width: 18rem;">
+                        <div class="card bg-container" style="width: 18rem;">
                             <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
-                            <div class="card-body">
-                            <h5 class="card-text">{{ quiz.title }}</h5>
+                            <div class="card-body bg-light-blue">
+                            <h5 class="card-text text-dark title-design">{{ quiz.title }}</h5>
                         </div>
                     </button>
                 </div>
                 <!-- Modal -->
                 <div class="modal fade" id="quiz{{ quiz.id }}" tabindex="-1" aria-labelledby="quiz{{ quiz.id }}label" aria-hidden="true">
                     <div class="modal-dialog rounded">
-                        <div class="modal-content bg-night">
+                        <div class="modal-content bg-container text-light">
                             <div class="modal-header">
                                 <h6 class="modal-title" id="quiz{{ quiz.id }}label">{{ quiz.title}}</h6>
                                 <!-- <h5 class="modal-title" id="quiz{{ quiz.id }}label">{{ quiz.title }}</h5> -->

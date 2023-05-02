@@ -21,6 +21,7 @@ class RegisterForm(FlaskForm):
     #section = StringField('Enter Your section', validators=[DataRequired()], render_kw={"placeholder": "Enter Section"})
     #username = StringField('Enter Your Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email", 'autocomplete': 'off'})
+    school = StringField('School', validators=[DataRequired()], render_kw={"placeholder": "Enter School Name", 'autocomplete': 'off'})
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password", 'autocomplete': 'off'})
     retypepassword = PasswordField('Retype Password', validators=[DataRequired()], render_kw={"placeholder": "Confirm Your Password", 'autocomplete': 'off'})
     submit = SubmitField('Register')
@@ -29,6 +30,7 @@ class UserProfileForm(FlaskForm):
     firstname = StringField('Firstname', validators=[DataRequired()], render_kw={"placeholder": "Enter Firstname ", 'autocomplete': 'off'})
     lastname = StringField('Lastname', validators=[DataRequired()], render_kw={"placeholder": "Enter Lastname", 'autocomplete': 'off'})
     email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email", 'autocomplete': 'off'})
+    school = StringField('School', validators=[DataRequired(), Length(max=50)], render_kw={"placeholder": "Enter Your School", 'autocomplete': 'off'})
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password", 'autocomplete': 'off'})
     retypepassword = PasswordField('Retype Password', validators=[DataRequired()], render_kw={"placeholder": "Confirm Your Password", 'autocomplete': 'off'})
     submit = SubmitField('Save Changes')
@@ -76,19 +78,19 @@ class CreateQuiz(FlaskForm):
 
 class MultipleChoiceForm(FlaskForm):
     question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question", 'autocomplete': 'off'})
-    choice1 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 1", 'autocomplete': 'off'})
-    choice2 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 2", 'autocomplete': 'off'})
-    choice3 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 3", 'autocomplete': 'off'})
-    choice4 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 4", 'autocomplete': 'off'})
+    choice1 = StringField('Choice 1', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 1", 'autocomplete': 'off'})
+    choice2 = StringField('Choice 2', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 2", 'autocomplete': 'off'})
+    choice3 = StringField('Choice 3', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 3", 'autocomplete': 'off'})
+    choice4 = StringField('Choice 4', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 4", 'autocomplete': 'off'})
     answer =  StringField('Answer', validators=[DataRequired()], render_kw={"placeholder": "Enter Answer", 'autocomplete': 'off'})
     submit = SubmitField('Submit')
 
 class MultipleChoiceFormEdit(FlaskForm):
     question = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Question", 'autocomplete': 'off'})
-    choice1 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 1", 'autocomplete': 'off'})
-    choice2 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 2", 'autocomplete': 'off'})
-    choice3 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 3", 'autocomplete': 'off'})
-    choice4 = StringField('Question', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 4", 'autocomplete': 'off'})
+    choice1 = StringField('Choice 1', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 1", 'autocomplete': 'off'})
+    choice2 = StringField('Choice 2', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 2", 'autocomplete': 'off'})
+    choice3 = StringField('Choice 3', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 3", 'autocomplete': 'off'})
+    choice4 = StringField('Choice 4', validators=[DataRequired()], render_kw={"placeholder": "Enter Choice 4", 'autocomplete': 'off'})
     answer =  StringField('Answer', validators=[DataRequired()], render_kw={"placeholder": "Enter Answer", 'autocomplete': 'off'})
     submit = SubmitField('Submit')
 

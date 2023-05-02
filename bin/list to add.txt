@@ -1,6 +1,4 @@
-fix the database model 
-add quizcode in the violation
-add history table 
+---------------------------------To do---------------------------------
 
 
 in the student table add attempt column
@@ -14,4 +12,13 @@ back up database
 
 changes images on every quiz
 
+---------------------------------Fixes---------------------------------
+fix the database model 
+add quizcode in the violation
+add history table 
+
+
+
+---------------------------------Bugs---------------------------------
+the student table is has no quizcode hence is not specific
 

@@ -3,7 +3,7 @@
 {% block content %}
  
 
-    <div class="container bg-night mt-5 rounded">
+    <div class="container bg-container mt-5 rounded">
         {% if category == '1' %}
             <form action="{{ url_for('views.matchingtype', quiz_code=quiz_code) }}" method="POST" class="p-3">
                 <h1>Matching Type</h1>

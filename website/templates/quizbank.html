@@ -8,8 +8,8 @@
 
 {% block content %}
 
-    <div class="container bg-night mt-5 rounded">
-        <form action="{{ url_for('views.searchquiz') }}" method="POST" class="my-5">
+    <div class="container bg-container mt-5 rounded">
+        <form action="{{ url_for('views.searchquiz') }}" method="POST" class="my-3">
             <div class="row">
                 {{ form.hidden_tag() }}
                 <div class="row">
@@ -24,15 +24,16 @@
         </form>
     </div>
 
-    <div class="container mt-5 rounded" > 
+    <div class="container bg-container mt-5 rounded p-3" style="overflow:scroll; height:50%;"> 
+        <h1 class="text-light ms-4">Quiz Bank</h1>
         <div class="row">
-            {% for quiz, firstname, lastname in quiz_list %}
+            {% for quiz, firstname, lastname in quiz_list if quiz.visibility != 2 %}
                 <div class="col-md-3 col-sm-6 col-12">
                     <button class="btn text-start shadow-none"  data-bs-toggle="modal" data-bs-target="#quiz{{ quiz.id }}">
-                        <div class="card bg-night" style="width: 18rem;">
+                        <div class="card bg-accordion" style="width: 18rem;">
                             <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top" alt="quiz.jpg">
                             <div class="card-body">
-                                <h5 class="card-text title-ellipsis">{{ quiz.title }}</h5>
+                                <h5 class="card-text title-design">{{ quiz.title }}</h5>
                             </div>
                         </div>
                     </button>
@@ -40,7 +41,7 @@
                 <!-- Modal -->
                 <div class="modal fade" id="quiz{{ quiz.id }}" tabindex="-1" aria-labelledby="quiz{{ quiz.id }}label" aria-hidden="true">
                     <div class="modal-dialog rounded">
-                        <div class="modal-content bg-night">
+                        <div class="modal-content bg-container text-light">
                             <div class="modal-header">
                                 <h6 class="modal-title" id="quiz{{ quiz.id }}label">{{ quiz.title}}</h6>
                                 <!-- <h5 class="modal-title" id="quiz{{ quiz.id }}label">{{ quiz.title }}</h5> -->
@@ -50,7 +51,6 @@
                                 <img src="{{ url_for('views.images', filename='quiz.jpg') }}" class="card-img-top rounded" alt="quiz.jpg">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        
                                         <h6 class="card-text">Create by:&nbsp;{{ firstname|title }}&nbsp;{{ lastname|title }}</h6>
                                         
                                         <h6>Category: 
@@ -124,10 +124,12 @@
                                     {% elif current_user.id != quiz.author_id %}
                                         <a href="{{ url_for('views.clonequiz', quizid=quiz.id, quizcode=quiz.code)}}" class="btn btn-info"><i class="fa-regular fa-clone me-1"></i>Copy Quiz</a>
                                     {% endif %}
-                                    {% if current_user.id == quiz.author_id%}
-                                        <a href="{{ url_for('views.monitoring', quizcode=quiz.code)}}" class="btn btn-success"><i class="fa-solid fa-desktop me-1"></i>Monitor</a>
-                                    {% endif %}
                                 </div>
+                                {% if current_user.id == quiz.author_id%}
+                                <div class="modal-footer mt-3">
+                                    <a href="{{ url_for('views.monitoring', quizcode=quiz.code, quiztype=quiz.quiztype)}}" class="btn btn-success"><i class="fa-solid fa-desktop me-1"></i>Monitor</a>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -136,16 +138,16 @@
                 <!-- Modal -->
                 <div class="modal fade" id="quizdelete{{quiz.id}}" tabindex="-1" aria-labelledby="quizdelete{{quiz.id}}Label" aria-hidden="true">
                     <div class="modal-dialog">
-                        <div class="modal-content bg-night">
+                        <div class="modal-content bg-container text-light">
                             <div class="modal-header">
-                                <h5 class="modal-title bg-night" id="quizdelete{{quiz.id}}Label">Remove Quiz</h5>
+                                <h5 class="modal-title bg-container" id="quizdelete{{quiz.id}}Label">Remove Quiz</h5>
                                 <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-body bg-night">
+                            <div class="modal-body bg-container">
                                 Removing this will make the quiz no longer available to all users
                                 are you sure you want to remove it?
                             </div>
-                            <div class="modal-footer bg-night">
+                            <div class="modal-footer bg-container">
                                 <a href="{{ url_for('views.quizdelete', quiz_code=quiz.code, quiztype=quiz.category )}}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Remove</a>
                             </div>
                         </div>

@@ -569,3 +569,237 @@ Note that this is just an example and you may need to modify the code to fit you
         </div>
     </div>
 ------------------------------------------------------------------------------------------Accounts---------------------------------------------------------------------------------------
+
+hey can you modify my route?
+here are the following instructions
+i want you to get the prediction_class
+check the if the current user has already have record of the current class prediction_class then 
+
+
+
+this is my model:
+class Violations(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    laptop = db.Column(db.String(50))
+    phone = db.Column(db.String(50))
+    head_pose = db.Column(db.String(50))
+    switch_tabs = db.Column(db.String(50))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
+    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
+
+
+here is my route:
+@views.route('/record_prediction', methods=['POST'])
+@login_required
+def process_frame():
+    prediction_class = request.form.get("prediction_class")
+    if prediction_class:
+        # check if the user already has a violation of this type
+        violation = Violations.query.filter_by(user_id=current_user.id, detected=prediction_class).first()
+        if violation:
+            # update the existing violation
+            violation.date = datetime.now()
+        else:
+            # create a new violation
+            violation = Violations(
+                detected=prediction_class,
+                user_id=current_user.id
+            )
+        # check if the prediction class is "phone"
+        if prediction_class == "phone":
+            violation.phone_detected = "Yes"
+        # save the violation to the database
+        try:
+            db.session.add(violation)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return "failed"
+        return "success"
+    else:
+        return "failed"
+
+
+
+# @views.route('/record_prediction', methods=['POST'])
+# @login_required
+# def process_frame():
+#     prediction_class = request.form.get("prediction_class")
+#     if prediction_class:
+#         # check if the user already has a violation of this type
+#         violation = Violations.query.filter_by(user_id=current_user.id, detected=prediction_class).first()
+#         if violation:
+#             # update the existing violation
+#             violation.date = datetime.now()
+#         else:
+#             # create a new violation
+#             violation = Violations(
+#                 detected=prediction_class,
+#                 user_id=current_user.id
+#             )
+#         # check if the prediction class is "phone"
+#         if prediction_class == "phone":
+#             violation.phone_detected = "Yes"
+#         # save the violation to the database
+#         try:
+#             db.session.add(violation)
+#             db.session.commit()
+#         except IntegrityError:
+#             db.session.rollback()
+#             return "failed"
+#         return "success"
+#     else:
+#         return "failed"
+
+# @views.route('/record_prediction', methods=['POST'])
+# @login_required
+# def process_frame():
+#     prediction_class = request.form.get("prediction_class")
+#     print(f"prediction_class : {prediction_class}" )
+#     print(f"quizcode : {session['quizcode']}")
+#     if prediction_class:
+#         # check if the user already has a violation of this type
+#         violation = Violations.query.filter_by(user_id=current_user.id, quiz_code=session['quizcode']).first()
+#         if violation:
+#             # update the existing violation
+#             if prediction_class == "laptop":
+#                 violation.laptop = "True"
+#             elif prediction_class == "phone":
+#                 violation.phone = "True"
+#             elif prediction_class == "head_pose":
+#                 violation.head_pose = "True"
+#         else:
+#             # create a new violation
+#             violation = Violations(
+#                 user_id=current_user.id,
+#                 quiz_code=session['quizcode']
+#             )
+#             if prediction_class == "laptop":
+#                 violation.laptop = "True"
+#             elif prediction_class == "phone":
+#                 violation.phone = "True"
+#             elif prediction_class == "head_pose":
+#                 violation.head_pose = "True"
+#         # save the violation to the database
+#         try:
+#             db.session.add(violation)
+#             db.session.commit()
+#         except IntegrityError:
+#             db.session.rollback()
+#             return "failed"
+#         return "success"
+#     else:
+#         return "failed"
+
+# @views.route('/record_prediction', methods=['POST'])
+# @login_required
+# def process_frame():
+#     prediction_class = request.form.get("prediction_class")
+#     if prediction_class:
+#         # check if the user already has a violation of this type
+#         violation = Violations.query.filter_by(user_id=current_user.id, quiz_code=session['quizcode']).first()
+#         if violation:
+#             # update the existing violation
+#             if prediction_class == "laptop":
+#                 violation.laptop = "True"
+#                 print(f"predicted class: {prediction_class}")
+#             elif prediction_class == "phone":
+#                 violation.phone = "True"
+#                 print(f"predicted class: {prediction_class}")
+#             elif prediction_class == "Front":
+#                 violation.head_pose = "Front"
+#             elif prediction_class == "Left":
+#                 violation.head_pose = "Left"
+#             elif prediction_class == "Right":
+#                 violation.head_pose = "Right"
+#             elif prediction_class == "FrontLeft":
+#                 violation.head_pose = "FrontLeft"
+#             elif prediction_class == "FrontRight":
+#                 violation.head_pose = "FrontRight"
+#             elif prediction_class == "FrontRight":
+#                 violation.head_pose = "FrontRight"
+#             elif prediction_class == "Back":
+#                 violation.head_pose = "Back"
+
+#         else:
+#             # create a new violation
+#             violation = Violations(
+#                 user_id=current_user.id,
+#                 quiz_code=session['quizcode']
+#             )
+#             if prediction_class == "laptop":
+#                 violation.laptop = "True"
+#                 print(f"predicted class: {prediction_class}")
+#             elif prediction_class == "phone":
+#                 violation.phone = "True"
+#                 print(f"predicted class: {prediction_class}")
+#             elif prediction_class == "Front":
+#                 violation.head_pose = "Front"
+#             elif prediction_class == "Left":
+#                 violation.head_pose = "Left"
+#             elif prediction_class == "Right":
+#                 violation.head_pose = "Right"
+#             elif prediction_class == "FrontLeft":
+#                 violation.head_pose = "FrontLeft"
+#             elif prediction_class == "FrontRight":
+#                 violation.head_pose = "FrontRight"
+#             elif prediction_class == "FrontRight":
+#                 violation.head_pose = "FrontRight"
+#         # save the violation to the database
+#         try:
+#             db.session.add(violation)
+#             db.session.commit()
+#             print(f"Violation added to the database: {prediction_class}")
+#             return "success"
+#         except IntegrityError as e:
+#             db.session.rollback()
+#             print("Error: Violation could not be added to the database.")
+#             print(str(e))
+#             return "failed"
+#         return "success"
+#     else:
+#         return "failed"
+
+# @views.route('/record_prediction', methods=['POST'])
+# @login_required
+# def process_frame():
+#     prediction_class = request.form.get("prediction_class")
+#     if prediction_class:
+#         # check if the user already has a violation of this type
+#         violation = Violations.query.filter_by(user_id=current_user.id, quiz_code=session['quizcode']).first()
+#         if violation:
+#             # update the existing violation
+#             if prediction_class == "Laptop":
+#                 violation.laptop = "True"
+#             elif prediction_class == "Phone":
+#                 violation.phone = "True"
+#             elif prediction_class in ["Front", "Left", "Right", "FrontLeft", "FrontRight", "Back"]:
+#                 violation.head_pose = prediction_class
+#             elif prediction_class == "switchtab":
+#                 violation.switch_tabs = "True"
+#         else:
+#             # create a new violation
+#             violation = Violations(
+#                 user_id=current_user.id,
+#                 quiz_code=session['quizcode']
+#             )
+#             if prediction_class == "Laptop":
+#                 violation.laptop = "True"
+#             elif prediction_class == "Phone":
+#                 violation.phone = "True"
+#             elif prediction_class in ["Front", "Left", "Right", "FrontLeft", "FrontRight", "Back"]:
+#                 violation.head_pose = prediction_class
+#             elif prediction_class == "switchtab":
+#                 violation.switch_tabs = "True"
+#         # save the violation to the database
+#         try:
+#             db.session.add(violation)
+#             db.session.commit()
+#             print(f"Violation added to the database: {prediction_class}")
+#         except IntegrityError:
+#             db.session.rollback()
+#             print("Error: Violation could not be added to the database.")
+#             return "failed"
+#         return "success"
+#     else:
+#         return "failed"

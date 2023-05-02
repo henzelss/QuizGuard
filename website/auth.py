@@ -1,5 +1,5 @@
 #routes 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session, Response, send_file
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, Response, send_file, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from . import db
@@ -45,9 +45,10 @@ def home():
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-    dict = {}
+    temp = None
     if form.validate_on_submit():
         # Check if user with same email already exists
+        temp = [form.firstname.data, form.lastname.data, form.email.data, form.password.data, form.retypepassword.data, form.school.data]
         existing_email = User.query.filter_by(email=form.email.data).first()
         if existing_email:
             flash('Email already registered exist',  category='error')
@@ -57,26 +58,26 @@ def register():
             return redirect(url_for('auth.register'))
         else:
             hashed_password = generate_password_hash(form.password.data, method='sha256')
-            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, password=hashed_password, usertype='user')
+            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, school=form.school.data, password=hashed_password, usertype='admin')
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user)
             activity_logs('New User Registered')
             flash('Account created!', category='success')
             return redirect(url_for('views.dashboard'))
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, temp=temp)
 
 
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    
     user =  User.query.get_or_404(current_user.id)
     form = UserProfileForm()
     existing_info = {
         'firstname' : user.firstname,
         'lastname' : user.lastname,
-        'email' : user.email
+        'email' : user.email,
+        'school' : user.school
     }
     if request.method == 'POST' and request.form.get('submit'):
         if request.form['firstname'] != current_user.firstname:
@@ -89,6 +90,8 @@ def profile():
                 flash('Email already exists', category='danger')
                 return redirect(url_for('auth.profile'))
             user.email = request.form['email']
+        if request.form['school'] != current_user.school:
+            user.school = request.form['school']
         try:
             db.session.commit()
             flash('Profile Successfully Updated', category='success')
@@ -98,7 +101,7 @@ def profile():
             flash('Profile Failed to Updated', category='danger')
             activity_logs("User profile failed to updated")
             return redirect(url_for('auth.profile'))
-    return render_template('profile.html', form=form, existing_info=existing_info)
+    return render_template('profile.html', form=form, existing_info=existing_info, current_user=current_user)
 
 @auth.route('/accounts', methods=['GET', 'POST'])
 @login_required
@@ -306,7 +309,10 @@ def extodaylog():
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name=f'Logs Today {today}.xlsx')
 
-
+@auth.route('/images/<filename>')
+@login_required
+def images(filename):
+    return  send_from_directory("images", filename)
 
 
 
