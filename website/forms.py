@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField, DateTimeField, RadioField, IntegerField, TextAreaField, HiddenField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, SelectField, DateTimeField, RadioField, IntegerField, TextAreaField, HiddenField, FileField
 from wtforms.validators import DataRequired, Email, Length, NumberRange
 from wtforms import ValidationError
 from .models import User, MultipleChoice
@@ -33,15 +33,17 @@ class UserProfileForm(FlaskForm):
     school = StringField('School', validators=[DataRequired(), Length(max=50)], render_kw={"placeholder": "Enter Your School", 'autocomplete': 'off'})
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password", 'autocomplete': 'off'})
     retypepassword = PasswordField('Retype Password', validators=[DataRequired()], render_kw={"placeholder": "Confirm Your Password", 'autocomplete': 'off'})
+    profile = FileField('Profile Picture')
     submit = SubmitField('Save Changes')
 
 class EditForm(FlaskForm):
-    firstname = StringField('Firstname', validators=[DataRequired()], render_kw={"placeholder": "Enter Firstname ", 'autocomplete': 'off'})
-    lastname = StringField('Lastname', validators=[DataRequired()], render_kw={"placeholder": "Enter Lastname", 'autocomplete': 'off'})
-    email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email", 'autocomplete': 'off'})
-    password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter New Password", 'autocomplete': 'off'})
-    retype = PasswordField('Retype Password', validators=[DataRequired()], render_kw={"placeholder": "Confirm Your Password", 'autocomplete': 'off'})
+    firstname = StringField('Firstname',  render_kw={"placeholder": "Enter Firstname ", 'autocomplete': 'off'})
+    lastname = StringField('Lastname', render_kw={"placeholder": "Enter Lastname", 'autocomplete': 'off'})
+    email = StringField('Email',  render_kw={"placeholder": "Enter Your Email", 'autocomplete': 'off'})
+    school = StringField('School', render_kw={"placeholder": "Enter School Name", 'autocomplete': 'off'})
+    password = PasswordField('Password', render_kw={"placeholder": "Enter New Password", 'autocomplete': 'off'})
     usertype = SelectField('Select Role', choices=[('admin', 'Admin'), ('professor', 'Professor'), ('user', 'User')])
+    profile = FileField('Profile Picture')
     submit = SubmitField('Save Changes')
 
     def __init__(self, *args, **kwargs):
@@ -58,6 +60,7 @@ class AddNewUserForm(FlaskForm):
     firstname = StringField('Firstname', validators=[DataRequired()], render_kw={"placeholder": "Enter Firstname ", 'autocomplete': 'off'})
     lastname = StringField('Lastname', validators=[DataRequired()], render_kw={"placeholder": "Enter Lastname", 'autocomplete': 'off'})
     email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email'), Length(max=50)], render_kw={"placeholder": "Enter Your Email", 'autocomplete': 'off'})
+    school = StringField('School', validators=[DataRequired()], render_kw={"placeholder": "Enter School Name", 'autocomplete': 'off'})
     usertype = SelectField('Select Role', choices=[('admin', 'Admin'), ('professor', 'Professor'), ('user', 'User')])
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Enter Password", 'autocomplete': 'off'})
     submit = SubmitField('Add')
