@@ -103,7 +103,11 @@
             <div class="profile-details">
               <div class="profile-content">
                 <a href="{{ url_for('auth.profile')}}">
-                  <img src="{{ url_for('static', filename='/images/Fernan.jpg')}}" alt="profileImg">
+                  {% if current_user.imagepath %}
+                    <img src="{{ url_for('static', filename='/profiles/' + current_user.imagepath )}}" alt="profileImg">
+                  {% else %}
+                    <img src="{{ url_for('static', filename='/profiles/default_image.png')}}" alt="profileImg">
+                  {% endif %}
                 </a>
               </div>
               <div class="name-job">
