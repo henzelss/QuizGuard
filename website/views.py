@@ -24,6 +24,7 @@ views = Blueprint('views', __name__)
 def dashboard():
     user =  User.query.get_or_404(current_user.id)
     
+
     print('Login Successfully')
     print(f'User type: {current_user.usertype}')
     if current_user.usertype == 'user':
@@ -58,11 +59,13 @@ def student():
     return render_template('student.html', quiz_list=quiz_list, form=form, current_user=current_user)
 
 @views.route('/professor')
+@login_required
 def professor():
     return render_template('professor.html', current_user=current_user)
 
 
 @views.route('/myquiz')
+@login_required
 def myquiz():   
     #quiz_list = db.session.query(QuizList).filter_by(author_id=current_user.id).all()
     quiz_list = db.session.query(QuizList, User.firstname, User.lastname)\
@@ -72,6 +75,7 @@ def myquiz():
     return render_template('myquiz.html', quiz_list=quiz_list, current_user=current_user)
 
 @views.route('/clonequiz/<string:quizid>/<string:quizcode>', methods=['GET', 'POST'])
+@login_required
 def clonequiz(quizid, quizcode):
     # Find the quiz to clone
     quiz = QuizList.query.filter_by(id=quizid).first()
@@ -133,26 +137,6 @@ def quizbank():
     # JOIN user ON quiz_list.author_id = user.id;
     quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
     return render_template('quizbank.html', quiz_list=quiz_list, form=form, current_user=current_user)
-
-# @views.route('/quizbank')
-# @login_required
-# def quizbank():
-#     # user is authenticated, do something
-#     # SELECT quiz_list.*, user.firstname, user.lastname 
-#     # FROM quiz_list 
-#     # JOIN user ON quiz_list.author_id = user.id;
-#     form = SearchCode()
-#     current_date = date.today()
-#     quiz_list = (
-#         db.session.query(QuizList, User.firstname, User.lastname)
-#         .join(User, QuizList.author_id == User.id)
-#         .filter(QuizList.startdate <= current_date)
-#         .filter(QuizList.enddate >= current_date)
-#         .all()
-#     )
-#     print(f'quiz_list : {quiz_list}')
-
-#     return render_template('quizbank.html', quiz_list=quiz_list, form=form, current_user=current_user)
 
 @views.route('/searchquiz',  methods=['GET', 'POST'])
 @login_required
@@ -376,21 +360,6 @@ def addquestions(quizcode, quiztype):
     
     return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
 
-#     if form.validate_on_submit():
-#         question = form.question.data
-#         answer = form.answer.data
-
-#         if answer == '0':
-#             answer = False
-#         else:
-#             answer = True
-#         TOF = TrueOrFalse(quiz_code=quiz_code , question=question, answer=answer)
-#         db.session.add(TOF)
-#         db.session.commit()
-
-#         flash('Your question has been added!', 'success')
-#         return redirect(url_for('views.questionaire', quiz_code=quiz_code , category=3))
-
 @views.route('/editquiz<string:quizcode>/<string:quiztype>/', methods=['GET', 'POST'])
 @login_required
 def editquiz(quizcode, quiztype):
@@ -427,14 +396,6 @@ def editquiz(quizcode, quiztype):
         return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
 
     return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
-
-# @views.route('/deletequiz<string:quizcode>', methods=['GET', 'POST'])
-# @login_required
-# def DeleteQuiz():
-#     if current_user.usertype == 'user':
-#         flash('You dont have permission to access this page', category='error')
-#         activity_logs("Try to access webpages not for users")
-#         return redirect(url_for('views.student'))
     
 #     pass
 @views.route('/createquiz', methods=['GET', 'POST'])
@@ -457,6 +418,10 @@ def createquiz():
 
         enddate_str = request.form['enddate']
         enddate = datetime.strptime(enddate_str, '%Y-%m-%d').date()
+
+        starttime= ""
+        endtime = ""
+        
 
         new_quiz = QuizList(
             author_id=current_user.id,
@@ -684,72 +649,11 @@ def process_frame():
     else:
         return "failed"
 
-
-
-# @views.route('/record_prediction', methods=['POST'])
-# @login_required
-# def record_prediction():
-#     prediction_class = request.form.get('prediction_class')
-#     action = request.form.get('action')
-
-#     quiz_code = session['quizcode']
-    
-#     # Get the user's current violation (if any) for the given quiz code
-#     violation = Violations.query.filter_by(user_id=current_user.id, quiz_code=quiz_code).first()
-    
-#     # Update or create the violation for the given prediction class
-#     if violation:
-#         print(f'in the if statement')
-#         if prediction_class == "laptop":
-#             violation.laptop = "True"
-#             print(f'if: {violation}')
-#         elif prediction_class == "phone":
-#             violation.phone = "True"
-#             print(f'if: {violation}')
-#         elif prediction_class == "head_pose":
-#             violation.head_pose = "True"
-#             print(f'if: {violation}')
-#         db.session.add(violation)  # add the updated violation to the session
-#     else:
-#         print(f'in the else statement')
-#         if prediction_class == "laptop":
-#             violation = Violations(user_id=current_user.id, quiz_code=quiz_code, laptop="True")
-#             print(f'else: {violation}')
-#         elif prediction_class == "phone":
-#             violation = Violations(user_id=current_user.id, quiz_code=quiz_code, phone="True")
-#             print(f'else: {violation}')
-#         elif prediction_class == "head_pose":
-#             violation = Violations(user_id=current_user.id, quiz_code=quiz_code, head_pose="True")
-#             print(f'else: {violation}')
-#         db.session.add(violation)
-        
-#     try:
-#         db.session.commit()
-#         print("Violation added to the database.")
-#     except:
-#         db.session.rollback()
-#         print("Error: Violation could not be added to the database.")
-#         return "failed"
-
-#     return "success"
-
-
-
-
-# @views.route('/switchtabs',methods=['POST'])
-# @login_required
-# def switchtabs():
-#     value = request.args.get('value')
-#     user_id = current_user.id
-#     violation = Violations.query.filter_by(user_id=user_id).first()
-#     if violation is not None:
-#         violation.switch_tabs = value
-#         db.session.commit()
-#     else:
-#         violation = Violations(switch_tabs=value, user_id=user_id)
-#         db.session.add(violation)
-#         db.session.commit()
-#     return jsonify({'reply': 'success'})
+@views.route('/DownloadImage/<filename>')
+@login_required
+def DownloadImage(filename):
+    filepath = f'static/images/{filename}'
+    return send_file(filepath, as_attachment=True)
 
 @views.route('/switchtabs', methods=['POST'])
 @login_required
@@ -766,45 +670,6 @@ def switchtabs():
         db.session.add(violation)
         db.session.commit()
     return jsonify({'reply': 'success'})
-
-# @views.route('/switchtabs', methods=['POST'])
-# @login_required
-# def switchtabs():
-#     value = request.args.get('value')
-#     user_id = current_user.id
-#     quiz_code = request.args.get('quiz_code')
-#     violation = Violations.query.filter_by(user_id=user_id, quiz_code=quiz_code).first()
-#     if violation is not None:
-#         violation.switch_tabs = value
-#         db.session.commit()
-#     else:
-#         violation = Violations(switch_tabs=value, user_id=user_id, quiz_code=quiz_code)
-#         db.session.add(violation)
-#         db.session.commit()
-#     return jsonify({'reply': 'success'})
-
-# @views.route('/switchtabs', methods=['POST'])
-# @login_required
-# def switchtabs():
-#     value = request.args.get('value')
-#     user_id = current_user.id
-#     quiz_code = request.args.get('quiz_code')
-#     violation = Violations.query.filter_by(user_id=user_id, quiz_code=quiz_code).first()
-#     if violation is not None:
-#         violation.switch_tabs = value
-#         db.session.commit()
-#     else:
-#         violation = Violations(switch_tabs=value, user_id=user_id, quiz_code=quiz_code)
-#         db.session.add(violation)
-#         db.session.commit()
-    
-#     response = make_response(jsonify({'reply': 'success'}))
-#     response.headers['Access-Control-Allow-Origin'] = '*'
-    
-#     return response
-
-
-
 
 # this is function is for bulk entry of questions for multiple choice type quiz        
 @views.route('/upload_multiple/<string:quizcode>/<string:quiztype>', methods=['POST'])
@@ -1095,6 +960,7 @@ def view_student_profile(quizcode):
     pass
 
 @views.route("/view_student_result/<string:quizcode>/<string:quiztype>")
+@login_required
 def view_student_result(quizcode, quiztype):
 
     if quiztype == "1":
@@ -1118,26 +984,10 @@ def view_student_result(quizcode, quiztype):
     return render_template("view_result.html", results=results, total_score=total_score )
 
 
-
-
-
-
 @views.route('/images/<filename>')
 @login_required
 def images(filename):
     return  send_from_directory("images", filename)
-
-# @views.route('/images/<filename>')
-# @login_required
-# def images(filename):
-#     try:
-#         image_dir = os.path.join(current_app.root_path, 'images')
-#         return send_from_directory(image_dir, filename)
-#     except FileNotFoundError:
-#         current_app.logger.error(f"Image file '{filename}' not found.")
-#         return "Image not found.", 404
-
-
 
 @views.route('/error')
 @login_required
@@ -1154,3 +1004,156 @@ def page_not_found(e):
 def page_not_found(e):
     return render_template("500.html"), 500
 
+# @views.route('/quizbank')
+# @login_required
+# def quizbank():
+#     # user is authenticated, do something
+#     # SELECT quiz_list.*, user.firstname, user.lastname 
+#     # FROM quiz_list 
+#     # JOIN user ON quiz_list.author_id = user.id;
+#     form = SearchCode()
+#     current_date = date.today()
+#     quiz_list = (
+#         db.session.query(QuizList, User.firstname, User.lastname)
+#         .join(User, QuizList.author_id == User.id)
+#         .filter(QuizList.startdate <= current_date)
+#         .filter(QuizList.enddate >= current_date)
+#         .all()
+#     )
+#     print(f'quiz_list : {quiz_list}')
+
+#     return render_template('quizbank.html', quiz_list=quiz_list, form=form, current_user=current_user)
+
+# @views.route('/images/<filename>')
+# @login_required
+# def images(filename): 
+#     try:
+#         image_dir = os.path.join(current_app.root_path, 'images')
+#         return send_from_directory(image_dir, filename)
+#     except FileNotFoundError:
+#         current_app.logger.error(f"Image file '{filename}' not found.")
+#         return "Image not found.", 404
+
+# @views.route('/switchtabs', methods=['POST'])
+# @login_required
+# def switchtabs():
+#     value = request.args.get('value')
+#     user_id = current_user.id
+#     quiz_code = request.args.get('quiz_code')
+#     violation = Violations.query.filter_by(user_id=user_id, quiz_code=quiz_code).first()
+#     if violation is not None:
+#         violation.switch_tabs = value
+#         db.session.commit()
+#     else:
+#         violation = Violations(switch_tabs=value, user_id=user_id, quiz_code=quiz_code)
+#         db.session.add(violation)
+#         db.session.commit()
+#     return jsonify({'reply': 'success'})
+
+# @views.route('/switchtabs', methods=['POST'])
+# @login_required
+# def switchtabs():
+#     value = request.args.get('value')
+#     user_id = current_user.id
+#     quiz_code = request.args.get('quiz_code')
+#     violation = Violations.query.filter_by(user_id=user_id, quiz_code=quiz_code).first()
+#     if violation is not None:
+#         violation.switch_tabs = value
+#         db.session.commit()
+#     else:
+#         violation = Violations(switch_tabs=value, user_id=user_id, quiz_code=quiz_code)
+#         db.session.add(violation)
+#         db.session.commit()
+    
+#     response = make_response(jsonify({'reply': 'success'}))
+#     response.headers['Access-Control-Allow-Origin'] = '*'
+    
+#     return response
+
+#     if form.validate_on_submit():
+#         question = form.question.data
+#         answer = form.answer.data
+
+#         if answer == '0':
+#             answer = False
+#         else:
+#             answer = True
+#         TOF = TrueOrFalse(quiz_code=quiz_code , question=question, answer=answer)
+#         db.session.add(TOF)
+#         db.session.commit()
+
+#         flash('Your question has been added!', 'success')
+#         return redirect(url_for('views.questionaire', quiz_code=quiz_code , category=3))
+
+# @views.route('/deletequiz<string:quizcode>', methods=['GET', 'POST'])
+# @login_required
+# def DeleteQuiz():
+#     if current_user.usertype == 'user':
+#         flash('You dont have permission to access this page', category='error')
+#         activity_logs("Try to access webpages not for users")
+#         return redirect(url_for('views.student'))
+
+# @views.route('/record_prediction', methods=['POST'])
+# @login_required
+# def record_prediction():
+#     prediction_class = request.form.get('prediction_class')
+#     action = request.form.get('action')
+
+#     quiz_code = session['quizcode']
+    
+#     # Get the user's current violation (if any) for the given quiz code
+#     violation = Violations.query.filter_by(user_id=current_user.id, quiz_code=quiz_code).first()
+    
+#     # Update or create the violation for the given prediction class
+#     if violation:
+#         print(f'in the if statement')
+#         if prediction_class == "laptop":
+#             violation.laptop = "True"
+#             print(f'if: {violation}')
+#         elif prediction_class == "phone":
+#             violation.phone = "True"
+#             print(f'if: {violation}')
+#         elif prediction_class == "head_pose":
+#             violation.head_pose = "True"
+#             print(f'if: {violation}')
+#         db.session.add(violation)  # add the updated violation to the session
+#     else:
+#         print(f'in the else statement')
+#         if prediction_class == "laptop":
+#             violation = Violations(user_id=current_user.id, quiz_code=quiz_code, laptop="True")
+#             print(f'else: {violation}')
+#         elif prediction_class == "phone":
+#             violation = Violations(user_id=current_user.id, quiz_code=quiz_code, phone="True")
+#             print(f'else: {violation}')
+#         elif prediction_class == "head_pose":
+#             violation = Violations(user_id=current_user.id, quiz_code=quiz_code, head_pose="True")
+#             print(f'else: {violation}')
+#         db.session.add(violation)
+        
+#     try:
+#         db.session.commit()
+#         print("Violation added to the database.")
+#     except:
+#         db.session.rollback()
+#         print("Error: Violation could not be added to the database.")
+#         return "failed"
+
+#     return "success"
+
+
+
+
+# @views.route('/switchtabs',methods=['POST'])
+# @login_required
+# def switchtabs():
+#     value = request.args.get('value')
+#     user_id = current_user.id
+#     violation = Violations.query.filter_by(user_id=user_id).first()
+#     if violation is not None:
+#         violation.switch_tabs = value
+#         db.session.commit()
+#     else:
+#         violation = Violations(switch_tabs=value, user_id=user_id)
+#         db.session.add(violation)
+#         db.session.commit()
+#     return jsonify({'reply': 'success'})
