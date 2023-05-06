@@ -13,7 +13,7 @@
           </button>
         </h2>
         <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
-          <div class="accordion-body">
+          <div class="accordion-body bg-light-blue">
             <table class="table table-hover table-responsive">
               <thead>
                 <tr>
@@ -53,6 +53,9 @@
                               <div class="modal-body">
                                 <img class="rounded" src="{{ url_for('static', filename='images/' + violation.laptop_image)}}" alt="" style="width: 100%; height: auto;">
                               </div>
+                              <div class="modal-footer">
+                                <a href="{{ url_for('views.DownloadImage', filename=violation.laptop_image)}}" class="btn btn-success">Download</a>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -80,6 +83,9 @@
                               </div>
                               <div class="modal-body">
                                 <img class="rounded" src="{{ url_for('static', filename='images/' + violation.phone_image)}}" alt="" style="width: 100%; height: auto;">
+                              </div>
+                              <div class="modal-footer">
+                                <a href="{{ url_for('views.DownloadImage', filename=violation.phone_image)}}" class="btn btn-success">Download</a>
                               </div>
                             </div>
                           </div>
@@ -109,6 +115,9 @@
                               <div class="modal-body">
                                 <img class="rounded" src="{{ url_for('static', filename='images/' + violation.head_pose_image)}}" alt="" style="width: 100%; height: auto;">
                               </div>
+                              <div class="modal-footer">
+                                <a href="{{ url_for('views.DownloadImage', filename=violation.head_pose_image)}}" class="btn btn-success">Download</a>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -124,7 +133,6 @@
                 {% endfor %}
               </tbody>
             </table>
-           
           </div>
         </div>
       </div>
@@ -135,7 +143,7 @@
           </button>
         </h2>
         <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
-          <div class="accordion-body">
+          <div class="accordion-body bg-light-blue">
             <table class="table  table-responsive">
               <thead>
                   <tr>
