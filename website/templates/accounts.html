@@ -7,7 +7,7 @@
         {{ searchform.hidden_tag() }}
         <div class="row">
             <div class="col-6">{{ searchform.search(class='text-dark' , required=True)}}</div>
-            <div class="col-2">{{ searchform.submit(class='btn btn-primary text-light' , required=True)}}</div>
+            <div class="col-2">{{ searchform.submit(class='btn btn-warning text-dark' , required=True)}}</div>
             <div class="col-2"><h5 class="mt-3 text-light text-end">Create New User</h5></div>
             <div class="col-2">
               <button type="button" class="btn submit-button-add text-light" data-bs-toggle="modal" data-bs-target="#createUserModal">
@@ -22,6 +22,7 @@
             <tr>
               <th>User ID</th>
               <th>Fullname</th>
+              <th>School</th>
               <th>Email</th>
               <th>User Role</th>
               <th>Actions</th>
@@ -32,31 +33,66 @@
               <tr>
                 <td>{{ acc.id }}</td>
                 <td>{{ acc.firstname}}&nbsp;{{ acc.lastname}}</td>
+                <td>{{ acc.school }}</td>
                 <td>{{ acc.email }}</td>
                 <td>{{ acc.usertype }}</td>
                 <td> 
-                    <!-- pass the acc.id on the href to get the profile you want to edit-->
-                    <a href="{{ url_for('auth.edit', user_id=acc.id) }}" class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i>Edit</a>
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ acc.id }}"><i class="fa-solid fa-trash me-1"></i>Remove</button>
-                    <!-- Modal -->
-                    <div class="modal fade" id="deleteModal{{ acc.id }}" tabindex="-1" aria-labelledby="deleteModal" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content bg-container text-light">
-                          <div class="modal-header bg-container">
-                            <h5 class="modal-title" id="deleteModal">Remove Account</h5>
-                            <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body bg-container">
-                            Removing this account will result of permanent removal of all data associated with this account: <p>{{ acc.firstname}}&nbsp;{{ acc.lastname}}</p>
-                            Are you sure you still want to remove this account?
-                          </div>
-                          <div class="modal-footer bg-container">
-                            <a href="{{ url_for('auth.delete', user_id=acc.id) }}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Remove</a>
-                          </div>
+                  <!-- pass the acc.id on the href to get the profile you want to edit-->
+                  
+                  <!-- Button trigger Edit modal -->
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#EditModal{{ acc.id }}">
+                    <i class="fa-solid fa-pen-to-square"></i>Edit
+                  </button>
+
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ acc.id }}"><i class="fa-solid fa-trash me-1"></i>Remove</button>
+                  <!-- Modal -->
+                  <div class="modal fade" id="deleteModal{{ acc.id }}" tabindex="-1" aria-labelledby="deleteModal" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content bg-container text-light">
+                        <div class="modal-header bg-container">
+                          <h5 class="modal-title" id="deleteModal">Remove Account</h5>
+                          <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body bg-container">
+                          Removing this account will result of permanent removal of all data associated with this account: <p>{{ acc.firstname}}&nbsp;{{ acc.lastname}}</p>
+                          Are you sure you still want to remove this account?
+                        </div>
+                        <div class="modal-footer bg-container">
+                          <a href="{{ url_for('auth.delete', user_id=acc.id) }}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Remove</a>
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <!-- edit modal -->
+                  <div class="modal fade" id="EditModal{{ acc.id }}" tabindex="-1" aria-labelledby="EditModallabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content bg-container text-light">
+                        <div class="modal-header bg-container">
+                          <h5 class="modal-title" id="EditModalLabel">Edit Account</h5>
+                          <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body bg-container">
+                          <form method="POST" class="form-properties" action="{{ url_for('auth.edit', user_id=acc.id)}}">
+                            {{ editform.hidden_tag() }}
+                            {{ editform.firstname.label(class='text-light floatingInput') }}
+                            {{ editform.firstname(class="form-control text-dark shadow-sm", id="floatingInput", value=temp[0] if temp else '', placeholder=acc.firstname) }}
+                            {{ editform.lastname.label(class='text-light floatingInput') }}
+                            {{ editform.lastname(class="form-control text-dark shadow-sm", id="floatingInput" , value=temp[1] if temp else '', placeholder=acc.lastname) }}
+                            {{ editform.school.label(class='text-light floatingInput') }}
+                            {{ editform.school(class="form-control text-dark shadow-sm", id="floatingInput" , value=temp[1] if temp else '', placeholder=acc.school) }}
+                            {{ editform.email.label(class='text-light floatingInput') }}
+                            {{ editform.email(class="form-control text-dark shadow-sm", id="floatingInput" , value=temp[2] if temp else '', placeholder=acc.email) }}
+                            {{ editform.password.label(class='text-light floatingInput') }}
+                            {{ editform.password(class="form-control text-dark shadow-sm", id="floatingInput" , value=temp[3] if temp else '', placeholder=acc.password) }}
+                            {{ editform.usertype.label(class='text-light floatingInput') }}
+                            {{ editform.usertype(class="form-control text-dark shadow-sm", id="floatingInput" , value=temp[3] if temp else '') }}
+                            {{ editform.submit(class='btn btn-warning text-dark') }}
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </td>
               </tr>
             {% endfor %}
@@ -83,6 +119,9 @@
 
                 {{ addform.email.label(class='form-label') }}
                 {{ addform.email(class='form-control', required=True) }}
+
+                {{ addform.school.label(class='form-label') }}
+                {{ addform.school(class='form-control', required=True) }}
 
                 {{ addform.password.label(class='form-label') }}
                 {{ addform.password(class='form-control', required=True) }}
