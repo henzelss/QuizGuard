@@ -12,6 +12,10 @@ from sqlalchemy import or_
 from io import BytesIO
 import pandas as pd
 from xhtml2pdf import pisa
+from werkzeug.utils import secure_filename
+import uuid  as uuid
+import os
+import imghdr
 
 auth = Blueprint('auth', __name__)
 
@@ -41,7 +45,6 @@ def home():
             flash('Email does not exist.', category='error')
     return render_template('home.html', form=form, temp=temp)
 
-
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -52,10 +55,10 @@ def register():
         existing_email = User.query.filter_by(email=form.email.data).first()
         if existing_email:
             flash('Email already registered exist',  category='error')
-            return redirect(url_for('auth.register'))
+            return render_template('register.html', form=form, temp=temp)
         elif form.password.data != form.retypepassword.data:
             flash("Password and Retype Password didn't match try again")
-            return redirect(url_for('auth.register'))
+            return render_template('register.html', form=form, temp=temp)
         else:
             hashed_password = generate_password_hash(form.password.data, method='sha256')
             new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, school=form.school.data, password=hashed_password, usertype='user')
@@ -67,41 +70,104 @@ def register():
             return redirect(url_for('views.dashboard'))
     return render_template('register.html', form=form, temp=temp)
 
+# @auth.route('/profile', methods=['GET', 'POST'])
+# @login_required
+# def profile():
+#     user =  User.query.get_or_404(current_user.id)
+#     form = UserProfileForm()
+#     existing_info = {
+#         'firstname' : user.firstname,
+#         'lastname' : user.lastname,
+#         'email' : user.email,
+#         'school' : user.school
+#     }
+#     if request.method == 'POST' and request.form.get('submit'):
+#         if request.form['firstname'] != current_user.firstname:
+#             user.firstname = request.form['firstname']
+#         if request.form['lastname'] != current_user.lastname:
+#                 user.lastname = request.form['lastname']
+#         if request.form['email'] != current_user.email:
+#             # Check if the new email already exists in the database
+#             if User.query.filter_by(email=request.form['email']).first():
+#                 flash('Email already exists', category='danger')
+#                 return redirect(url_for('auth.profile'))
+#             user.email = request.form['email']
+#         if request.form['school'] != current_user.school:
+#             user.school = request.form['school']
+#         try:
+#             db.session.commit()
+#             flash('Profile Successfully Updated', category='success')
+#             activity_logs("User Profile Updated")
+#             return redirect(url_for('auth.profile'))
+#         except:
+#             flash('Profile Failed to Updated', category='danger')
+#             activity_logs("User profile failed to updated")
+#             return redirect(url_for('auth.profile'))
+#     return render_template('profile.html', form=form, existing_info=existing_info, current_user=current_user)
 
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    user =  User.query.get_or_404(current_user.id)
-    form = UserProfileForm()
+    user = User.query.get_or_404(current_user.id)
+    form = EditForm()
     existing_info = {
-        'firstname' : user.firstname,
-        'lastname' : user.lastname,
-        'email' : user.email,
-        'school' : user.school
+        'firstname': user.firstname,
+        'lastname': user.lastname,
+        'email': user.email,
+        'school': user.school,
+        'profile': user.imagepath
     }
     if request.method == 'POST' and request.form.get('submit'):
-        if request.form['firstname'] != current_user.firstname:
+        if request.form['firstname'] == '':
+            user.firstname = existing_info['firstname']
+        if request.form['lastname'] == '':
+            user.lastname = existing_info['lastname']
+        if request.form['email'] == '':
+            user.email = existing_info['email']
+        if request.form['school'] == '':
+            user.school = existing_info['school']
+        if request.files['profile'] == '':
+            user.imagepath = existing_info['profile']
+
+        if request.form['firstname']:
             user.firstname = request.form['firstname']
-        if request.form['lastname'] != current_user.lastname:
-                user.lastname = request.form['lastname']
-        if request.form['email'] != current_user.email:
-            # Check if the new email already exists in the database
-            if User.query.filter_by(email=request.form['email']).first():
-                flash('Email already exists', category='danger')
-                return redirect(url_for('auth.profile'))
-            user.email = request.form['email']
-        if request.form['school'] != current_user.school:
+        if request.form['lastname']:
+            user.lastname = request.form['lastname']
+        if request.form['school']:
             user.school = request.form['school']
+
+        if request.files['profile']:
+            if imghdr.what(request.files['profile']) not in ['jpeg', 'jpg', 'png']:
+                flash('Invalid file format. Only JPEG, JPG, and PNG files are allowed.', category='error')
+                return redirect(url_for('auth.profile'))
+            
+            old_image_path = None
+            if existing_info['profile']:
+                old_image_path = os.path.join("website", "static", "profiles", existing_info['profile'])
+                if os.path.isfile(old_image_path):
+                    os.remove(old_image_path)
+
+            profile = secure_filename(request.files['profile'].filename)
+            #set the uuid
+            profile_filename = str(uuid.uuid1()) + "_" + profile
+            saveImage = request.files['profile']
+            user.imagepath = profile_filename
+            saveImage.save(os.path.join("website", "static", "profiles", profile_filename))
+
         try:
             db.session.commit()
-            flash('Profile Successfully Updated', category='success')
-            activity_logs("User Profile Updated")
+            activity_logs('Edit user profile')
+            flash('Successfully Updated', category='success')
             return redirect(url_for('auth.profile'))
         except:
-            flash('Profile Failed to Updated', category='danger')
-            activity_logs("User profile failed to updated")
+            flash('Failed to update', category='danger')
+            activity_logs('Failed to edit user profile')
             return redirect(url_for('auth.profile'))
+
+    activity_logs("Update Profile")
     return render_template('profile.html', form=form, existing_info=existing_info, current_user=current_user)
+
+
 
 @auth.route('/accounts', methods=['GET', 'POST'])
 @login_required
@@ -113,6 +179,7 @@ def accounts():
     accs = User.query.all()
     searchform = SearchForm()
     addform = AddNewUserForm()
+    editform = EditForm()
     if addform.validate_on_submit():
         existing_email = User.query.filter_by(email=addform.email.data).first()
         if existing_email:
@@ -124,7 +191,8 @@ def accounts():
                 password=generate_password_hash(addform.password.data),
                 firstname=addform.firstname.data,
                 lastname=addform.lastname.data,
-                usertype=addform.usertype.data
+                usertype=addform.usertype.data,
+                school=addform.school.data
             )
             # Add the new user to the database
             db.session.add(new_user)
@@ -132,7 +200,7 @@ def accounts():
             activity_logs('Added New User')
             flash('New user added successfully!', category='success')
             return redirect(url_for('auth.accounts'))
-    return render_template('accounts.html', accounts=accs, addform=addform, searchform=searchform)
+    return render_template('accounts.html', accounts=accs, addform=addform, searchform=searchform, editform=editform)
 
 @auth.route('/addaccounts', methods=['GET', 'POST'])
 @login_required
@@ -154,7 +222,9 @@ def addaccounts():
             password=generate_password_hash(addform.password.data),
             firstname=addform.firstname.data,
             lastname=addform.lastname.data,
+            school=addform.school.data,
             usertype=addform.usertype.data
+            
         )
         # Add the new user to the database
         db.session.add(new_user)
@@ -163,45 +233,48 @@ def addaccounts():
         flash('New user added successfully!', category='success')
         return redirect(url_for('auth.accounts'))
     
-
 @auth.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def edit(user_id):
-    if current_user.usertype == 'user':
-        flash('You dont have permission to access this page', category='error')
-        activity_logs("Try to access webpages not for users")
-        return redirect(url_for('views.student'))
-    
     user = User.query.get_or_404(user_id)
     form = EditForm()
     existing_info = {
         'firstname' : user.firstname,
         'lastname' : user.lastname,
         'email' : user.email,
-        'password' : user.password,
-        'usertype' : user.usertype
+        'school' : user.school,
+        'password': user.password,
+        'usertype': user.usertype
     }
+
     if request.method == 'POST' and request.form.get('submit'):
 
-        if request.form['firstname'] != existing_info['firstname']:
-            user.firstname = request.form['firstname']
-        if request.form['lastname'] != existing_info['lastname']:
-            user.lastname = request.form['lastname']
-        if request.form['password'] != existing_info['password']:
-            user.password = generate_password_hash(request.form['password'])
+        if request.form['firstname'] == '':
+            user.firstname = existing_info['firstname']
+        if request.form['lastname'] =='':
+            user.lastname = existing_info['lastname']
+        if request.form['email'] == '':
+            user.email = existing_info['email']
+        if request.form['school'] =='':
+            user.school = existing_info['school']
+        if request.form['password'] =='':
+            user.password = existing_info['password']
         if request.form['usertype'] != existing_info['usertype']:
             user.usertype = request.form['usertype']
-        if request.form['email'] != existing_info['email']:
-            # Check if the new email already exists in the database
+
+        if request.form['firstname']:
+            user.firstname = request.form['firstname']
+        if request.form['lastname']:
+            user.lastname = request.form['lastname']
+        if request.form['school']:
+            user.school = request.form['school']
+        if request.form['password']:
+            user.password = request.form['password']
+        if request.form['email'] != '':
             if User.query.filter_by(email=request.form['email']).first():
                 flash('Email already exists', category='danger')
-                return redirect(url_for('auth.edit', user_id=user.id))
+                return redirect(url_for('auth.account'))
             user.email = request.form['email']
-
-        if request.form['password'] != request.form['retype']:
-            flash("The password and retype password doesnt match")
-            return redirect(url_for('auth.edit', user_id=user_id))
-
         try: 
             db.session.commit()
             activity_logs('Edit user profile')
@@ -211,8 +284,8 @@ def edit(user_id):
             flash('Failed to update', category='danger')
             activity_logs('Failed to edit user profile')
             return redirect(url_for('auth.edit' , user_id = user.id))
-    
-    return render_template('edit.html', form=form,  existing_info=existing_info)
+    activity_logs('Edit User Account')
+    return redirect(url_for('auth.accounts'))
 
 @auth.route('/delete/<int:user_id>', methods=['GET', 'POST'])
 @login_required
@@ -234,17 +307,19 @@ def delete(user_id):
     activity_logs('Deleted a user')
     return redirect(url_for('auth.accounts'))
 
-
 @auth.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
     form = SearchForm()
     addform = AddNewUserForm()
+    editform = EditForm()
     if request.method == 'POST' and request.form.get('submit'):
         query_string = form.search.data
         print(query_string)
         results = User.query.filter(or_(User.firstname.ilike(f'%{query_string}%'),
                                       User.lastname.ilike(f'%{query_string}%'),
+                                      User.usertype.ilike(f'%{query_string}%'),
+                                      User.school.ilike(f'%{query_string}%'),
                                       User.email.ilike(f'%{query_string}%'))).all()
         print(results)
         if results is None:
@@ -254,11 +329,10 @@ def search():
         else: 
             activity_logs('Search for a user')
             
-            return render_template('search.html', results=results, form=form, addform=addform)
+            return render_template('search.html', results=results, form=form, addform=addform, editform=editform)
         
     return redirect(url_for('auth.accounts'))
     
-
 @auth.route('/logs')
 def logs():
     if current_user.usertype == 'user':
@@ -314,7 +388,72 @@ def extodaylog():
 def images(filename):
     return  send_from_directory("images", filename)
 
+#error page handler | page not found
+@auth.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"), 404
 
+#error page handler | Internal server error
+@auth.errorhandler(500)
+def page_not_found(e):
+    return render_template("500.html"), 500
+
+@auth.route('/logout')
+@login_required
+def logout():
+    #activity_logs('User Logout')
+    logout_user()
+    return redirect(url_for('auth.home'))
+
+# @auth.route('/edit/<int:user_id>', methods=['GET', 'POST'])
+# @login_required
+# def edit(user_id):
+#     if current_user.usertype == 'user':
+#         flash('You dont have permission to access this page', category='error')
+#         activity_logs("Try to access webpages not for users")
+#         return redirect(url_for('views.student'))
+    
+#     user = User.query.get_or_404(user_id)
+#     form = EditForm()
+#     existing_info = {
+#         'firstname' : user.firstname,
+#         'lastname' : user.lastname,
+#         'email' : user.email,
+#         'password' : user.password,
+#         'usertype' : user.usertype
+#     }
+#     if request.method == 'POST' and request.form.get('submit'):
+
+#         if request.form['firstname'] != existing_info['firstname']:
+#             user.firstname = request.form['firstname']
+#         if request.form['lastname'] != existing_info['lastname']:
+#             user.lastname = request.form['lastname']
+#         if request.form['password'] != existing_info['password']:
+#             user.password = generate_password_hash(request.form['password'])
+#         if request.form['usertype'] != existing_info['usertype']:
+#             user.usertype = request.form['usertype']
+#         if request.form['email'] != existing_info['email']:
+#             # Check if the new email already exists in the database
+#             if User.query.filter_by(email=request.form['email']).first():
+#                 flash('Email already exists', category='danger')
+#                 return redirect(url_for('auth.edit', user_id=user.id))
+#             user.email = request.form['email']
+
+#         if request.form['password'] != request.form['retype']:
+#             flash("The password and retype password doesnt match")
+#             return redirect(url_for('auth.edit', user_id=user_id))
+
+#         try: 
+#             db.session.commit()
+#             activity_logs('Edit user profile')
+#             flash('Successfully Updated', category='success')
+#             return redirect(url_for('auth.accounts'))
+#         except:
+#             flash('Failed to update', category='danger')
+#             activity_logs('Failed to edit user profile')
+#             return redirect(url_for('auth.edit' , user_id = user.id))
+    
+#     return render_template('edit.html', form=form,  existing_info=existing_info)
 
 # @auth.route('/pdfalllogs')
 # def pdfalllogs():
@@ -337,13 +476,3 @@ def images(filename):
 #     today = date.today()
 #     logs = ActivityLog.query.filter(ActivityLog.logtime >= datetime.combine(today, datetime.min.time())).all()
 #     return render_template('logs_pdf.html', logs=logs)
-   
-
-
-@auth.route('/logout')
-@login_required
-def logout():
-    #activity_logs('User Logout')
-    logout_user()
-    return redirect(url_for('auth.home'))
-
