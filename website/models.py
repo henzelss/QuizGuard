@@ -59,7 +59,51 @@ class Student(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
     score = db.Column(db.Integer, nullable=False)
-    
+
+class Violations(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    laptop = db.Column(db.String(50))
+    laptop_image = db.Column(db.String(50))
+    laptop_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
+    phone = db.Column(db.String(50))
+    phone_image = db.Column(db.String(50))
+    phone_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
+    head_pose = db.Column(db.String(50))
+    head_pose_image = db.Column(db.String(50))
+    head_pose_image_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
+    switch_tabs = db.Column(db.String(50))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
+    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
+
+
+
+class ActivityLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    name = db.Column(db.String(255))
+    logtime = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
+    activity = db.Column(db.String(255))
+    user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))
+
+class History(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    date_taken = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class Achievements(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    image_path = db.Column(db.String(255))
+
+class Room(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    toast_message = db.Column(db.String(255))
+    status = db.Column(db.String(255))
+
+
 
 # class Violations(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
@@ -81,48 +125,3 @@ class Student(db.Model):
 #     switch_tabs = db.Column(db.String(50))
 #     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
 #     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
-
-class Violations(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    laptop = db.Column(db.String(50))
-    laptop_image = db.Column(db.String(50))
-    laptop_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
-    phone = db.Column(db.String(50))
-    phone_image = db.Column(db.String(50))
-    phone_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
-    head_pose = db.Column(db.String(50))
-    head_pose_image = db.Column(db.String(50))
-    head_pose_image_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
-    switch_tabs = db.Column(db.String(50))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
-    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
-
-
-
-    
-class Room(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    toast_message = db.Column(db.String(255))
-    status = db.Column(db.String(255))
-
-class ActivityLog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    name = db.Column(db.String(255))
-    logtime = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
-    activity = db.Column(db.String(255))
-    user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))
-
-class History(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    date_taken = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-class Achievements(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
-    image_path = db.Column(db.String(255))
-
