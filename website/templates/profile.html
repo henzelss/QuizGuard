@@ -4,66 +4,83 @@
 {% endblock %}
 
 {% block content %}
+    <div class="container p-3 mt-5 bg-container rounded">
+        <div class="row">
+            <div class="col-4">
+                <div class="p-5">
+                    <button class="btn shadow-none">
+                        {% if current_user.imagepath %}
+                            <img src="{{ url_for('static', filename='/profiles/' + current_user.imagepath )}}" alt="profileImg" style="width: 18rem; height: 18rem; border-radius: 50%;">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='/profiles/default_image.png')}}" alt="profileImg">
+                        {% endif %}
     
-    <div class="container bg-container mt-5 rounded">
-        <div class="row ">
-            <div class="col-4 d-flex justify-content-center p-5 rounded">
-                <button class="btn shadow-none">
-                    <img src="{{ url_for('static', filename='images/Fernan.jpg')}}" alt="" style="width: 18rem; height: 18rem; border-radius: 50%;" >
-                    <h5 class="text-light mt-3">{{ existing_info['firstname']|title }}&nbsp;{{ existing_info['lastname'] }}</h5>
-                    {% if current_user.usertype == 'user'%}
-                        <h6 class="text-light">Student</h6>
-                    {% elif current_user.usertype == 'admin'%}
-                        <h6 class="text-light">Admin</h6>
-                    {% elif current_user.usertype == 'professor'%}  
-                        <h6 class="text-light">Teacher</h6>
-                    {% endif %}
-                </button>
+                        <h5 class="text-light mt-3">{{ existing_info['firstname']|title }}&nbsp;{{ existing_info['lastname'] }}</h5>
+                        {% if current_user.usertype == 'user'%}
+                            <h6 class="text-light">Student</h6>
+                        {% elif current_user.usertype == 'admin'%}
+                            <h6 class="text-light">Admin</h6>
+                        {% elif current_user.usertype == 'professor'%}  
+                            <h6 class="text-light">Teacher</h6>
+                        {% endif %}
+                    </button>
+                </div>
+                
             </div>
-            <div class="col-8 d-flex justify-content-center p-5 rounded text-light">
-                <form action="" method="GET">
-                    <label for="firstname" class="">Firstname</label>
-                    <input class="firstname" id="firstname" type="text" placeholder="{{ existing_info['firstname'] }}" readonly >
-                    <label for="lastname">Lastname</label>
-                    <input class="lastname" id="lastname" type="text" placeholder="{{ existing_info['lastname'] }}" readonly >
-                    <label for="Email">Email</label>
-                    <input class="Email" id="Email" type="text" placeholder="{{ existing_info['email'] }}" readonly >
-                    <label for="School">School</label>
-                    <input type="text" class="" id="School" placeholder="{{ existing_info['school'] }}"  readonly>
-                    <div class="d-flex justify-content-end"> 
-                        <button type="button" class="btn submit-button text-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Edit
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <!-- Modal -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content bg-container">
-                        <div class="modal-header">
-                            <h5 class="modal-title text-light" id="exampleModalLabel">Update</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="col-8 text-light">
+                <div id="profile">
+                    <form action="" method="GET">
+                        <label for="firstname" class="">Firstname</label>
+                        <input class="firstname" id="firstname" type="text" placeholder="{{ existing_info['firstname'] }}" readonly >
+                        <label for="lastname">Lastname</label>
+                        <input class="lastname" id="lastname" type="text" placeholder="{{ existing_info['lastname'] }}" readonly >
+                        <label for="Email">Email</label>
+                        <input class="Email" id="Email" type="text" placeholder="{{ existing_info['email'] }}" readonly >
+                        <label for="School">School</label>
+                        <input type="text" class="" id="School" placeholder="{{ existing_info['school'] }}"  readonly>  
+                        <div class="d-flex justify-content-end"> 
+                            <button type="button" class="btn submit-button text-dark" onclick="HideUnHide()">Edit</button>
                         </div>
-                        <div class="modal-body">
-                            <form method="POST" action="{{ url_for('auth.profile')}}">
-                                {{ form.hidden_tag() }}
-                                {{ form.firstname.label(class='text-light') }}
-                                {{ form.firstname(class='text-dark', required=True) }}
-                                {{ form.lastname.label(class='text-light') }}
-                                {{ form.lastname(class='text-dark' , required=True) }}
-                                {{ form.school.label(class='text-light')}}
-                                {{ form.school(class='text-dark', required=True)}}
-                                {{ form.email.label(class='text-light') }}
-                                {{ form.email(class='text-dark', required=True) }}
-                                <div class="d-flex justify-content-end">
-                                    {{ form.submit(class='btn btn-warning submit-button text-dark') }}
-                                </div>
-                            </form>
+                    </form>
+                </div>
+                <div id="edit-profile" style="display: none;">
+                    <form method="POST" action="{{ url_for('auth.profile')}}" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        {{ form.firstname.label(class='text-light') }}
+                        {{ form.firstname(class='text-dark') }}
+                        {{ form.lastname.label(class='text-light') }}
+                        {{ form.lastname(class='text-dark') }}
+                        {{ form.school.label(class='text-light')}}
+                        {{ form.school(class='text-dark')}}
+                        {{ form.email.label(class='text-light') }}
+                        {{ form.email(class='text-dark') }}
+                        {{ form.profile.label(class='text-light floatingInput') }}
+                        {{ form.profile(class="form-control text-dark shadow-sm", id="floatingInput" , value=temp[3] if temp else '') }}
+                        <div class="d-flex justify-content-end">
+                            {{ form.submit(class='btn submit-button text-dark') }}
+                            <button type="button" class="btn previous-button text-light ms-1 mt-2 p-2" onclick="HideUnHide()">Cancel</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function HideUnHide()
+        {
+            var profile = document.getElementById("profile");
+            var edit_profile = document.getElementById("edit-profile");
+            if( profile.style.display === "none")
+            {
+                profile.style.display = "block";
+                edit_profile.style.display = "none";
+            }
+            else
+            {
+                profile.style.display = "none";
+                edit_profile.style.display = "block";
+            }
+        }
+    </script> 
 {% endblock %}
