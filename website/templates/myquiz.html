@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    <div class="container mt-5 rounded bg-container p-3" > 
+    <div class="container mt-5 bg-container rounded p-3" style="overflow:scroll; height:80%;"> 
         <div class="row">
             <h3 class="ms-3 text-light">My Quizzes</h3>
             {% for quiz, firstname, lastname in quiz_list %}
@@ -34,7 +34,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         
-                                        <h6 class="card-text">Create by:&nbsp;{{ firstname|title }}&nbsp;{{ lastname|title }}</h6>
+                                        <h6 class="card-text">Created by:&nbsp;{{ firstname|title }}&nbsp;{{ lastname|title }}</h6>
                                         
                                         <h6>Category: 
                                             {% if quiz.category == '1' %}
@@ -46,7 +46,7 @@
                                             {% elif quiz.category == '4' %}
                                                 History
                                             {% elif quiz.category == '5' %}
-                                                Science
+                                                Programming
                                             {% elif quiz.category == '6' %}
                                                 Physics
                                             {% elif quiz.category == '7' %}
@@ -54,13 +54,31 @@
                                             {% elif quiz.category == '8' %}
                                                 Chemistry
                                             {% elif quiz.category == '9' %}
-                                                Mathematics
-                                            {% elif quiz.category == '10' %}
                                                 Geography
-                                            {% elif quiz.category == '11' %}
+                                            {% elif quiz.category == '10' %}
                                                 Career and Technical Education
-                                            {% elif quiz.category == '12' %}
+                                            {% elif quiz.category == '11' %}
                                                 Creative Arts
+                                            {% elif quiz.category == '12' %}
+                                                Drama
+                                            {% elif quiz.category == '13' %}
+                                                Physical Education"
+                                            {% elif quiz.category == '14' %}
+                                                Physchology
+                                            {% elif quiz.category == '15' %}
+                                                Music
+                                            {% elif quiz.category == '16' %}
+                                                Technology
+                                            {% elif quiz.category == '17' %}
+                                                Humanities
+                                            {% elif quiz.category == '18' %}
+                                                Economics
+                                            {% elif quiz.category == '19' %}
+                                                Literature
+                                            {% elif quiz.category == '20' %} 
+                                                Geography
+                                            {% elif quiz.category == '21' %}
+                                                General Knowledge
                                             {% endif %}
                                         </h6>
                                         <h6>Quiz Type : 
@@ -73,16 +91,14 @@
                                             {% endif%}
                                         </h6>
                                         <h6>Attempts:&nbsp;
-                                            {% if quiz.attempt == 0%}
-                                                Infinite
-                                            {% else %}
-                                                quiz.attempt
-                                            {% endif %}
+                                            {{  quiz.attempt }}
                                         </h6>
                                     </div>
                                     <div class="col-md-6">
                                         <h6>Start Date:&nbsp;{{ quiz.startdate}}</h6>
                                         <h6>End Date:&nbsp;{{ quiz.enddate}}</h6>
+                                        <h6>Start Time:&nbsp;{{ quiz.starttime.strftime('%H:%M %p') }}</h6>
+                                        <h6>End Time:&nbsp;{{ quiz.endtime.strftime('%H:%M %p') }}</h6>
                                         <h6>Time Limit:&nbsp;{{ quiz.timelimit}}&nbsp;Minutes</h6>
                                         <h6>Visibility:&nbsp; 
                                             {% if quiz.visibility == 1 %}
@@ -121,9 +137,9 @@
                 <!-- Modal -->
                 <div class="modal fade" id="quizdelete{{quiz.id}}" tabindex="-1" aria-labelledby="quizdelete{{quiz.id}}Label" aria-hidden="true">
                     <div class="modal-dialog">
-                        <div class="modal-content bg-container">
+                        <div class="modal-content bg-container text-light">
                             <div class="modal-header">
-                                <h5 class="modal-title bg-container" id="quizdelete{{quiz.id}}Label">Remove Quiz</h5>
+                                <h5 class="modal-title bg-container " id="quizdelete{{quiz.id}}Label">Remove Quiz</h5>
                                 <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body bg-container">

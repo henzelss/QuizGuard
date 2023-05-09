@@ -1,0 +1,71 @@
+{% extends "dashboard.html" %}
+
+{% block title %} 
+    <title>Student Profiles</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container" style="overflow:scroll; height:100%;">
+        <h1>Student List</h1>
+        <div class="accordion" id="accordionExample">
+            {% for student in student_info %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{student.id}}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{student.id}}" aria-expanded="false" aria-controls="collapse{{student.id}}">
+                        {{ student.firstname }} {{ student.lastname }}
+                    </button>
+                    </h2>
+                    <div id="collapse{{student.id}}" class="accordion-collapse collapse" aria-labelledby="heading{{student.id}}" data-bs-parent="#accordionExample">
+                        <div class="accordion-body bg-light-blue">
+                            <div class="row">
+                                <div class="col-2">
+                                    {% if student.imagepath %}
+                                        <button class="btn shadow-none" data-bs-toggle="modal" data-bs-target="#student-{{ student.id }}-modal">
+                                            <img src="{{ url_for('static', filename='profiles/' + student.imagepath )}}" alt="profile image" style="width: 100px; height: 100px;" class="rounded">
+                                        </button>
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='/profiles/default_image.png')}}" alt="profileImg" style="width: 100px; height: 100px;"class="rounded">
+                                    {% endif %}
+                                </div>
+                                <div class="col-2">
+                                   <p>Fullname:  {{ student.firstname }} {{ student.lastname }}</p>
+                                </div>
+                                <div class="col-2">
+                                    <p>Email: {{ student.email }}</p>
+                                </div>
+                                <div class="col-3">
+                                    <p>School: {{ student.school }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="student-{{ student.id }}-modal" tabindex="-1" aria-labelledby="student-{{ student.id }}-modal-label" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content text-dark">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="student-{{ student.id }}-modal-label">Profile Image</h5>
+                              <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% if student.imagepath %}
+                                    <img class="rounded" src="{{ url_for('static', filename='profiles/' + student.imagepath )}}" alt="" style="width: 100%; height: auto;">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='/profiles/default_image.png')}}" alt="profileImg">
+                                {% endif %}
+                            </div>
+                            <div class="modal-footer">
+                                {% if student.imagepath %}
+                                    <a href="{{ url_for('views.DownloadProfileImage', filename=student.imagepath)}}" class="btn btn-success">Download</a>
+                                {% else %}
+                                    <p> No Image to download</p>
+                                {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

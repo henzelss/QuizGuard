@@ -32,10 +32,10 @@
             {% for acc in accounts %}
               <tr>
                 <td>{{ acc.id }}</td>
-                <td>{{ acc.firstname}}&nbsp;{{ acc.lastname}}</td>
+                <td>{{ acc.firstname|title}}&nbsp;{{ acc.lastname|title}}</td>
                 <td>{{ acc.school }}</td>
                 <td>{{ acc.email }}</td>
-                <td>{{ acc.usertype }}</td>
+                <td>{{ acc.usertype | title}}</td>
                 <td> 
                   <!-- pass the acc.id on the href to get the profile you want to edit-->
                   

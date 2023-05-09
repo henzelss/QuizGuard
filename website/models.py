@@ -16,6 +16,7 @@ class User(db.Model, UserMixin):
     school = db.Column(db.String(150))
     imagepath = db.Column(db.String(150))
     usertype = db.Column(db.String(10))
+    model = db.Column(db.Integer)
 
 class QuizList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -27,10 +28,13 @@ class QuizList(db.Model):
     quiztype = db.Column(db.String(10), nullable=False)
     startdate = db.Column(db.Date, nullable=True)   
     enddate = db.Column(db.Date, nullable=True)
+    starttime = db.Column(db.Time, nullable=True)
+    endtime = db.Column(db.Time, nullable=True)
     timelimit = db.Column(db.Integer, nullable=False)
     points = db.Column(db.Integer, nullable=False)
     visibility = db.Column(db.Integer, nullable=False)
     attempt = db.Column(db.Integer, nullable=False)
+    image = db.Column(db.String(255), nullable=True)
 
 class MultipleChoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,6 +50,9 @@ class FillInTheBlanks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
     question = db.Column(db.String(255), nullable=False)
+    keyword1 = db.Column(db.String(255), nullable=False)
+    keyword2 = db.Column(db.String(255), nullable=False)
+    keyword3 = db.Column(db.String(255), nullable=False)
     answer = db.Column(db.String(255), nullable=False)
 
 class TrueOrFalse(db.Model):
@@ -58,7 +65,8 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
-    score = db.Column(db.Integer, nullable=False)
+    score = db.Column(db.Integer, nullable=True)
+    attempt = db.Column(db.Integer, nullable=True)
 
 class Violations(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -71,11 +79,10 @@ class Violations(db.Model):
     head_pose = db.Column(db.String(50))
     head_pose_image = db.Column(db.String(50))
     head_pose_image_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
-    switch_tabs = db.Column(db.String(50))
+    #switch_tabs = db.Column(db.String(50))
+    switch_tabs = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
     quiz_code = db.Column(db.String(20), db.ForeignKey('quiz_list.code'), nullable=False)
-
-
 
 class ActivityLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -89,8 +96,8 @@ class History(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz_list.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    date_taken = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
+    date_taken = db.Column(db.DateTime, nullable=False, default=datetime.now(tz))
+    
 class Achievements(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))

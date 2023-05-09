@@ -1,0 +1,138 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                  <h1>Violations</h1>
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <table class="table table-hover table-responsive">
+                        <thead>
+                          <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Full Name</th>
+                            <th scope="col">Laptop Detected</th>
+                            <th scope="col">Laptop Image</th>
+                            <th scope="col">Time Stamp</th>
+                            <th scope="col">Phone Detected</th>
+                            <th scope="col">Phone Image</th>
+                            <th scope="col">Time Stamp</th>
+                            <th scope="col">Head Direction</th>
+                            <th scope="col">Head Direction Image</th>
+                            <th scope="col">Time Stamp</th>
+                            <th scope="col">Switch Tabs</th>
+                            <!-- <th scope="col">Action</th> -->
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for violation in violations %}
+                            <tr>
+                              <td>{{ violation.id}}</td>
+                              <td>{{ violation.firstname | title }}&nbsp;{{violation.lastname | title }}</td>
+                              <td>{{ violation.laptop }}</td>
+                              <td> 
+                                {% if violation.laptop_image %}
+                                  <button class="btn shadow-none" data-bs-toggle="modal" data-bs-target="#laptop{{ violation.id }}">
+                                    <img class="rounded" src="{{ url_for('static', filename='images/' + violation.laptop_image)}}" alt="" style="width: 100px; height: auto;">
+                                  </button>
+                                  <div class="modal fade" id="laptop{{ violation.id }}" tabindex="-1" aria-labelledby="laptop{{ violation.id }}ModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                      <div class="modal-content text-dark">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="laptop{{ violation.id }}ModalLabel">Captured Image</h5>
+                                          <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                          <img class="rounded" src="{{ url_for('static', filename='images/' + violation.laptop_image)}}" alt="" style="width: 100%; height: auto;">
+                                        </div>
+                                        <div class="modal-footer">
+                                          <a href="{{ url_for('views.DownloadImage', filename=violation.laptop_image)}}" class="btn btn-success">Download</a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% else %}
+                                  No image available
+                                {% endif %}
+                              </td>
+                              <td>
+                                {% if violation.laptop_image %}
+                                  {{ violation.laptop_timestamp.strftime('%Y-%m-%d %H:%M %p')}}
+                                {% endif %}
+                              </td>
+                              <td>{{ violation.phone }}</td>
+                              <td>
+                                {% if violation.phone_image %}
+                                  <button class="btn shadow-none" data-bs-toggle="modal" data-bs-target="#phone{{ violation.id }}">
+                                    <img class="rounded" src="{{ url_for('static', filename='images/' + violation.phone_image)}}" alt="" style="width: 100px; height: auto;">
+                                  </button>
+                                  <div class="modal fade" id="phone{{ violation.id }}" tabindex="-1" aria-labelledby="phone{{ violation.id }}ModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                      <div class="modal-content text-dark">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="phone{{ violation.id }}ModalLabel">Captured Image</h5>
+                                          <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                          <img class="rounded" src="{{ url_for('static', filename='images/' + violation.phone_image)}}" alt="" style="width: 100%; height: auto;">
+                                        </div>
+                                        <div class="modal-footer">
+                                          <a href="{{ url_for('views.DownloadImage', filename=violation.phone_image)}}" class="btn btn-success">Download</a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% else %}
+                                  No image available
+                                {% endif %}
+                                </td>
+                              <td>
+                                Date:&nbsp;{{ violation.phone_timestamp.strftime('%m-%d-%Y') }}
+                                <br>  
+                                Time:&nbsp;{{ violation.phone_timestamp.strftime('%H:%M %p') }}
+                              </td>
+                              <td>{{ violation.head_pose }}</td>
+                              <td>
+                                {% if violation.head_pose_image %}
+                                  <button class="btn shadow-none" data-bs-toggle="modal" data-bs-target="#head_pose_image{{ violation.id }}">
+                                    <img class="rounded" src="{{ url_for('static', filename='images/' + violation.head_pose_image)}}" alt="" style="width: 100px; height: auto;">
+                                  </button>
+                                  <div class="modal fade" id="head_pose_image{{ violation.id }}" tabindex="-1" aria-labelledby="head_pose_image{{ violation.id }}ModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                      <div class="modal-content text-dark">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="head_pose_image{{ violation.id }}ModalLabel">Captured Image</h5>
+                                          <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                          <img class="rounded" src="{{ url_for('static', filename='images/' + violation.head_pose_image)}}" alt="" style="width: 100%; height: auto;">
+                                        </div>
+                                        <div class="modal-footer">
+                                          <a href="{{ url_for('views.DownloadImage', filename=violation.head_pose_image)}}" class="btn btn-success">Download</a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% else %}
+                                  No image available
+                                {% endif %}
+                                </td>
+                              <td>
+                                {{ violation.head_pose_image_timestamp.strftime('%Y-%m-%d %H:%M %p') }}
+                              </td>  
+                              <td>{{ violation.switch_tabs }}</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

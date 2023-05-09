@@ -59,7 +59,7 @@
                                             {% elif quiz.category == '4' %}
                                                 History
                                             {% elif quiz.category == '5' %}
-                                                Science
+                                                Programming
                                             {% elif quiz.category == '6' %}
                                                 Physics
                                             {% elif quiz.category == '7' %}
@@ -67,13 +67,31 @@
                                             {% elif quiz.category == '8' %}
                                                 Chemistry
                                             {% elif quiz.category == '9' %}
-                                                Mathematics
-                                            {% elif quiz.category == '10' %}
                                                 Geography
-                                            {% elif quiz.category == '11' %}
+                                            {% elif quiz.category == '10' %}
                                                 Career and Technical Education
-                                            {% elif quiz.category == '12' %}
+                                            {% elif quiz.category == '11' %}
                                                 Creative Arts
+                                            {% elif quiz.category == '12' %}
+                                                Drama
+                                            {% elif quiz.category == '13' %}
+                                                Physical Education"
+                                            {% elif quiz.category == '14' %}
+                                                Physchology
+                                            {% elif quiz.category == '15' %}
+                                                Music
+                                            {% elif quiz.category == '16' %}
+                                                Technology
+                                            {% elif quiz.category == '17' %}
+                                                Humanities
+                                            {% elif quiz.category == '18' %}
+                                                Economics
+                                            {% elif quiz.category == '19' %}
+                                                Literature
+                                            {% elif quiz.category == '20' %} 
+                                                Geography
+                                            {% elif quiz.category == '21' %}
+                                                General Knowledge
                                             {% endif %}
                                         </h6>
                                         <h6>Quiz Type : 
@@ -96,6 +114,8 @@
                                     <div class="col-md-6">
                                         <h6>Start Date:&nbsp;{{ quiz.startdate}}</h6>
                                         <h6>End Date:&nbsp;{{ quiz.enddate}}</h6>
+                                        <h6>Start Time:&nbsp;{{ quiz.starttime.strftime('%H:%M %p') }}</h6>
+                                        <h6>End Time:&nbsp;{{ quiz.endtime.strftime('%H:%M %p') }}</h6>
                                         <h6>Time Limit:&nbsp;{{ quiz.timelimit}}&nbsp;Minutes</h6>
                                         <h6>Visibility:&nbsp; 
                                             {% if quiz.visibility == 1 %}
@@ -104,6 +124,7 @@
                                                Private
                                             {% endif %}
                                         </h6>
+
                                     </div>
                                     <h6>Description:</h6>
                                     <p class="card-text text-desc">{{ quiz.description }}</p>
@@ -114,7 +135,9 @@
                                     <input type="text" id="quizcode{{ quiz.id }}" value="{{ quiz.code }}" id="quizcode" hidden>
                                     <button type="button" class="btn btn-secondary" onclick='copyText("{{ quiz.id }}")'><i class="fa-regular fa-clipboard me-1"></i>Copy Code</button>
                                     <button type="button" class="btn btn-primary" onclick='shareText("{{ quiz.id }}")'><i class="fa-regular fa-share-from-square me-1"></i>Share</button>
-                                    <a href="{{ url_for('views.checkcamera', quizid=quiz.id, quizcode=quiz.code, quiztype=quiz.quiztype) }}" class="btn btn-warning"><i class="fa-regular fa-square-plus me-1"></i>Take Quiz</a>
+                                    {% if quiz.starttime <= current_time and quiz.endtime >= current_time %}
+                                        <a href="{{ url_for('views.checkcamera', quizid=quiz.id, quizcode=quiz.code, quiztype=quiz.quiztype) }}" class="btn btn-warning"><i class="fa-regular fa-square-plus me-1"></i>Take Quiz</a>
+                                    {% endif %}
                                     <!-- <button type="button" class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i>Edit</button>
                                     <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i>Delete</button> -->
 

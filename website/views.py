@@ -6,16 +6,17 @@ from flask import Blueprint, make_response, render_template, url_for, flash, red
 from website.socketio import socketio
 from datetime import datetime, time
 from flask_login import login_required, current_user
-from .models import User, QuizList, MultipleChoice, FillInTheBlanks, TrueOrFalse, Violations, Student, Room
-from .forms import CreateQuiz, MultipleChoiceForm, FillInTheBlanksForm, TrueOrFalseForm, MultipleChoiceFormEdit, FillInTheBlanksFormEdit, TrueOrFalseFormEdit, QuizForm, SearchCode, MultipleChoiceQuizForm 
-from .utils import generate_random_string, activity_logs
+from .models import User, QuizList, MultipleChoice, FillInTheBlanks, TrueOrFalse, Violations, Student, Room, History
+from .forms import CreateQuiz, MultipleChoiceForm, FillInTheBlanksForm, TrueOrFalseForm, MultipleChoiceFormEdit, FillInTheBlanksFormEdit, TrueOrFalseFormEdit, QuizForm, SearchCode 
+from .utils import generate_random_string, activity_logs, check_category
 from .import db
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, date
 import pandas as pd
 import xlsxwriter
 import os
-
+import pytz
+tz = pytz.timezone('Asia/Manila')
 
 views = Blueprint('views', __name__)
 
@@ -38,17 +39,32 @@ def dashboard():
     return render_template('error.html', message='Unknown user type')
 
 
+# @views.route('/student')
+# @login_required
+# def student():
+#     # quiz_list = QuizList.query.all()
+#     # joined the table so we can show the author fullname
+#     # form = SearchCode()
+#     # quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
+#     # return render_template('student.html', quiz_list=quiz_list, form=form)
+
+#     form = SearchCode()
+#     current_date = date.today()
+#     quiz_list = (
+#         db.session.query(QuizList, User.firstname, User.lastname)
+#         .join(User, QuizList.author_id == User.id)
+#         .filter(QuizList.startdate <= current_date)
+#         .filter(QuizList.enddate >= current_date)
+#         .all()
+#     )
+#     current_time = datetime.now().time()
+#     return render_template('student.html', quiz_list=quiz_list, form=form, current_user=current_user, current_time=current_time)
 @views.route('/student')
 @login_required
 def student():
-    # quiz_list = QuizList.query.all()
-    # joined the table so we can show the author fullname
-    # form = SearchCode()
-    # quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
-    # return render_template('student.html', quiz_list=quiz_list, form=form)
-
     form = SearchCode()
     current_date = date.today()
+    current_time = datetime.now().time()
     quiz_list = (
         db.session.query(QuizList, User.firstname, User.lastname)
         .join(User, QuizList.author_id == User.id)
@@ -56,7 +72,7 @@ def student():
         .filter(QuizList.enddate >= current_date)
         .all()
     )
-    return render_template('student.html', quiz_list=quiz_list, form=form, current_user=current_user)
+    return render_template('student.html', quiz_list=quiz_list, form=form, current_user=current_user, current_time=current_time)
 
 @views.route('/professor')
 @login_required
@@ -90,10 +106,13 @@ def clonequiz(quizid, quizcode):
                         quiztype=quiz.quiztype,
                         startdate=quiz.startdate,
                         enddate=quiz.enddate,
+                        starttime=quiz.starttime,
+                        endtime=quiz.endtime,
                         timelimit=quiz.timelimit,
                         points=quiz.points,
                         visibility=quiz.visibility,
-                        attempt=quiz.attempt)
+                        attempt=quiz.attempt
+                        )
     db.session.add(new_quiz)
     db.session.flush()  # generate an id for the new quiz
 
@@ -125,7 +144,7 @@ def clonequiz(quizid, quizcode):
             db.session.add(new_question)
 
     db.session.commit()
-    flash("Successfully clone the quiz", category="success")
+    flash("Successfully copied the quiz", category="success")
     return redirect(url_for('views.myquiz'))
 
 @views.route('/quizbank')
@@ -135,20 +154,31 @@ def quizbank():
     # SELECT quiz_list.*, user.firstname, user.lastname 
     # FROM quiz_list 
     # JOIN user ON quiz_list.author_id = user.id;
-    quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
+    #quiz_list = db.session.query(QuizList, User.firstname, User.lastname).join(User, QuizList.author_id == User.id).all()
+    current_date = date.today()
+    quiz_list = (
+        db.session.query(QuizList, User.firstname, User.lastname)
+        .join(User, QuizList.author_id == User.id)
+        .filter(QuizList.startdate <= current_date)
+        .filter(QuizList.enddate >= current_date)
+        .all()
+    )
+
+
     return render_template('quizbank.html', quiz_list=quiz_list, form=form, current_user=current_user)
 
 @views.route('/searchquiz',  methods=['GET', 'POST'])
 @login_required
 def searchquiz():
     form = SearchCode()
+    current_time = datetime.now().time()
     if form.validate_on_submit():
         code = form.search.data
         #quiz = QuizList.query.filter_by(code=code).first()
         quiz = db.session.query(QuizList).filter_by(code=code).first()
         if quiz:
             author = User.query.filter_by(id=quiz.author_id).first()
-            return render_template('searchbank.html', quiz=quiz, form=form, author=author, current_user=current_user)
+            return render_template('searchbank.html', quiz=quiz, form=form, author=author, current_user=current_user, current_time=current_time)
         else:
             flash('Quiz not found', category='error')
             return redirect(url_for('views.quizbank'))
@@ -196,6 +226,7 @@ def quizdelete(quiz_code, quiztype):
         multiple_choice = MultipleChoice.query.filter_by(quiz_code=quiz_code).all()
         for question in multiple_choice:
             db.session.delete(question)
+
     elif quiztype == '2':
         fib_questions = FillInTheBlanks.query.filter_by(quiz_code=quiz_code).all()
         for question in fib_questions:
@@ -204,6 +235,17 @@ def quizdelete(quiz_code, quiztype):
         tor_questions = TrueOrFalse.query.filter_by(quiz_code=quiz_code).all()
         for question in tor_questions:
             db.session.delete(question)
+    
+    # Delete student records on the specific quiz
+    student_records = Student.query.filter_by(quiz_id=quiz.id).all()
+    for record in student_records:
+        db.session.delete(record)
+
+    # Delete violations of the students on the specific quiz
+    violations = Violations.query.filter_by(quiz_code=quiz_code).all()
+    for violation in violations:
+        db.session.delete(violation)
+
 
     db.session.delete(quiz)
     db.session.commit()
@@ -334,6 +376,9 @@ def addquestions(quizcode, quiztype):
         elif quiztype == '2':
             question = FillInTheBlanks(
                 question=form.question.data,
+                keyword1=form.keyword1.data,
+                keyword2=form.keyword2.data,
+                keyword3=form.keyword3.data,
                 answer=form.answer.data,
                 quiz_code=quizcode
             )
@@ -419,9 +464,11 @@ def createquiz():
         enddate_str = request.form['enddate']
         enddate = datetime.strptime(enddate_str, '%Y-%m-%d').date()
 
-        starttime= ""
-        endtime = ""
-        
+        # starttime_str = request.form['starttime']
+        # starttime = datetime.strptime(starttime_str, '%H:%M:%S').time()
+
+        # endtime_str = request.form['starttime']
+        # endtime = datetime.strptime(starttime_str, '%H:%M:%S').time()
 
         new_quiz = QuizList(
             author_id=current_user.id,
@@ -430,8 +477,10 @@ def createquiz():
             description=form.description.data,
             category=form.category.data,
             quiztype=form.quiztype.data,
-            startdate=startdate,
-            enddate=enddate,
+            startdate=form.startdate.data,
+            enddate=form.enddate.data,
+            starttime=form.starttime.data,
+            endtime=form.endtime.data,
             timelimit=form.timelimit.data,
             points=form.points.data,
             visibility=form.visibility.data,
@@ -453,42 +502,90 @@ def checkcamera(quizid, quizcode, quiztype):
     # pwede i load model dito
     return render_template('check_camera.html', quizid=quizid, quizcode=quizcode, quiztype=quiztype)
 
+# @views.route('/quiz/<string:quizid>/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
+# @login_required
+# def quiz(quizid, quizcode, quiztype):
+
+#     session['quizcode'] = quizcode
+#     quiz = QuizList.query.filter_by(code=quizcode).first()
+    
+#     if quiz is None:
+#         # handle invalid quiz code
+#         flash("Invalid Quiz Code ", category="error")
+#         return redirect(url_for('views.student'))
+#     questions = None
+#     if quiztype == '1':
+#         #form = MultipleChoiceQuizForm()
+#         questions = MultipleChoice.query.filter_by(quiz_code=quizcode).all()
+#     elif quiztype == '2':
+#         #form = FillInTheBlanksForm()
+#         questions = FillInTheBlanks.query.filter_by(quiz_code=quizcode).all()
+#     elif quiztype == '3':
+#         #form = TrueOrFalseForm()
+#         questions = TrueOrFalse.query.filter_by(quiz_code=quizcode).all()
+
+#     if questions is None or len(questions) == 0:
+#         print('question len is none')
+#         flash("No questions found for this quiz", category="error")
+#         return redirect(url_for('views.student'))
+#     else: 
+#         print('question len is not none')
+#         question_count = len(questions)
+#         return render_template('quiz.html', quiz=quiz, questions=questions, quiztype=quiztype, quizcode=quizcode, question_count=question_count)
+
 @views.route('/quiz/<string:quizid>/<string:quizcode>/<string:quiztype>', methods=['GET', 'POST'])
 @login_required
 def quiz(quizid, quizcode, quiztype):
-    
     session['quizcode'] = quizcode
-    room = Room.query.filter_by(quiz_code=quizcode, user_id=current_user.id).first()
-    if not room:
-        # If not, create a new Room object and add it to the database
-        room = Room(quiz_code=quizcode, user_id=current_user.id, toast_message="", status="active")
-        db.session.add(room)
-        db.session.commit()
-        
     quiz = QuizList.query.filter_by(code=quizcode).first()
+    
     if quiz is None:
-        # handle invalid quiz code
-        flash("Invalid Quiz Code ", category="error")
+        flash("Invalid Quiz Code", category="error")
         return redirect(url_for('views.student'))
+    
+    # Check if the student has any attempts left
+    student = Student.query.filter_by(user_id=current_user.id, quiz_id=quizid).first()
+    if student is not None and student.attempt == 0:
+        flash("You have used up all your attempts for this quiz", category="error")
+        return redirect(url_for('views.student'))
+    
+    # If student has not attempted this quiz yet, get the total attempt and save it to student.attempt
+    if student is None:
+        student = Student(user_id=current_user.id, quiz_id=quizid, attempt=quiz.attempt)
+        db.session.add(student)
+        db.session.commit()
+    
+    # If student still has attempts left, subtract one attempt
+    if student.attempt > 0:
+        student.attempt -= 1
+        db.session.commit()
+    else:
+        flash("You have used up all your attempts for this quiz", category="error")
+        return redirect(url_for('views.student'))
+    
+    history = History.query.filter_by(quiz_id=quizid, user_id=current_user.id).first()
+    if history is None:
+        student_history = History(quiz_id=quizid, user_id=current_user.id)
+        db.session.add(student_history)
+        db.session.commit()
+    
+    
+    # Get questions based on quiz type
     questions = None
     if quiztype == '1':
-        #form = MultipleChoiceQuizForm()
         questions = MultipleChoice.query.filter_by(quiz_code=quizcode).all()
     elif quiztype == '2':
-        #form = FillInTheBlanksForm()
         questions = FillInTheBlanks.query.filter_by(quiz_code=quizcode).all()
     elif quiztype == '3':
-        #form = TrueOrFalseForm()
         questions = TrueOrFalse.query.filter_by(quiz_code=quizcode).all()
 
     if questions is None or len(questions) == 0:
-        print('question len is none')
         flash("No questions found for this quiz", category="error")
         return redirect(url_for('views.student'))
-    else: 
-        print('question len is not none')
-        question_count = len(questions)
-        return render_template('quiz.html', quiz=quiz, questions=questions, quiztype=quiztype, quizcode=quizcode, question_count=question_count)
+    
+    # Render quiz template
+    question_count = len(questions)
+    return render_template('quiz.html', quiz=quiz, questions=questions, quiztype=quiztype, quizcode=quizcode, question_count=question_count)
 
     # question_count = len(questions)
     # return render_template('quiz.html', quiz=quiz, questions=questions, quiztype=quiztype, quizcode=quizcode, question_count=question_count)
@@ -497,7 +594,11 @@ def quiz(quizid, quizcode, quiztype):
 @login_required
 def result(quizcode, quiztype ):
     #violations = Violations.query.all()
-    violations = db.session.query(User.id, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs).\
+    violations = db.session.query(User.id, User.firstname, User.lastname, Violations.laptop, Violations.phone, Violations.head_pose, Violations.switch_tabs, 
+                                  Violations.laptop, Violations.laptop_image, Violations.laptop_timestamp, 
+                                  Violations.phone, Violations.phone_image, Violations.phone_timestamp, 
+                                  Violations.head_pose, Violations.head_pose_image, Violations.head_pose_image_timestamp, 
+                                  ).\
                 join(Violations, User.id == Violations.user_id).\
                 join(QuizList, QuizList.code == Violations.quiz_code).\
                 filter(Violations.user_id == current_user.id).\
@@ -519,10 +620,20 @@ def result(quizcode, quiztype ):
                 elif quiztype == '2':
                     student_answer = request.form[question] #getting the answers
                     correct_answer = FillInTheBlanks.query.filter_by(id=question_id).first().answer
+                    keyword1 = FillInTheBlanks.query.filter_by(id=question_id).first().keyword1
+                    keyword2 = FillInTheBlanks.query.filter_by(id=question_id).first().keyword2
+                    keyword3 = FillInTheBlanks.query.filter_by(id=question_id).first().keyword3
                     print("Student Answer: " + student_answer.strip().lower())
                     print("Corrent Answer: " + correct_answer.strip().lower())
                     if student_answer.strip().lower() == correct_answer.strip().lower():
                         score += 1
+                    else:
+                        if student_answer.strip().lower() == keyword1.strip().lower():
+                            score += 1
+                        elif student_answer.strip().lower() == keyword2.strip().lower():
+                            score += 1
+                        elif student_answer.strip().lower() == keyword3.strip().lower():
+                            score += 1
                 elif quiztype == '3':
                     student_answer = request.form[question] #getting the answers
                     correct_answer = TrueOrFalse.query.filter_by(id=question_id).first().answer
@@ -608,6 +719,8 @@ def process_frame():
                 violation.head_pose_image = filename
                 violation.head_pose_image_timestamp = timestamp
                 save_path = os.path.join("website", "static", "images", filename)
+            else:
+                print("Error 723")
         else:
             # create a new violation
             violation = Violations(
@@ -632,6 +745,9 @@ def process_frame():
                 violation.head_pose_image = filename
                 violation.head_pose_image_timestamp=timestamp
                 save_path = os.path.join("website", "static", "images", filename)
+            else:
+                print("Error 723")
+            
 
         # save the snapshot to file
         with open(save_path, "wb") as f:
@@ -655,6 +771,12 @@ def DownloadImage(filename):
     filepath = f'static/images/{filename}'
     return send_file(filepath, as_attachment=True)
 
+@views.route('/DownloadProfileImage/<filename>')
+@login_required
+def DownloadProfileImage(filename):
+    filepath = f'static/profiles/{filename}'
+    return send_file(filepath, as_attachment=True)
+
 @views.route('/switchtabs', methods=['POST'])
 @login_required
 def switchtabs():
@@ -663,7 +785,10 @@ def switchtabs():
     quiz_code = request.args.get('quiz_code')
     violation = Violations.query.filter_by(user_id=user_id, quiz_code=quiz_code).first()
     if violation is not None:
-        violation.switch_tabs = value
+        if violation.switch_tabs is not None:
+            violation.switch_tabs = violation.switch_tabs + int(value)
+        else:
+            violation.switch_tabs = int(value)
         db.session.commit()
     else:
         violation = Violations(switch_tabs=value, user_id=user_id, quiz_code=quiz_code)
@@ -711,7 +836,7 @@ def upload_fob(quizcode, quiztype):
         # now loop to the list
         for question in questions:
             # place the question and answer to the table to be inserted
-            fill_in_the_blanks = FillInTheBlanks( quiz_code=quizcode, question=question['question'], answer=question['answer'])
+            fill_in_the_blanks = FillInTheBlanks( quiz_code=quizcode, question=question['question'], keyword1=question['keyword1'], keyword2=question['keyword2'], keyword3=question['keyword3'], answer=question['answer'])
             # the the question 
             db.session.add(fill_in_the_blanks)
             #then repeat until it ends 
@@ -740,7 +865,7 @@ def upload_tor(quizcode, quiztype):
         questions = json.loads(contents)
         for question in questions:
             answer = None
-            if question['answer'] == 0:
+            if question['answer'] == '0':
                 answer = True
             else:
                 answer = False 
@@ -757,6 +882,35 @@ def upload_tor(quizcode, quiztype):
     else:
         flash("Invalid File Type", category="warning")
         return redirect(url_for('views.quizbankedit', quizcode=quizcode, quiztype=quiztype))
+
+@views.route('/history')
+@login_required
+def history():
+    user_id = current_user.id
+    history_data = db.session.query(
+        User.firstname,
+        User.lastname,
+        QuizList.title,
+        History.date_taken,
+        Student.score,
+        Violations.laptop,
+        Violations.laptop_image,
+        Violations.laptop_timestamp,
+        Violations.phone,
+        Violations.phone_image,
+        Violations.phone_timestamp,
+        Violations.head_pose,
+        Violations.head_pose_image,
+        Violations.head_pose_image_timestamp,
+        Violations.switch_tabs
+    ).join(History, User.id == History.user_id)\
+    .join(QuizList, History.quiz_id == QuizList.id)\
+    .outerjoin(Student, (QuizList.id == Student.quiz_id) & (User.id == Student.user_id))\
+    .outerjoin(Violations, (QuizList.code == Violations.quiz_code) & (User.id == Violations.user_id))\
+    .filter(User.id == user_id)\
+    .all()
+    
+    return render_template("history.html", history_data = history_data)
 
 
 
@@ -957,7 +1111,23 @@ def export_violations(quizcode, quiztype):
 @views.route("/view_student_profile/<string:quizcode>")
 @login_required
 def view_student_profile(quizcode):
-    pass
+    quiz = QuizList.query.filter_by(code=quizcode).first()  # get the quiz by its code
+    student_scores = Student.query.filter_by(quiz_id=quiz.id).all()  # get all the student scores for the quiz
+    student_info = []  # a list to store the information of each student
+
+    # iterate over the student scores and retrieve the information of each student
+    for score in student_scores:
+        user = User.query.filter_by(id=score.user_id).first()
+        student_info.append({
+            'id':user.id,
+            'firstname': user.firstname,
+            'lastname': user.lastname,
+            'school': user.school,
+            'email': user.email,
+            'imagepath': user.imagepath
+        })
+
+    return render_template("view_student_profile.html", student_info=student_info)
 
 @views.route("/view_student_result/<string:quizcode>/<string:quiztype>")
 @login_required
@@ -983,6 +1153,18 @@ def view_student_result(quizcode, quiztype):
     
     return render_template("view_result.html", results=results, total_score=total_score )
 
+@views.route("/view_student_violation/<string:quizcode>/<string:quiztype>")
+@login_required
+def view_student_violation(quizcode, quiztype):
+    
+    violations = db.session.query(User.id, User.firstname, User.lastname, Violations.laptop, Violations.laptop_image , Violations.laptop_timestamp, 
+                                  Violations.phone, Violations.phone_image, Violations.phone_timestamp, 
+                                  Violations.head_pose, Violations.head_pose_image, Violations.head_pose_image_timestamp, 
+                                  Violations.switch_tabs).\
+                join(Violations, User.id == Violations.user_id).\
+                join(QuizList, QuizList.code == Violations.quiz_code).\
+                filter(QuizList.code == quizcode).all()
+    return render_template("view_student_violation.html", violations=violations)
 
 @views.route('/images/<filename>')
 @login_required

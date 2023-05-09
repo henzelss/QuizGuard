@@ -26,7 +26,7 @@ $(function () {
     var publishable_key = "rf_J0DlY6kyUohmXmkP95mA";
     var toLoad = {
         model: "dataset-0z5ow",
-        version: 1
+        version: 2
     };
 
     const loadModelPromise = new Promise(function (resolve, reject) {
@@ -156,15 +156,14 @@ $(function () {
             const height = prediction.bbox.height;
 
 
-            if (prediction.class === "Front" || prediction.class === "Left" || prediction.class === "Right" || prediction.class === "FrontRight" || prediction.class === "FrontLeft" || prediction.class==="Back" || prediction.class==="Laptop" || prediction.class==="Phone") {
+            if (prediction.class === "Front" || prediction.class === "Left" || prediction.class === "Right" || prediction.class === "FrontRight" || prediction.class === "FrontLeft" || prediction.class==="Back" || prediction.class==="Laptop" || prediction.class==="Phone" || prediction.class==="LookingUp" || prediction.class==="LookingDown" ) {
                 const snapshotCanvas = document.createElement("canvas");
                 snapshotCanvas.width = video.videoWidth;
                 snapshotCanvas.height = video.videoHeight;
                 const snapshotCtx = snapshotCanvas.getContext("2d");
                 snapshotCtx.drawImage(video, 0, 0, snapshotCanvas.width, snapshotCanvas.height);
                 const snapshot = snapshotCanvas.toDataURL("image/jpeg");
-                
-                console.log(prediction.class)
+        
                 // Check if the detected object has changed since the last prediction
                 if (prediction.class !== previousObject) {
                     // const detectionTime = new Date().getTime();

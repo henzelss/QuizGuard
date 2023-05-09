@@ -5,7 +5,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from . import db
 from .models import User, ActivityLog
 from .forms import LoginForm, RegisterForm, UserProfileForm, EditForm, AddNewUserForm, SearchForm
-from .utils import activity_logs
+from .utils import activity_logs, LoadModel
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, date
 from sqlalchemy import or_
@@ -16,6 +16,8 @@ from werkzeug.utils import secure_filename
 import uuid  as uuid
 import os
 import imghdr
+import csv
+import io
 
 auth = Blueprint('auth', __name__)
 
@@ -61,7 +63,7 @@ def register():
             return render_template('register.html', form=form, temp=temp)
         else:
             hashed_password = generate_password_hash(form.password.data, method='sha256')
-            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, school=form.school.data, password=hashed_password, usertype='user')
+            new_user = User(firstname=form.firstname.data, lastname=form.lastname.data, email=form.email.data, school=form.school.data, password=hashed_password, usertype='user', model=LoadModel())
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user)
@@ -69,41 +71,6 @@ def register():
             flash('Account created!', category='success')
             return redirect(url_for('views.dashboard'))
     return render_template('register.html', form=form, temp=temp)
-
-# @auth.route('/profile', methods=['GET', 'POST'])
-# @login_required
-# def profile():
-#     user =  User.query.get_or_404(current_user.id)
-#     form = UserProfileForm()
-#     existing_info = {
-#         'firstname' : user.firstname,
-#         'lastname' : user.lastname,
-#         'email' : user.email,
-#         'school' : user.school
-#     }
-#     if request.method == 'POST' and request.form.get('submit'):
-#         if request.form['firstname'] != current_user.firstname:
-#             user.firstname = request.form['firstname']
-#         if request.form['lastname'] != current_user.lastname:
-#                 user.lastname = request.form['lastname']
-#         if request.form['email'] != current_user.email:
-#             # Check if the new email already exists in the database
-#             if User.query.filter_by(email=request.form['email']).first():
-#                 flash('Email already exists', category='danger')
-#                 return redirect(url_for('auth.profile'))
-#             user.email = request.form['email']
-#         if request.form['school'] != current_user.school:
-#             user.school = request.form['school']
-#         try:
-#             db.session.commit()
-#             flash('Profile Successfully Updated', category='success')
-#             activity_logs("User Profile Updated")
-#             return redirect(url_for('auth.profile'))
-#         except:
-#             flash('Profile Failed to Updated', category='danger')
-#             activity_logs("User profile failed to updated")
-#             return redirect(url_for('auth.profile'))
-#     return render_template('profile.html', form=form, existing_info=existing_info, current_user=current_user)
 
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -172,9 +139,11 @@ def profile():
 @auth.route('/accounts', methods=['GET', 'POST'])
 @login_required
 def accounts():
-    if current_user.usertype == 'user':
+    if current_user.usertype == 'user' or current_user.usertype == 'professor':
         flash('You dont have permission to access this page', category='error')
-        return redirect(url_for('views.student'))
+        activity_logs("User tried to access accounts function")
+        return redirect(url_for('views.dashboard'))
+    
     
     accs = User.query.all()
     searchform = SearchForm()
@@ -192,7 +161,8 @@ def accounts():
                 firstname=addform.firstname.data,
                 lastname=addform.lastname.data,
                 usertype=addform.usertype.data,
-                school=addform.school.data
+                school=addform.school.data,
+                model = LoadModel()
             )
             # Add the new user to the database
             db.session.add(new_user)
@@ -205,10 +175,11 @@ def accounts():
 @auth.route('/addaccounts', methods=['GET', 'POST'])
 @login_required
 def addaccounts():
-    if current_user.usertype == 'user':
+    
+    if current_user.usertype == 'user' or current_user.usertype == 'professor':
         flash('You dont have permission to access this page', category='error')
-        activity_logs("User try to access add accounts route")
-        return redirect(url_for('views.student'))
+        activity_logs("User tried to access add accounts function")
+        return redirect(url_for('views.dashboard'))
     
     addform = AddNewUserForm()
     if addform.validate_on_submit():
@@ -223,9 +194,10 @@ def addaccounts():
             firstname=addform.firstname.data,
             lastname=addform.lastname.data,
             school=addform.school.data,
+            model = LoadModel(),
             usertype=addform.usertype.data
-            
         )
+
         # Add the new user to the database
         db.session.add(new_user)
         db.session.commit()
@@ -236,6 +208,11 @@ def addaccounts():
 @auth.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def edit(user_id):
+    if current_user.usertype == 'professor' or current_user.usertype == 'student':
+       activity_logs('User tried to access the account edit function')
+       flash("You dont have permision to access this page")
+       return redirect(url_for('views.dashboard'))
+
     user = User.query.get_or_404(user_id)
     form = EditForm()
     existing_info = {
@@ -269,7 +246,7 @@ def edit(user_id):
         if request.form['school']:
             user.school = request.form['school']
         if request.form['password']:
-            user.password = request.form['password']
+            user.password = generate_password_hash(request.form['password'])
         if request.form['email'] != '':
             if User.query.filter_by(email=request.form['email']).first():
                 flash('Email already exists', category='danger')
@@ -290,9 +267,9 @@ def edit(user_id):
 @auth.route('/delete/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def delete(user_id):
-    if current_user.usertype == 'user':
+    if current_user.usertype == 'user' or current_user.usertype == 'professor':
         flash('You dont have permission to access this page', category='error')
-        activity_logs("Try to access webpages not for users")
+        activity_logs("User tried to access the delete account function")
         return redirect(url_for('views.student'))
     
     user = User.query.get(user_id)
@@ -310,6 +287,11 @@ def delete(user_id):
 @auth.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
+    if current_user.usertype == 'user' or current_user.usertype == 'professor':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("User tried to access the delete account function")
+        return redirect(url_for('views.dashboard'))
+    
     form = SearchForm()
     addform = AddNewUserForm()
     editform = EditForm()
@@ -320,6 +302,7 @@ def search():
                                       User.lastname.ilike(f'%{query_string}%'),
                                       User.usertype.ilike(f'%{query_string}%'),
                                       User.school.ilike(f'%{query_string}%'),
+                                      User.id.ilike(f'%{query_string}%'),
                                       User.email.ilike(f'%{query_string}%'))).all()
         print(results)
         if results is None:
@@ -335,10 +318,10 @@ def search():
     
 @auth.route('/logs')
 def logs():
-    if current_user.usertype == 'user':
+    if current_user.usertype == 'user' or current_user.usertype == 'professor':
         flash('You dont have permission to access this page', category='error')
-        activity_logs("The user tried to access the live logs module")
-        return redirect(url_for('views.student'))
+        activity_logs("User tried to access the logs function")
+        return redirect(url_for('views.dashboard'))
     
     today = date.today()
     #logs = ActivityLog.query.all()
@@ -348,10 +331,10 @@ def logs():
 # this route will export all the logs
 @auth.route('/exalllogs')
 def exalllogs():
-    if current_user.usertype == 'user':
+    if current_user.usertype == 'user' or current_user.usertype == 'professor':
         flash('You dont have permission to access this page', category='error')
-        activity_logs("The user tried to export the live logs")
-        return redirect(url_for('views.student'))
+        activity_logs("User tried to access the exalllogs function")
+        return redirect(url_for('views.dashboard'))
     
     today = date.today()
     logs = ActivityLog.query.all()
@@ -367,10 +350,10 @@ def exalllogs():
 # this route will export todays logs
 @auth.route('/extodaylog')
 def extodaylog():
-    if current_user.usertype == 'user':
+    if current_user.usertype == 'user' or current_user.usertype == 'professor':
         flash('You dont have permission to access this page', category='error')
-        activity_logs("The user tried to export the live logs")
-        return redirect(url_for('views.student'))
+        activity_logs("User tried to access the extodaylog function")
+        return redirect(url_for('views.dashboard'))
     
     today = date.today()
     logs = ActivityLog.query.filter(ActivityLog.logtime >= today).all()
@@ -382,6 +365,39 @@ def extodaylog():
     writer.close()
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name=f'Logs Today {today}.xlsx')
+
+@auth.route('/CustomDownload')
+def CustomDownload():
+    if current_user.usertype == 'user' or current_user.usertype == 'professor':
+        flash('You dont have permission to access this page', category='error')
+        activity_logs("User tried to access the CustomDownload function")
+        return redirect(url_for('views.dashboard'))
+
+    start_date = request.args.get('startdate')
+    end_date = request.args.get('enddate')
+    
+    # format the input strings to datetime objects
+    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
+    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
+
+    # get the logs within the date range
+    logs = ActivityLog.query.filter(ActivityLog.logtime >= start_datetime, ActivityLog.logtime <= end_datetime).all()
+
+    # create the csv file
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['ID', 'User ID', 'Name', 'Log Time', 'Activity'])
+    for log in logs:
+        writer.writerow([log.id, log.user_id, log.name, log.logtime.strftime('%Y-%m-%d %H:%M:%S'), log.activity])
+
+    # output the file
+    response = Response(
+        output.getvalue(),
+        mimetype='text/csv',
+        headers={"Content-disposition": "attachment; filename=logs.csv"}
+    )
+
+    return response
 
 @auth.route('/images/<filename>')
 @login_required
@@ -402,6 +418,8 @@ def page_not_found(e):
 @login_required
 def logout():
     #activity_logs('User Logout')
+    session.clear()
+    current_user = None
     logout_user()
     return redirect(url_for('auth.home'))
 
@@ -476,3 +494,38 @@ def logout():
 #     today = date.today()
 #     logs = ActivityLog.query.filter(ActivityLog.logtime >= datetime.combine(today, datetime.min.time())).all()
 #     return render_template('logs_pdf.html', logs=logs)
+
+# @auth.route('/profile', methods=['GET', 'POST'])
+# @login_required
+# def profile():
+#     user =  User.query.get_or_404(current_user.id)
+#     form = UserProfileForm()
+#     existing_info = {
+#         'firstname' : user.firstname,
+#         'lastname' : user.lastname,
+#         'email' : user.email,
+#         'school' : user.school
+#     }
+#     if request.method == 'POST' and request.form.get('submit'):
+#         if request.form['firstname'] != current_user.firstname:
+#             user.firstname = request.form['firstname']
+#         if request.form['lastname'] != current_user.lastname:
+#                 user.lastname = request.form['lastname']
+#         if request.form['email'] != current_user.email:
+#             # Check if the new email already exists in the database
+#             if User.query.filter_by(email=request.form['email']).first():
+#                 flash('Email already exists', category='danger')
+#                 return redirect(url_for('auth.profile'))
+#             user.email = request.form['email']
+#         if request.form['school'] != current_user.school:
+#             user.school = request.form['school']
+#         try:
+#             db.session.commit()
+#             flash('Profile Successfully Updated', category='success')
+#             activity_logs("User Profile Updated")
+#             return redirect(url_for('auth.profile'))
+#         except:
+#             flash('Profile Failed to Updated', category='danger')
+#             activity_logs("User profile failed to updated")
+#             return redirect(url_for('auth.profile'))
+#     return render_template('profile.html', form=form, existing_info=existing_info, current_user=current_user)

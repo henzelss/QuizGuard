@@ -1,13 +1,31 @@
 [
   {
-    "question" : "The answer here is true. 0 is equal to true",
+    "question" : "The Philippines was under Japanese occupation during World War II.",
     "answer"   : "0"
+    
   },
 
   {
-    "question" : "The answer here is false. 1 is equal to false",
+    "question" : "The Philippine Revolution against Spanish colonial rule began in 1898.",
     "answer"   : "1"
-  }
+    
+  },
 
+  {
+    "question" : "The Treaty of Paris in 1898 transferred the Philippines from American to Spanish control. ",
+    "answer"   : "1"
+    
+  },
+
+  {
+    "question" : "The Commonwealth of the Philippines was established in 1946",
+    "answer"   : "1"
+    
+  },
+
+  {
+    "question" : "Ferdinand Marcos was the president of the Philippines during the EDSA Revolution. ",
+    "answer"   : "0"
+  }
 ]
 

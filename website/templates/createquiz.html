@@ -1,10 +1,10 @@
 {% extends "dashboard.html" %}
 
 {% block content %}
-  <div class="container mt-5 rounded p-5 bg-container">
-      <h1 class="text-light">Quiz Form</h1>
+  <div class="container rounded p-5" style="overflow:scroll; height:100%;">
+      <h1 class="text-dark">Quiz Form</h1>
       <form action="" method="POST" class="form-properties">
-        <div class="accordion" id="accordionPanelsStayOpenExample">
+        <div class="accordion shadow" id="accordionPanelsStayOpenExample">
           <div class="accordion-item">
             <h2 class="accordion-header" id="panelsStayOpen-headingQuizDetails">
               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseQuizDetails" aria-expanded="true" aria-controls="panelsStayOpen-collapseQuizDetails">
@@ -39,33 +39,37 @@
             </h2>
             <div id="panelsStayOpen-collapseQuizTimeSettings" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingQuizTimeSettings">
               <div class="accordion-body bg-accordion">
-                  <!-- Quiz Form  -->
-                  <div class="row">
-                    <div class="col-2" >
-                        <div class="mb-3">
-                            <label for="startdate">Start Date</label>
-                            <input type="date" id="startdate" name="startdate" class="form-control datetimepicker-input datetimepicker-date" required>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                      <div class="mb-3">
-                          <label for="enddate">End Date</label>
-                          <input type="date" name="enddate" id="enddate" class="form-control datetimepicker-input datetimepicker-date" required>
-                      </div>
-                    </div>
-                    <div class="col-8" style="line-height: 18px !important;">
-                      <label class="label-margin" for="">Time Limit</label>
-                      {{ form.timelimit(class="timelimit") }}
-                    </div>
+                <!-- Quiz Form  -->
+                <div class="row">
+                  <div class="col"> 
+                    {{ form.startdate.label(class='text-dark')}}
+                    {{ form.startdate(class="form-control datetimepicker-input datetimepicker-date")}}
                   </div>
-                  <div class="row">
-                      <div class="col-8">
-                        <label class="" for="">Number of Attempts</label>
-                        {{ form.attempt(class='timelimit') }}
-                      </div>
+                  <div class="col"> 
+                    {{ form.enddate.label(class='text-dark')}}
+                    {{ form.enddate(class="form-control datetimepicker-input datetimepicker-date")}}
+                  </div>
+                  <div class="col"> 
+                    {{ form.timelimit.label(class='text-dark') }}
+                    {{ form.timelimit(class='text-dark, form-control', required='required') }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col"> 
+                    {{ form.starttime.label(class='text-dark')}}
+                    {{ form.starttime(class="form-control")}}
+                  </div>
+                  <div class="col"> 
+                    {{ form.endtime.label(class='text-dark')}}
+                    {{ form.endtime(class="form-control")}}
+                  </div>
+                  <div class="col"> 
+                    {{ form.attempt.label(class='text-dark') }}
+                    {{ form.attempt(class='text-dark, form-control', required='required') }}
                   </div>
                 </div>
               </div>
+            </div> 
           </div>
           <div class="accordion-item">
             <h2 class="accordion-header" id="panelsStayOpen-headingQuizScore">
@@ -76,10 +80,8 @@
             <div id="panelsStayOpen-collapseQuizScore" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingQuizScore">
               <div class="accordion-body bg-accordion">
                 <!-- Quiz Form  -->
-                <label for="rbtn">Points Per Item:</label>
-                <div class="rbtn" >
-                  {{ form.points(class="timelimit")}}
-                </div>
+                {{ form.points.label(class='text-dark, form-label')}}
+                {{ form.points(class='text-dark, form-control')}}
               </div>
             </div>
           </div>

@@ -1,5 +1,9 @@
 {% extends 'dashboard.html' %}
 
+{% block title %}
+  <title>Records</title>
+{% endblock %}
+
 {% block content %}
     <div class="container bg-container rounded p-5">
         
@@ -14,10 +18,11 @@
                   <div class="accordion-body">
                     {% for quiz, firstname, lastname in quiz_list %}
                       <div class="row">
-                          <div class="col-3">{{ loop.index }}.&nbsp;{{ quiz.title }}</div>
-                          <div class="col-9">
+                          <div class="col-2">{{ loop.index }}.&nbsp;{{ quiz.title }}</div>
+                          <div class="col-10">
                             <a href="{{ url_for('views.view_student_result', quizcode=quiz.code, quiztype=quiz.quiztype) }}" class="btn btn-warning"><i class="fa-solid fa-eye me-1"></i>View Results</a>
-                            <a href="#" class="btn btn-primary"><i class="fa-solid fa-users me-2"></i>View Student Profiles</a>
+                            <a href="{{ url_for('views.view_student_violation', quizcode=quiz.code, quiztype=quiz.quiztype) }}" class="btn btn-danger"><i class="fa-solid fa-eye me-1"></i>View Violations</a>
+                            <a href="{{ url_for('views.view_student_profile', quizcode=quiz.code)}}" class="btn btn-primary"><i class="fa-solid fa-users me-2"></i>View Student Profiles</a>
                             <a href="{{ url_for('views.export_reports', quizcode=quiz.code, quiztype=quiz.quiztype) }}" class="btn btn-success"><i class="fa-solid fa-file-csv me-1"></i>Export Results</a>
                             <a href="{{ url_for('views.export_violations', quizcode=quiz.code, quiztype=quiz.quiztype) }}" class="btn btn-success"><i class="fa-solid fa-file-csv me-1"></i>Export Violations</a>
                           </div>

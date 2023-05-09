@@ -15,6 +15,78 @@
         "choice3": "Neptune",        
         "choice4": "Uranus",        
         "answer": "Jupiter"    
+    },
+
+    {    
+        "question": "What country has the highest life expectancy?",        
+        "choice1": "Hong Kong",        
+        "choice2": "United States",        
+        "choice3": "India",        
+        "choice4": "China",        
+        "answer": "Hong Kong"    
+    },
+
+    {    
+        "question": "Where would you be if you were standing on the Spanish Steps",        
+        "choice1": "India",        
+        "choice2": "Spain",        
+        "choice3": "Rome",        
+        "choice4": "China",        
+        "answer": "Rome"    
+    },
+
+    {    
+        "question": "Who was the Ancient Greek God of the Sun?",        
+        "choice1": "Apollo",        
+        "choice2": "Athena",        
+        "choice3": "Aphrodite",        
+        "choice4": "Artemis",        
+        "answer": "Apollo"    
+    },
+
+    {    
+        "question": "How many elements are in the periodic table?",        
+        "choice1": "118",        
+        "choice2": "100",        
+        "choice3": "105",        
+        "choice4": "150",        
+        "answer": "118"    
+    },
+
+    {    
+        "question": "How many elements are in the periodic table?",        
+        "choice1": "118",        
+        "choice2": "100",        
+        "choice3": "105",        
+        "choice4": "150",        
+        "answer": "118"    
+    },
+
+    {    
+        "question": "Who was the last Tsar of Russia?",        
+        "choice1": "Nicholas I",        
+        "choice2": "Nicholas II",        
+        "choice3": "Nicholas III",        
+        "choice4": "Nicholas IV",        
+        "answer": "Nicholas II"    
+    },
+
+    {    
+        "question": "Which planet in the Milky Way is the hottest?",        
+        "choice1": "Venus",        
+        "choice2": "Mercury",        
+        "choice3": "Earth",        
+        "choice4": "Pluto",        
+        "answer": "Venus"    
+    },
+
+    {    
+        "question": "Who discovered that the earth revolves around the sun?",        
+        "choice1": "Nicolaus Copernicus",        
+        "choice2": "Nicolaus Copernacus",        
+        "choice3": "Nicola Copernicus",        
+        "choice4": "Nikolai Copernicus",        
+        "answer": "Nicolaus Copernicus"    
     }
 
 ]

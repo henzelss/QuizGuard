@@ -1,8 +1,8 @@
 {% extends "dashboard.html" %}
 
 {% block content %}
-<div class="container-fluid mt-5 rounded  p-5 bg-container">
-  <div class="accordion" id="accordionExample">
+<div class="container mt-5 rounded p-5" style="overflow:scroll; height:100%;">
+  <div class="accordion shadow" id="accordionExample">
     <!-- 1st Main Accordion -->
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingTwo">
@@ -46,33 +46,37 @@
                 </h2>
                 <div id="panelsStayOpen-collapseQuizTimeSettings" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingQuizTimeSettings">
                   <div class="accordion-body bg-accordion">
-                      <!-- Quiz Form  -->
-                      <div class="row">
-                        <div class="col-2" >
-                            <div class="mb-3">
-                                <label for="startdate">Start Date</label>
-                                <input type="date" id="startdate" name="startdate" class="form-control datetimepicker-input datetimepicker-date" required>
-                            </div>
-                        </div>
-                        <div class="col-2">
-                          <div class="mb-3">
-                              <label for="enddate">End Date</label>
-                              <input type="date" name="enddate" id="enddate" class="form-control datetimepicker-input datetimepicker-date" required>
-                          </div>
-                        </div>
-                        <div class="col-8" style="line-height: 18px !important;">
-                          <label class="label-margin" for="">Time Limit</label>
-                          {{ quizform.timelimit(class="timelimit") }}
-                        </div>
+                    <!-- Quiz Form  -->
+                    <div class="row">
+                      <div class="col"> 
+                        {{ quizform.startdate.label(class='text-dark')}}
+                        {{ quizform.startdate(class="form-control datetimepicker-input datetimepicker-date")}}
                       </div>
-                      <div class="row">
-                        <div class="col-9">
-                          <label class="" for="">Number of Attempts</label>
-                          {{ quizform.attempt(class='timelimit') }}
-                        </div>
+                      <div class="col"> 
+                        {{ quizform.enddate.label(class='text-dark')}}
+                        {{ quizform.enddate(class="form-control datetimepicker-input datetimepicker-date")}}
+                      </div>
+                      <div class="col"> 
+                        {{ quizform.timelimit.label(class='text-dark') }}
+                        {{ quizform.timelimit(class='text-dark form-control', required='required') }}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col"> 
+                        {{ quizform.starttime.label(class='text-dark')}}
+                        {{ quizform.starttime(class="form-control")}}
+                      </div>
+                      <div class="col"> 
+                        {{ quizform.endtime.label(class='text-dark')}}
+                        {{ quizform.endtime(class="form-control")}}
+                      </div>
+                      <div class="col"> 
+                        {{ quizform.attempt.label(class='text-dark') }}
+                        {{ quizform.attempt(class='text-dark form-control', required='required') }}
                       </div>
                     </div>
                   </div>
+                </div>
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header" id="panelsStayOpen-headingQuizScore">
@@ -83,10 +87,8 @@
                 <div id="panelsStayOpen-collapseQuizScore" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingQuizScore">
                   <div class="accordion-body bg-accordion">
                     <!-- Quiz Form  -->
-                    <label for="rbtn">Points Per Item:</label>
-                    <div class="rbtn" >
-                      {{ quizform.points(class="timelimit")}}
-                    </div>
+                    {{ quizform.points.label(class='text-dark') }}
+                    {{ quizform.points(class='text-dark form-control', required='required') }}
                   </div>
                 </div>
               </div>
@@ -155,6 +157,9 @@
                         </div>
                         <Strong>Answer:&nbsp</Strong>{{ question.answer }} 
                       {% elif quiztype == '2' %}
+                        <Strong>Keyword 1:&nbsp</Strong>{{ question.keyword1 }} <br>
+                        <Strong>Keyword 2:&nbsp</Strong>{{ question.keyword2 }} <br>
+                        <Strong>Keyword 3:&nbsp</Strong>{{ question.keyword3 }}  <br>
                         <Strong>Answer:&nbsp</Strong>{{ question.answer }} 
                       {% elif quiztype == '3' %}
                         <Strong>Answer:&nbsp</Strong>{{ question.answer }}
@@ -207,6 +212,12 @@
                           {{ form.hidden_tag() }}
                           {{ form.question.label(class='text-light') }}
                           {{ form.question(class='form-control text-dark')}}
+                          {{ form.keyword1.label(class='text-light') }}
+                          {{ form.keyword1(class='form-control text-dark')}}
+                          {{ form.keyword2.label(class='text-light') }}
+                          {{ form.keyword2(class='form-control text-dark')}}
+                          {{ form.keyword3.label(class='text-light') }}
+                          {{ form.keyword3(class='form-control text-dark')}}
                           {{ form.answer.label(class='text-light') }}
                           {{ form.answer(class='form-control text-dark')}}
                           {{ form.submit(class='btn btn-warning text-dark') }}
@@ -285,9 +296,15 @@
                         <form action="{{ url_for('views.addquestions',  quizcode=quizcode, quiztype=quiztype)}}" method="POST" class="p-3">
                           <h1>Fill in the blanks </h1>
                           {{ form.hidden_tag() }}
-                          {{ form.question.label(class='text-light') }}
+                          {{ form.question.label(class='text-dark') }}
                           {{ form.question(class='form-control text-dark')}}
-                          {{ form.answer.label(class='text-light') }}
+                          {{ form.keyword1.label(class='text-dark') }}
+                          {{ form.keyword1(class='form-control text-dark')}}
+                          {{ form.keyword2.label(class='text-dark') }}
+                          {{ form.keyword2(class='form-control text-dark')}}
+                          {{ form.keyword3.label(class='text-dark') }}
+                          {{ form.keyword3(class='form-control text-dark')}}
+                          {{ form.answer.label(class='text-dark') }}
                           {{ form.answer(class='form-control text-dark')}}
                           <div class="d-flex justify-content-end">
                             {{ form.submit(class='class="btn submit-button text-dark"') }}
@@ -297,7 +314,7 @@
                         <form action="{{ url_for('views.addquestions',  quizcode=quizcode, quiztype=quiztype)}}" method="POST" class="p-3"> 
                           <h1>True or False</h1>
                           {{ form.hidden_tag() }}
-                          {{ form.question.label(class='text-light') }}
+                          {{ form.question.label(class='text-dark') }}
                           {{ form.question(class='form-control text-dark')}}
                           <label for="">Select an Option</label><br>
                           {{ form.answer(class="timelimit")}}

@@ -18,7 +18,6 @@
                       <th scope="col">Rank</th>
                       <th scope="col">Full Name</th>
                       <th scope="col">Score</th>
-                      <th scope="col">Achievement</th>
                   </tr>
               </thead>
               <tbody>
@@ -33,7 +32,6 @@
                           {% endif %}
                           <td>{{ result.firstname|title }}&nbsp;{{ result.lastname|title }}</td>
                           <td>{{ result.score}}/{{total_score}}</td>
-                          <td>None</td>
                       </tr>
                     {% endfor %}
               </tbody>

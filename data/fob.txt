@@ -1,12 +1,41 @@
 [
   {
     "question" : "Whos is the first president of the philippines?",
+    "keyword1" : "Emilio",
+    "keyword2" : "Aguinaldo",
+    "keyword3" : "emilio aguinaldo",
     "answer"   : "Emilio Aguinaldo"
   },
 
   {
-    "question" : "What is the name of our star?",
-    "answer"   : "sun"
-  }
+    "question" : "what are the nicknames of Dr.Jose Rizal",
+    "keyword1" : "Jose P. Rizal",
+    "keyword2" : "Pepe",
+    "keyword3" : "Jose",
+    "answer"   : "Pepe"
+  },
 
+  {
+    "question" : "The Philippines was colonized by ____ for over three centuries, from 1565 to 1898.",
+    "keyword1" : "Spain",
+    "keyword2" : "Spainiards",
+    "keyword3" : "Spainiards",
+    "answer"   : "Spain"
+  },
+
+  {
+    "question" : "The ________ _________ against Spanish colonial rule began in 1896 and ended with the proclamation of Philippine independence on June 12, 1898.",
+    "keyword1" : "Philippine Revolution",
+    "keyword2" : "Philippine Revolutions",
+    "keyword3" : "Philippines Revolution",
+    "answer"   : "Philippine Revolution"
+  },
+
+  {
+    "question" : "The Commonwealth of the Philippines was established in 1935, with ______ _______ as its first president.",
+    "keyword1" : "Manuel Quezon",
+    "keyword2" : "Manuel L Quezon",
+    "keyword3" : "President Quezon",
+    "answer"   : "Manuel Quezon"
+  }
 ]

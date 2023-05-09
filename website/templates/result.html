@@ -1,7 +1,7 @@
 {% extends "dashboard.html" %}
 
 {% block content %}
-  <div class="container bg-container rounded p-5 text-light">
+  <div class="container-fluid bg-container rounded p-5 text-light">
       
       <div class="accordion" id="accordionResult">
           <div class="accordion-item">
@@ -27,7 +27,6 @@
                               <th scope="col">Rank</th>
                               <th scope="col">Full Name</th>
                               <th scope="col">Score</th>
-                              <th scope="col">Achievement</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -42,7 +41,6 @@
                                   {% endif %}
                                   <td>{{ student.firstname|title }}&nbsp;{{ student.lastname|title }}</td>
                                   <td>{{ student.score}}/{{total_score}}</td>
-                                  <td>None</td>
                               </tr>
                             {% endfor %}
                       </tbody>
@@ -58,61 +56,135 @@
               </h2>
               <div id="collapseViolations" class="accordion-collapse collapse d-print-none" aria-labelledby="headingViolations" data-bs-parent="#accordionResult">
                 <div class="accordion-body d-print-none">
-                    <table class="table table-responsive d-print-none">
-                      <thead>
-                          <tr>
-                              <th>User ID</th>
-                              <th>Full Name</th>
-                              <th>Laptop Detected</th>
-                              <th>Phone Detected</th>
-                              <th>Head Pose</th>
-                              <th>Switch Tabs</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          {% for violators in violations %}
-                              <tr>
-                                  <td>{{ violators.id }}</td>
-                                  <td>{{ violators.firstname|title }}&nbsp;{{ violators.lastname|title }}</td>
-                                  <td>{{ violators.laptop }}</td>
-                                  <td>{{ violators.phone }}</td>
-                                  <td>{{ violators.head_pose }}</td>
-                                  <td>{{ violators.switch_tabs }}</td>
-                              </tr>
-                          {% endfor %}
-                      </tbody>
-                    </table>
+                  <table class="table table-hover table-responsive">
+                    <thead>
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Full Name</th>
+                        <th scope="col">Laptop Detected</th>
+                        <th scope="col">Laptop Image</th>
+                        <th scope="col">Time Stamp</th>
+                        <th scope="col">Phone Detected</th>
+                        <th scope="col">Phone Image</th>
+                        <th scope="col">Time Stamp</th>
+                        <th scope="col">Head Direction</th>
+                        <th scope="col">Head Direction Image</th>
+                        <th scope="col">Time Stamp</th>
+                        <th scope="col">Switch Tabs</th>
+                        <!-- <th scope="col">Action</th> -->
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for violation in violations %}
+                        <tr>
+                          <td>{{ violation.id}}</td>
+                          <td>{{ violation.firstname | title }}&nbsp;{{violation.lastname | title }}</td>
+                          <td>{{ violation.laptop }}</td>
+                          <td> 
+                            {% if violation.laptop_image %}
+                              <button class="btn shadow-none" data-bs-toggle="modal" data-bs-target="#laptop{{ violation.id }}">
+                                <img class="rounded" src="{{ url_for('static', filename='images/' + violation.laptop_image)}}" alt="" style="width: 100px; height: auto;">
+                              </button>
+                              <div class="modal fade" id="laptop{{ violation.id }}" tabindex="-1" aria-labelledby="laptop{{ violation.id }}ModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content text-dark">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="laptop{{ violation.id }}ModalLabel">Captured Image</h5>
+                                      <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <img class="rounded" src="{{ url_for('static', filename='images/' + violation.laptop_image)}}" alt="" style="width: 100%; height: auto;">
+                                    </div>
+                                    <div class="modal-footer">
+                                      <a href="{{ url_for('views.DownloadImage', filename=violation.laptop_image)}}" class="btn btn-success">Download</a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            {% else %}
+                              No image available
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if violation.laptop_image %}
+                              Date:&nbsp;{{ violation.laptop_timestamp.strftime('%m-%d-%Y') }}
+                              <br>  
+                              Time:&nbsp;{{ violation.laptop_timestamp.strftime('%H:%M %p') }}
+                            {% endif %}
+                          </td>
+                          <td>{{ violation.phone }}</td>
+                          <td>
+                            {% if violation.phone_image %}
+                              <button class="btn shadow-none" data-bs-toggle="modal" data-bs-target="#phone{{ violation.id }}">
+                                <img class="rounded" src="{{ url_for('static', filename='images/' + violation.phone_image)}}" alt="" style="width: 100px; height: auto;">
+                              </button>
+                              <div class="modal fade" id="phone{{ violation.id }}" tabindex="-1" aria-labelledby="phone{{ violation.id }}ModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content text-dark">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="phone{{ violation.id }}ModalLabel">Captured Image</h5>
+                                      <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <img class="rounded" src="{{ url_for('static', filename='images/' + violation.phone_image)}}" alt="" style="width: 100%; height: auto;">
+                                    </div>
+                                    <div class="modal-footer">
+                                      <a href="{{ url_for('views.DownloadImage', filename=violation.phone_image)}}" class="btn btn-success">Download</a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            {% else %}
+                              No image available
+                            {% endif %}
+                            </td>
+                          <td>
+                            Date:&nbsp;{{ violation.phone_timestamp.strftime('%m-%d-%Y') }}
+                            <br>  
+                            Time:&nbsp;{{ violation.phone_timestamp.strftime('%H:%M %p') }}
+                          </td>
+                          <td>{{ violation.head_pose }}</td>
+                          <td>
+                            {% if violation.head_pose_image %}
+                              <button class="btn shadow-none" data-bs-toggle="modal" data-bs-target="#head_pose_image{{ violation.id }}">
+                                <img class="rounded" src="{{ url_for('static', filename='images/' + violation.head_pose_image)}}" alt="" style="width: 100px; height: auto;">
+                              </button>
+                              <div class="modal fade" id="head_pose_image{{ violation.id }}" tabindex="-1" aria-labelledby="head_pose_image{{ violation.id }}ModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content text-dark">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="head_pose_image{{ violation.id }}ModalLabel">Captured Image</h5>
+                                      <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <img class="rounded" src="{{ url_for('static', filename='images/' + violation.head_pose_image)}}" alt="" style="width: 100%; height: auto;">
+                                    </div>
+                                    <div class="modal-footer">
+                                      <a href="{{ url_for('views.DownloadImage', filename=violation.head_pose_image)}}" class="btn btn-success">Download</a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            {% else %}
+                              No image available
+                            {% endif %}
+                            </td>
+                          <td>
+                            Date:&nbsp;{{ violation.head_pose_image_timestamp.strftime('%m-%d-%Y') }}
+                            <br>  
+                            Time:&nbsp;{{ violation.head_pose_image_timestamp.strftime('%H:%M %p') }}
+                          </td>  
+                          <td>{{ violation.switch_tabs }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
                 </div>
               </div>
           </div>
       </div>
   </div>
 
-  <!-- Modal -->
-  <div class="modal fade d-print-none" id="ExportModal" tabindex="-1" aria-labelledby="ExportModalLabel" aria-hidden="true">
-    <div class="modal-dialog d-print-none rounded">
-      <div class="modal-content d-print-none">
-        <div class="modal-header d-print-none">
-          <h5 class="modal-title" id="ExportModalLabel">Export</h5>
-          <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body d-print-none">
-          <div class="row">
-              <div class="col-2">
-                <p class="text-start">Export</p>
-              </div>
-              <div class="col-9"> 
-                  <a href="#" class="btn btn-success"><i class="fa-solid fa-file-csv me-1"></i>Top 5</a>
-                  <a href="#" class="btn btn-success"><i class="fa-solid fa-file-csv me-1"></i>Top 10</a>
-                  <a href="#" class="btn btn-success"><i class="fa-solid fa-file-csv me-1"></i>All</a>
-              </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  
   <!-- <i class="fa-solid fa-file-csv me-1"></i> -->
     <!-- <script>
       document.querySelector(".btn-warning").addEventListener("click", function() {

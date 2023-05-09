@@ -1,0 +1,177 @@
+{% extends "dashboard.html" %}
+
+{% block title %} 
+    <title>History</title>
+{% endblock %}
+
+{% block content %}
+
+    <div class="container p-1" style="overflow:scroll; height:100%;">
+        <h1>History</h1>
+        {% for history in history_data %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ loop.index}}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                    <h6>{{loop.index}}.&nbsp;{{ history.title }}&nbsp;{{ history.date_taken.strftime('%m/%d/%Y') }}</h6>
+                </button>   
+                </h2>
+                <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#accordionExample">
+                    <div class="accordion-body bg-light-blue">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="Result{{ loop.index }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Resultcollapse{{ loop.index }}" aria-expanded="false" aria-controls="Resultcollapse{{ loop.index }}">
+                                Result
+                            </button>
+                            </h2>
+                            <div id="Resultcollapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="Result{{ loop.index }}" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table table-responsive text-dark">
+                                        
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Full Name</th>
+                                                <th scope="col">Score</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{{ history.firstname|title }} {{ history.lastname|title }}</td>
+                                                <td>{{ history.score}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="Violation{{ loop.index }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Violationcollapse{{ loop.index }}" aria-expanded="false" aria-controls="Violationcollapse{{ loop.index }}">
+                                Violation
+                            </button>
+                            </h2>
+                            <div id="Violationcollapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="Violation{{ loop.index }}" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table table-hover table-responsive">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Full Name</th>
+                                            <th scope="col">Laptop Detected</th>
+                                            <th scope="col">Laptop Image</th>
+                                            <th scope="col">Time Stamp</th>
+                                            <th scope="col">Phone Detected</th>
+                                            <th scope="col">Phone Image</th>
+                                            <th scope="col">Time Stamp</th>
+                                            <th scope="col">Head Direction</th>
+                                            <th scope="col">Head Direction Image</th>
+                                            <th scope="col">Time Stamp</th>
+                                            <th scope="col">Switch Tabs</th>
+                                            <!-- <th scope="col">Action</th> -->
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                              <td>{{ history.firstname | title }}&nbsp;{{history.lastname | title }}</td>
+                                              <td>{{ history.laptop }}</td>
+                                              <td> 
+                                                {% if history.laptop_image %}
+                                                  <button class="btn shadow-none" data-bs-toggle="modal" data-bs-target="#laptop{{loop.index}}{{ history.id }}">
+                                                    <img class="rounded" src="{{ url_for('static', filename='images/' + history.laptop_image)}}" alt="" style="width: 100px; height: auto;">
+                                                  </button>
+                                                  <div class="modal fade" id="laptop{{loop.index}}{{ history.id }}" tabindex="-1" aria-labelledby="laptop{{loop.index}}{{ history.id }}ModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                      <div class="modal-content text-dark">
+                                                        <div class="modal-header">
+                                                          <h5 class="modal-title" id="laptop{{loop.index}}{{ history.id }}ModalLabel">Captured Image</h5>
+                                                          <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                          <img class="rounded" src="{{ url_for('static', filename='images/' + history.laptop_image)}}" alt="" style="width: 100%; height: auto;">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <a href="{{ url_for('views.DownloadImage', filename=history.laptop_image)}}" class="btn btn-success">Download</a>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                {% else %}
+                                                  No image available
+                                                {% endif %}
+                                              </td>
+                                              <td>
+                                                {% if history.laptop_image %}
+                                                  {{ history.laptop_timestamp.strftime('%Y-%m-%d %H:%M %p')}}
+                                                {% endif %}
+                                              </td>
+                                              <td>{{ history.phone }}</td>
+                                              <td>
+                                                {% if history.phone_image %}
+                                                  <button class="btn shadow-none" data-bs-toggle="modal" data-bs-target="#phone{{loop.index}}{{ history.id }}">
+                                                    <img class="rounded" src="{{ url_for('static', filename='images/' + history.phone_image)}}" alt="" style="width: 100px; height: auto;">
+                                                  </button>
+                                                  <div class="modal fade" id="phone{{loop.index}}{{ history.id }}" tabindex="-1" aria-labelledby="phone{{loop.index}}{{ history.id }}ModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                      <div class="modal-content text-dark">
+                                                        <div class="modal-header">
+                                                          <h5 class="modal-title" id="phone{{loop.index}}{{ history.id }}ModalLabel">Captured Image</h5>
+                                                          <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                          <img class="rounded" src="{{ url_for('static', filename='images/' + history.phone_image)}}" alt="" style="width: 100%; height: auto;">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <a href="{{ url_for('views.DownloadImage', filename=history.phone_image)}}" class="btn btn-success">Download</a>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                {% else %}
+                                                  No image available
+                                                {% endif %}
+                                                </td>
+                                              <td>
+                                                Date:&nbsp;{{ history.phone_timestamp.strftime('%m-%d-%Y') }}
+                                                <br>  
+                                                Time:&nbsp;{{ history.phone_timestamp.strftime('%H:%M %p') }}
+                                              </td>
+                                              <td>{{ history.head_pose }}</td>
+                                              <td>
+                                                {% if history.head_pose_image %}
+                                                  <button class="btn shadow-none" data-bs-toggle="modal" data-bs-target="#head_pose_image{{loop.index}}{{ history.id }}">
+                                                    <img class="rounded" src="{{ url_for('static', filename='images/' + history.head_pose_image)}}" alt="" style="width: 100px; height: auto;">
+                                                  </button>
+                                                  <div class="modal fade" id="head_pose_image{{loop.index}}{{ history.id }}" tabindex="-1" aria-labelledby="head_pose_image{{ history.id }}ModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                      <div class="modal-content text-dark">
+                                                        <div class="modal-header">
+                                                          <h5 class="modal-title" id="head_pose_image{{loop.index}}{{ history.id }}ModalLabel">Captured Image</h5>
+                                                          <button type="button" class="btn-close bg-danger shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                          <img class="rounded" src="{{ url_for('static', filename='images/' + history.head_pose_image)}}" alt="" style="width: 100%; height: auto;">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <a href="{{ url_for('views.DownloadImage', filename=history.head_pose_image)}}" class="btn btn-success">Download</a>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                {% else %}
+                                                  No image available
+                                                {% endif %}
+                                                </td>
+                                              <td>
+                                                {{ history.head_pose_image_timestamp.strftime('%Y-%m-%d %H:%M %p') }}
+                                              </td>  
+                                              <td>{{ history.switch_tabs }}</td>
+                                            </tr>
+                                        </tbody>
+                                      </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

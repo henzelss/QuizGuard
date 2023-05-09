@@ -31,9 +31,20 @@
               <span class="link_name">Home</span>
             </a>
             <ul class="sub-menu blank">
-              <li><a class="link_name" href="{{ url_for('views.dashboard') }}">Dashboard</a></li>
+              <li><a class="link_name" href="{{ url_for('views.dashboard') }}">Home</a></li>
             </ul>
           </li>
+          {% if current_user.usertype == "user" %}
+            <li>
+                <a href="{{ url_for('views.history')}}">
+                  <i class='bx bx-history'></i>
+                  <span class="link_name">History</span>
+                </a>
+                <ul class="sub-menu blank">
+                <li><a class="link_name" href="{{ url_for('views.history')}}">History</a></li>
+                </ul>
+            </li>
+          {% endif %}
           {% if current_user.usertype == 'professor' or current_user.usertype == 'admin'%}
             <li>
                 <a href="{{ url_for('views.myquiz')}}">

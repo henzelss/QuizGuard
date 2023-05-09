@@ -65,7 +65,9 @@
                     </td>
                     <td>
                       {% if violation.laptop_image %}
-                        {{ violation.laptop_timestamp.strftime('%Y-%m-%d %H:%M %p')}}
+                        Date:&nbsp;{{ iolation.laptop_timestamp.strftime('%m-%d-%Y') }}
+                        <br>  
+                        Time:&nbsp;{{ iolation.laptop_timestamp.strftime('%H:%M %p') }}
                       {% endif %}
                     </td>
                     <td>{{ violation.phone }}</td>
@@ -150,7 +152,6 @@
                       <th scope="col">Rank</th>
                       <th scope="col">Full Name</th>
                       <th scope="col">Score</th>
-                      <th scope="col">Achievement</th>
                   </tr>
               </thead>
               <tbody>
@@ -165,7 +166,6 @@
                           {% endif %}
                           <td>{{ result.firstname|title }}&nbsp;{{ result.lastname|title }}</td>
                           <td>{{ result.score}}/{{total_score}}</td>
-                          <td>None</td>
                       </tr>
                     {% endfor %}
               </tbody>
